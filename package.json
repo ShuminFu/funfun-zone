@@ -11,7 +11,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
+    "build": "astro check && astro build",
+    "build:local": "astro check && astro build && pagefind --site dist",
     "preview": "astro build && wrangler dev",
     "deploy": "astro build && wrangler deploy",
     "check": "astro build && tsc && wrangler deploy --dry-run",
