@@ -62,6 +62,14 @@ html[data-theme="dark"] {
   @apply underline decoration-wavy decoration-2 underline-offset-4;
 }
 
+.blog-highlight {
+  color: #16a34a;
+}
+
+html[data-theme="dark"] .blog-highlight {
+  color: #4ade80;
+}
+
 /* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */
 /* Anything that has been anchored to should have extra scroll margin */
 :target {
