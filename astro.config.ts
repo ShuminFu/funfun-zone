@@ -15,6 +15,7 @@ import { SITE } from "./src/config";
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
+  output: "server",
   adapter: cloudflare({
     platformProxy: {
       enabled: true,
@@ -48,6 +49,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
+    },
+    ssr: {
+      external: ["@resvg/resvg-js"],
     },
   },
   image: {
