@@ -2,10 +2,19 @@
   "name": "astro-paper",
   "type": "module",
   "version": "5.5.0",
+  "cloudflare": {
+    "label": "Astro Framework Starter",
+    "products": [
+      "Workers"
+    ],
+    "dash": true
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
-    "preview": "astro preview",
+    "preview": "astro build && wrangler dev",
+    "deploy": "astro build && wrangler deploy",
+    "check": "astro build && tsc && wrangler deploy --dry-run",
     "sync": "astro sync",
     "astro": "astro",
     "format:check": "prettier --check .",
@@ -13,6 +22,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.10",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.4.1",
     "@resvg/resvg-js": "^2.6.2",
@@ -32,6 +42,7 @@
     "@shikijs/transformers": "^3.7.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/lodash.kebabcase": "^4.1.9",
+    "@types/node": "^24.7.0",
     "@typescript-eslint/parser": "^8.36.0",
     "eslint": "^9.30.1",
     "eslint-plugin-astro": "^1.3.1",
@@ -41,6 +52,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.13",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.36.0"
+    "typescript-eslint": "^8.36.0",
+    "wrangler": "^4.42.1"
   }
 }
