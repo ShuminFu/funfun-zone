@@ -9,7 +9,7 @@
             <sparkle:shortVersionString>1.7.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.6</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://funfun.zone/ClaudeIsland-1.7.1.dmg" length="3754514" type="application/octet-stream" sparkle:edSignature="2JVmpVdy55Z3kJvnMDNEl/VriJ5TD/5qi6mrpyjzHG/leQ/R2Drv7vGIFYxN6BC2KVG8+phHvRqjkjfe5KiQBg=="/>
+            <enclosure url="https://github.com/ShuminFu/claude-island/releases/download/1.7.1/ClaudeIsland-1.7.1.dmg" length="3754514" type="application/octet-stream" sparkle:edSignature="2JVmpVdy55Z3kJvnMDNEl/VriJ5TD/5qi6mrpyjzHG/leQ/R2Drv7vGIFYxN6BC2KVG8+phHvRqjkjfe5KiQBg=="/>
         </item>
     </channel>
 </rss>
