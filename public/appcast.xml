@@ -3,13 +3,13 @@
     <channel>
         <title>Claude Island</title>
         <item>
-            <title>1.7.2</title>
-            <pubDate>Sun, 12 Apr 2026 16:50:44 +0000</pubDate>
-            <sparkle:version>202604121646</sparkle:version>
-            <sparkle:shortVersionString>1.7.2</sparkle:shortVersionString>
+            <title>1.7.3</title>
+            <pubDate>Wed, 22 Apr 2026 08:33:06 +0000</pubDate>
+            <sparkle:version>202604220830</sparkle:version>
+            <sparkle:shortVersionString>1.7.3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.6</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://github.com/ShuminFu/claude-island/releases/download/1.7.2/ClaudeIsland-1.7.2.dmg" length="3788648" type="application/octet-stream" sparkle:edSignature="ZPJT0B4btKJcpl3sOQQR/IDXMAE+LhqmsuZZzhAF9Du1HAyXKb0enWMn/0zi5ir+qJiabzciV5+mu52vC7gKCg=="/>
+            <enclosure url="https://github.com/ShuminFu/claude-island/releases/download/1.7.3/ClaudeIsland-1.7.3.dmg" length="3805183" type="application/octet-stream" sparkle:edSignature="L4pE551rpTR+yN0sntjh/0Oi/Aef/OhMcofpI75VNLcKDAjb+7y/FjaVSmacC8u9VaUzfD/alM22RFW+N14KCg=="/>
         </item>
     </channel>
 </rss>
