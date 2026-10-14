@@ -12,5 +12,5 @@
 !.prettierrc
 !eslint.config.js
 !README.md
-# Self-contained HTML reports, kept verbatim
-/public/reports
+# Post with an inline HTML report, kept verbatim
+/src/data/blog/claude-code-workflow-multi-turn.md
