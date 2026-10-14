@@ -187,13 +187,7 @@ html[data-theme="dark"] .fz-seg button.on,html[data-theme="dark"] .fz-steps butt
 <p>第二个值得多想一步。以前 AI 能做的，只是在对话框里回话。<code>spawn_task</code> 让它在对话框外面、在应用本身放了一个可以操作的东西。做不做，仍然由你点。</p>
 <p>把这一点推到底：如果 App 里的每个地方，AI 都能先放点东西进来，App 会变成什么样？</p>
 <h2>先玩一下</h2>
-<p>下面是一个未来的 App。可以动三个地方，再盯住一个地方：</p>
-<ul>
-<li>右上角，在「今天的 App」和「AI 之后的 App」之间切换。</li>
-<li>「放手程度」那一排，决定 AI 可以自己做到哪一步。换一档，剧本会重新播放。</li>
-<li>底部的几句话，点一下，看它当场生成一个小界面。</li>
-<li>盯住左边的停靠栏和顶栏。AI 不只出卡片，它还会改 App 本身：给图标挂角标、在停靠栏新开一个入口、在顶栏钉一条提醒。每改一处，左上角的小球会射出一道光飞过去，右边「AI 碰过的外壳」也会记一笔。</li>
-</ul>
+<p>下面是一个未来的 App。卡片里的界面都是当场生成的。AI 也不只待在卡片里：它会给图标挂角标，在停靠栏开新入口，在顶栏钉提醒，能力延伸到了整个 App。</p>
 <div class="fz not-prose" id="fz-demo" data-mode="new">
   <div class="fz-top">
     <span class="fz-brand">Next OS</span>
