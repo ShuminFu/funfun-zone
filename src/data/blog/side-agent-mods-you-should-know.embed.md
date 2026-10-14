@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-14T15:42:32+08:00
+pubDatetime: 2026-10-14T15:43:37+08:00
 title: "从 You should know 插件看旁路 agent 与 Claude Code mod 实践"
 slug: side-agent-mods-you-should-know
 featured: false
@@ -22,6 +22,7 @@ description: "一个不打断主 agent、默认保持沉默的“旁观者”是
 .mock .star{color:var(--accent)}
 .mock .dim,.note,.gloss,blockquote .gloss{color:color-mix(in srgb,var(--foreground) 72%,transparent)}
 blockquote{border-left:2px solid var(--accent);padding-left:1em}
+.lead{color:color-mix(in srgb,var(--foreground) 75%,transparent)}
 </style>
 
 <div class="html-embed" lang="zh-CN">
