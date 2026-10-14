@@ -14,3 +14,6 @@
 !README.md
 # Post with an inline HTML report, kept verbatim
 /src/data/blog/claude-code-workflow-multi-turn.md
+
+# Posts that inline a self-contained HTML page, kept verbatim
+/src/data/blog/*.embed.md
