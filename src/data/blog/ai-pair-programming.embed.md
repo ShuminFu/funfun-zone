@@ -1,6 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-05T10:00:00+08:00
+modDatetime: 2026-10-12T10:00:00+08:00
 title: "两个 AI 结对写代码，真的比一个强吗？"
 slug: ai-pair-programming
 featured: false
@@ -13,47 +14,24 @@ description: "让 AI 编程助手跑了约 2,400 次真实任务：两个 AI 结
 ---
 
 <style>
-.html-embed{display:block}
-.html-embed :where(h1,h2,h3,h4){font-style:normal}
-.html-embed :where(th,td){border:0}
-.html-embed :where(code)::before,.html-embed :where(code)::after{content:none}
-.html-embed :where(ul,ol){list-style:revert}
-.html-embed{--bg:#fbfaf7; --fg:#1f1f1c; --muted:#6b6a64; --line:#e4e1d8; --accent:#b4532a; --card:#f3f1ea; --hl:#fff4e8; --link:#2457a6;}
-html[data-theme="dark"] .html-embed{--bg:#181816; --fg:#ebe9e3; --muted:#a19f97; --line:#34332f; --accent:#e08a5f; --card:#22221f; --hl:#2c2420; --link:#8fb3ef;}
-html[data-theme="dark"] .html-embed{--bg:#181816; --fg:#ebe9e3; --muted:#a19f97; --line:#34332f; --accent:#e08a5f; --card:#22221f; --hl:#2c2420; --link:#8fb3ef;}
-.html-embed *{box-sizing:border-box}
-.html-embed{margin:0;background:var(--bg);color:var(--fg); font:17px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",sans-serif;}
-.html-embed main{max-width:720px;margin:0 auto;padding:56px 16px 96px}
-.html-embed h1{font-size:34px;line-height:1.3;margin:0 0 10px;letter-spacing:.01em}
-.html-embed .meta{color:var(--muted);font-size:14px;margin-bottom:40px}
-.html-embed h2{font-size:23px;margin:52px 0 14px;line-height:1.4}
-.html-embed h3{font-size:18px;margin:34px 0 10px}
-.html-embed p{margin:0 0 16px}
-.html-embed a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
-.html-embed code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card);padding:1px 6px;border-radius:4px}
-.html-embed ol,.html-embed ul{padding-left:1.4em;margin:0 0 18px}
-.html-embed li{margin:6px 0}
-.html-embed .table-wrap{overflow-x:auto;margin:6px 0 22px}
-.html-embed table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.6}
-.html-embed th,.html-embed td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-.html-embed th{font-weight:600;color:var(--muted);font-size:13px;border-bottom:2px solid var(--line)}
-.html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.html-embed tr.win td{font-weight:600}
-.html-embed .update{background:var(--hl);border-left:3px solid var(--accent);border-radius:6px;padding:4px 22px 10px;margin:0 0 40px}
-.html-embed .update h2{margin-top:22px}
-.html-embed .oneline{font-weight:600;border-top:1px solid var(--line);padding-top:16px;margin-top:24px}
-.html-embed .divider{color:var(--muted);font-size:14px;text-align:center;margin:8px 0 0}
-.html-embed .refs li{font-size:14px;line-height:1.7;color:var(--muted)}
-.html-embed .refs i{color:var(--fg)}
-.html-embed .theme{position:fixed;top:14px;right:14px;background:var(--card);color:var(--muted);border:1px solid var(--line); border-radius:16px;padding:4px 12px;font-size:13px;cursor:pointer}
-@media (max-width:600px){.html-embed h1{font-size:27px}
-.html-embed{font-size:16px}
-.html-embed .update{padding:2px 14px 8px}}
-.html-embed{background:transparent!important}  /* the blog owns the page background */
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
+/* Pair-programming article on the blog's own typography: only its custom classes need rules. */
+.html-embed .meta{display:none}  /* the blog header already shows the date; "Updated" comes from modDatetime */
+.html-embed .update{border-left:2px solid var(--accent);padding:2px 0 2px 1.25rem;margin:0 0 2.5rem}
+.html-embed .update > h2:first-child{margin-top:0}
+.html-embed .divider{margin:2rem 0 0;padding-top:1rem;border-top:1px dashed color-mix(in srgb,var(--foreground) 25%,transparent);font-size:.875em;opacity:.7}
+.html-embed .table-wrap{overflow-x:auto;margin:1.25rem 0 1.75rem}
+.html-embed .table-wrap table{margin:0;width:100%;font-size:.9em}
+.html-embed .table-wrap th,.html-embed .table-wrap td{border:0;border-bottom:1px solid color-mix(in srgb,var(--foreground) 14%,transparent);padding:.5rem .75rem}
+.html-embed .table-wrap th{font-weight:600;opacity:.7;border-bottom-width:2px}
+.html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.html-embed tr.win td{font-weight:700;color:var(--accent)}
+.html-embed .oneline{font-weight:700;margin-top:1.75rem;padding:.75rem 1rem;background:color-mix(in srgb,var(--muted) 45%,transparent);border-radius:6px}
+.html-embed .refs li{font-size:.875em;line-height:1.65}
+.html-embed .refs i{font-style:italic}
 </style>
 
-<div class="html-embed not-prose" lang="zh-CN">
+<div class="html-embed" lang="zh-CN">
 <div class="meta">2026-10-05 · Shumin · 10 月 12 日更新</div>
 <section class="update">
 <h2>10 月 12 日更新：两个小模型搭档，也能赢大一号的模型</h2>
