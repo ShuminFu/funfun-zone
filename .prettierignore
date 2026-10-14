@@ -12,3 +12,5 @@
 !.prettierrc
 !eslint.config.js
 !README.md
+# Self-contained HTML reports, kept verbatim
+/public/reports
