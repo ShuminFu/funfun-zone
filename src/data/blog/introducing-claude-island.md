@@ -3,7 +3,7 @@ author: Shumin Fu
 pubDatetime: 2026-04-11T10:00:00+08:00
 title: "Claude Island：给 Claude Code 加一块灵动岛"
 slug: introducing-claude-island
-featured: true
+featured: false
 draft: false
 tags:
   - claude-code
