@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-title: "一个把活分出去，一个把东西摆出来"
+title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
 draft: false
@@ -243,7 +243,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 <div class="html-embed not-prose" lang="zh-CN">
   <header>
     <div class="kicker">Claude Code 桌面版 · 两个小工具 · 科普</div>
-    <p class="lead">spawn_task 和 show_widget：Claude 在聊天里的两条“旁路”</p>
+    <p class="lead">一个把顺路发现的问题记成卡片，另开会话去修；一个把选项画在聊天里，让你直接点。</p>
     <div class="chips">
       <span class="chip">环境 <b>Claude Code 桌面版</b></span>
       <span class="chip">工具 <b>spawn_task</b></span>
@@ -252,7 +252,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </header>
   <div class="verdict">
     <div class="verdict-head">
-      <span class="verdict-word">两条旁路</span>
+      <span class="verdict-word">简单说</span>
       <span class="verdict-zh">顺路看到的问题，不塞进这次的改动；要你挑的东西，直接摆在聊天里。</span>
     </div>
     <div class="verdict-body">
