@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:32:19+08:00
+modDatetime: 2026-10-15T10:34:25+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -303,35 +303,31 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </div>
   <p class="pg-prose">这个例子是真的：给这个博客发文章时，自定义域名一直打不开，但它跟“发文章”这件事无关。正确的做法就是记一张卡片，而不是在发文章的改动里顺手去改 DNS。</p>
   <h3>新会话怎么知道自己是谁开出来的</h3>
-  <p class="pg-prose">两个会话自己并不知道对方。<code>spawn_task</code> 的参数里没有“父会话”这一项，新会话的聊天记录里也找不到旧会话的 ID。这层关系由桌面 app 记录：它给每个会话存一份 JSON 档案，放在 <code>~/Library/Application Support/Claude/claude-code-sessions/</code> 下面。就像前台的登记簿，上面写着“这个人是那个人介绍来的”。</p>
-  <p class="pg-prose">一个真实例子：排查一个插件路由 404 时，Claude 发现“卸载插件后再装回来，路由一直 404，要重启才好”。这件事跟当时的任务无关，于是它开了一张卡片。点开之后，新会话的档案里多了这几项：</p>
+  <p class="pg-prose">它自己不知道。<b>这层关系由桌面 app 记录</b>：<code>spawn_task</code> 的参数里没有父会话，新会话的聊天记录里也没有。app 把来历写进自己的会话档案。下面是一张真实卡片点开后，新会话档案里的字段：</p>
   <div class="tablebox"><table>
     <thead><tr><th>字段</th><th>记的是什么</th></tr></thead>
     <tbody>
       <tr><td><code>spawnedFrom.sessionId</code></td><td class="note">父会话的 ID</td></tr>
       <tr><td><code>spawnedFrom.taskId</code></td><td class="note">那张卡片的编号，形如 <code>task_cc891ed4</code></td></tr>
       <tr><td><code>spawnedFrom.title</code></td><td class="note">卡片标题，也就是新会话的名字</td></tr>
-      <tr><td><code>worktreePath</code> / <code>branch</code></td><td class="note">新建的 worktree 和分支，从当时所在的分支拉出来</td></tr>
+      <tr><td><code>worktreePath</code> / <code>branch</code></td><td class="note">新建的 worktree 和分支</td></tr>
     </tbody>
   </table></div>
-  <p class="pg-prose">父会话那边也会收到一条消息：“你建议的任务已经在另一个会话里开工了，结束时会通知你。”所以新会话做完后，消息还能回到旧会话。</p>
-  <div class="tldr"><p><span class="hl">一句话：</span>父子关系不在会话里，而是记在桌面 app 的档案字段 <code>spawnedFrom</code> 里，由 app 负责牵线和回报。</p></div>
+  <p class="pg-prose">新会话做完后，app 再按这条记录通知父会话。</p>
   <h3>为什么这层关系值得记：项目和线程都靠它</h3>
-  <p class="pg-prose">这一个字段背后，是 Claude Code 对“项目”的理解在变。可以分三步看：</p>
+  <p class="pg-prose">Claude Code 里的“项目”，正在从一个文件夹变成一段对话：</p>
   <div class="tablebox"><table>
     <thead><tr><th>阶段</th><th>“项目”是什么</th><th>会话之间的关系</th></tr></thead>
     <tbody>
-      <tr><td><b>1. 文件夹</b></td><td class="note">命令行版按目录认项目：会话在哪个目录启动，聊天记录和 memory 就放进 <code>~/.claude/projects/</code> 下对应的文件夹。</td><td class="note">没有。spawn 出来的会话跑在新的 worktree 里，目录变了，就被当成另一个项目。我的机器上已经有 13 个这样的碎片文件夹，里面只有聊天记录，没有 memory。</td></tr>
-      <tr><td><b>2. 侧栏分组</b></td><td class="note">桌面 app 记的是 <code>originCwd</code>，也就是最初开工的仓库。侧栏可以按项目分组。</td><td class="note">app 在档案里记下来历：<code>spawnedFrom</code>（开卡片，我这里有 21 个）、<code>forkedFromSessionId</code>（从某条消息分叉，44 个）、<code>parentSessionId</code>。子会话会自动进父会话的分组，结束后还会通知父会话。</td></tr>
-      <tr><td><b>3. Projects</b></td><td class="note">2026 年 9 月推出的 Projects（公测）。官方博客的标题就叫“from folder to conversation”：项目不再是一个文件夹，而是一段由 Claude 当协调人的长对话。</td><td class="note">协调人为每件事开一个 thread（线程），并跟踪自己开过的每一个。thread 做完会向项目对话汇报，你可以在 Overview 里一次看到全部 thread。</td></tr>
+      <tr><td><b>1. 文件夹</b></td><td class="note">命令行版按启动目录归档会话（<code>~/.claude/projects/</code>）。</td><td class="note">没有。spawn 出来的会话跑在新 worktree 里，被当成另一个项目。</td></tr>
+      <tr><td><b>2. 侧栏分组</b></td><td class="note">桌面 app 按 <code>originCwd</code>（最初的仓库）归组。</td><td class="note">app 记下 <code>spawnedFrom</code>、<code>forkedFromSessionId</code>、<code>parentSessionId</code>。子会话进父会话的分组，做完通知父会话。</td></tr>
+      <tr><td><b>3. Projects</b></td><td class="note">2026 年 9 月公测。项目是一段由 Claude 当协调人的对话。</td><td class="note">协调人为每件事开一个 thread 并跟踪它；thread 做完向项目汇报。</td></tr>
     </tbody>
   </table></div>
-  <p class="pg-prose">把三步放在一起看，<code>spawn_task</code> 其实是 thread 的手动版：Claude 提议，你点卡片；新会话做完，回报给开它的那个会话。到了 Projects，提议和开工都交给协调人，你只说要什么。</p>
-  <p class="pg-prose">这只是类比，不是同一个功能。Projects 里的 thread 默认是云端会话，要在你自己的电脑上跑，也得由项目通过 Remote Control 来开；你在本机自己开的会话，加不进项目。<code>spawn_task</code> 开出来的却是本机会话，跑在一个新的 git worktree 里。两者相同的地方只有一个：新会话都记得是谁开的它。</p>
-  <p class="pg-prose">两者靠的是同一件事：每个会话都记得是谁开的它。官方文档写得很直接：一个 thread 只属于开它的那个项目，不能搬到别的项目，也不能拎出来单独存在。归档项目时，它的 thread 会一起归档。没有这条“谁开了谁”的线，就没有项目对话里的汇报，没有 Overview，也没有一起归档。</p>
-  <p class="pg-prose">AI 会自己生出新的工作：开卡片、分叉、派活。会话因此不再是一份份独立的聊天，而会长成一棵树。软件要做的，是把这棵树管起来。</p>
-  <div class="tldr"><p><span class="hl">一句话：</span>项目从“一个文件夹”变成“一段协调的对话”，靠的就是 <code>spawnedFrom</code> 这类“谁开了谁”的记录；<code>spawn_task</code> 是这条路上手动的那一步。</p></div>
-  <p class="pg-prose note">参考：<a href="https://code.claude.com/docs/en/claude-projects">Claude Code 文档：Projects</a>，<a href="https://claude.com/blog/projects-redesigned">Projects redesigned: from folder to conversation</a>，<a href="https://code.claude.com/docs/en/desktop">Claude Code 桌面版文档</a>。</p>
+  <p class="pg-prose"><code>spawn_task</code> 像 thread 的手动版：Claude 提议，你点卡片开工。但这只是类比：thread 默认跑在云端，你在本机自己开的会话加不进项目。</p>
+  <p class="pg-prose">两者靠的是同一条线：谁开了谁。官方文档写明，一个 thread 只属于开它的项目，归档项目时会一起归档。AI 会自己生出新会话，会话就长成一棵树；记住来历，软件才管得住这棵树。</p>
+  <div class="tldr"><p><span class="hl">一句话：</span>项目从“一个文件夹”变成“一段对话”，靠的就是 app 记下的“谁开了谁”。</p></div>
+  <p class="pg-prose note">参考：<a href="https://code.claude.com/docs/en/claude-projects">Claude Code 文档：Projects</a>，<a href="https://claude.com/blog/projects-redesigned">Projects redesigned: from folder to conversation</a>。</p>
   <h3>什么时候不该用</h3>
   <ul class="pg-prose">
     <li>只是觉得“代码有点丑”，说不出具体问题。</li>
