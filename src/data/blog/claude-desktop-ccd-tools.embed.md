@@ -1,6 +1,7 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-15T10:23:41+08:00
+pubDatetime: 2026-10-15T10:50:32+08:00
+modDatetime: 2026-10-14T22:50:32+08:00
 title: "How the Claude Desktop App's Own Tools Work"
 slug: claude-desktop-ccd-tools
 featured: false
@@ -97,6 +98,43 @@ description: "The Claude desktop app gives its agent a set of mcp__ccd_* tools t
 </ol>
 <p>The agent's instructions also ask for a <code>scope</code> on each new list: <code>first_task</code>, <code>continuation</code> or <code>new_task</code>. A <code>new_task</code> makes the agent offer a fresh session first, instead of piling unrelated work onto a long one.</p>
 <p>The weak spot is timing. If the agent moves on without sending <code>advance</code>, the box lags behind the real work. In one real run, step 1 kept spinning while a later command was already running, and two steps were ticked together afterwards.</p>
+<h3>The data structure</h3>
+<p><code>update_plan</code> takes either a whole list or a small change to the current one.</p>
+<p><strong>The whole list</strong>, sent when a task starts or the plan changes:</p>
+<pre><code>{
+  "items": [
+    { "content": "Load blog posting skill", "status": "completed" },
+    { "content": "Add post to funfun-zone repo", "status": "in_progress" },
+    { "content": "Build and check the post", "status": "pending" },
+    { "content": "Commit and push to main", "status": "pending", "session": "blog-check" }
+  ],
+  "scope": "continuation"
+}</code></pre>
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>items</code></td><td>array, 1–12 entries</td><td>The whole list; it replaces the old one</td></tr>
+<tr><td><code>items[].content</code></td><td>string</td><td>One step, about 7 words at most</td></tr>
+<tr><td><code>items[].status</code></td><td><code>pending</code> / <code>in_progress</code> / <code>completed</code></td><td>Not started / being worked on / done</td></tr>
+<tr><td><code>items[].session</code></td><td>string, optional</td><td>The name of another session this step was handed to</td></tr>
+<tr><td><code>scope</code></td><td><code>first_task</code> / <code>continuation</code> / <code>new_task</code></td><td>How this request relates to earlier work; required with <code>items</code></td></tr>
+</tbody>
+</table>
+<p><strong>A small change</strong>, sent as work moves on:</p>
+<ul>
+<li><code>{"advance": true}</code> finishes the current step and starts the next one.</li>
+<li><code>{"done": [1, 2], "start": 3}</code> marks steps 1 and 2 done and starts step 3, counting from 1.</li>
+</ul>
+<p>The app answers with one short line, such as <code>Plan shown (4 steps).</code> or <code>Plan updated: step 3 of 4 is in progress.</code> The app works out "step 3 of 4" itself, so the real state of the list lives in the app. The agent only sends changes.</p>
+<h3>Is the list fed back to the agent each turn?</h3>
+<p>Not as far as the agent can see. No message on each turn says "here is your current to-do list."</p>
+<p>The agent knows where it is from the conversation history instead. Its earlier <code>update_plan</code> calls and the app's replies stay in the record, and it reads them back. It is like keeping your own notebook: nobody reads it to you each morning, you just look at what you wrote.</p>
+<p>That has two risks:</p>
+<ul>
+<li><strong>Long conversations get summarized.</strong> When old turns are compressed into a summary, the tool calls can disappear. If the summary does not record the list's state, the agent has to rebuild it from the summary.</li>
+<li><strong>Two copies can drift.</strong> The app holds the real state; the agent holds a history of what it sent. If they disagree, the app's view is the true one.</li>
+</ul>
+<p>Claude Code's command-line <code>TodoWrite</code> tool reportedly sends the agent reminders about its list, but no such reminder appears in a desktop app session. Whether the app has a hidden fallback, such as closing a forgotten list when a turn ends, is not visible from the agent's side.</p>
 <h2>Case study: starting other sessions</h2>
 <p><code>start_session</code> lets one session act as a front desk: it hands work to new sessions and gets a short report back when they finish.</p>
 <p>The <code>initiation</code> field says whose idea the new session is:</p>
