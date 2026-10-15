@@ -1,6 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
+modDatetime: 2026-10-15T10:04:22+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -300,6 +301,20 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     </div>
   </div>
   <p class="prose">这个例子是真的：给这个博客发文章时，自定义域名一直打不开，但它跟“发文章”这件事无关。正确的做法就是记一张卡片，而不是在发文章的改动里顺手去改 DNS。</p>
+  <h3>新会话怎么知道自己是谁开出来的</h3>
+  <p class="prose">两个会话自己并不知道对方。<code>spawn_task</code> 的参数里没有“父会话”这一项，新会话的聊天记录里也找不到旧会话的 ID。这层关系由桌面 app 记录：它给每个会话存一份 JSON 档案，放在 <code>~/Library/Application Support/Claude/claude-code-sessions/</code> 下面。就像前台的登记簿，上面写着“这个人是那个人介绍来的”。</p>
+  <p class="prose">一个真实例子：排查一个插件路由 404 时，Claude 发现“卸载插件后再装回来，路由一直 404，要重启才好”。这件事跟当时的任务无关，于是它开了一张卡片。点开之后，新会话的档案里多了这几项：</p>
+  <div class="tablebox"><table>
+    <thead><tr><th>字段</th><th>记的是什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>spawnedFrom.sessionId</code></td><td class="note">父会话的 ID</td></tr>
+      <tr><td><code>spawnedFrom.taskId</code></td><td class="note">那张卡片的编号，形如 <code>task_cc891ed4</code></td></tr>
+      <tr><td><code>spawnedFrom.title</code></td><td class="note">卡片标题，也就是新会话的名字</td></tr>
+      <tr><td><code>worktreePath</code> / <code>branch</code></td><td class="note">新建的 worktree 和分支，从当时所在的分支拉出来</td></tr>
+    </tbody>
+  </table></div>
+  <p class="prose">父会话那边也会收到一条消息：“你建议的任务已经在另一个会话里开工了，结束时会通知你。”所以新会话做完后，消息还能回到旧会话。</p>
+  <div class="tldr"><p><span class="hl">一句话：</span>父子关系不在会话里，而是记在桌面 app 的档案字段 <code>spawnedFrom</code> 里，由 app 负责牵线和回报。</p></div>
   <h3>什么时候不该用</h3>
   <ul class="prose">
     <li>只是觉得“代码有点丑”，说不出具体问题。</li>
