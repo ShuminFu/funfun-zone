@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-15T10:22:16+08:00
+pubDatetime: 2026-10-15T10:23:41+08:00
 title: "How the Claude Desktop App's Own Tools Work"
 slug: claude-desktop-ccd-tools
 featured: false
@@ -63,7 +63,7 @@ description: "The Claude desktop app gives its agent a set of mcp__ccd_* tools t
 <path d="M560 150H440" style="stroke:var(--accent);stroke-width:2" marker-end="url(#ccd-accent-arrow)"/>
 <path d="M648 186V290" style="stroke:var(--foreground);stroke-opacity:.55;stroke-width:1.25" marker-end="url(#ccd-arrow)"/>
 </g>
-<text x="500" y="140" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:var(--foreground)">mcp__ccd_* calls</text>
+<text x="500" y="140" text-anchor="middle" font-size="10.5" font-weight="600" style="fill:var(--foreground)">mcp__ccd_* calls</text>
 <text x="638" y="242" text-anchor="end" font-size="11.5" style="fill:var(--foreground);opacity:.7">Read, Edit, Bash</text>
 </svg>
 </figure>
