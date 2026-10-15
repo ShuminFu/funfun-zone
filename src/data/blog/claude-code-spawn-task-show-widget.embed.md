@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:04:22+08:00
+modDatetime: 2026-10-15T10:09:03+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -315,6 +315,26 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </table></div>
   <p class="prose">父会话那边也会收到一条消息：“你建议的任务已经在另一个会话里开工了，结束时会通知你。”所以新会话做完后，消息还能回到旧会话。</p>
   <div class="tldr"><p><span class="hl">一句话：</span>父子关系不在会话里，而是记在桌面 app 的档案字段 <code>spawnedFrom</code> 里，由 app 负责牵线和回报。</p></div>
+  <h3>为什么这层关系值得记：项目和线程都靠它</h3>
+  <p class="prose">Claude Code 本身按“文件夹”认项目：会话在哪个目录启动，聊天记录和 memory 就放进 <code>~/.claude/projects/</code> 下对应那个目录的文件夹。spawn 出来的会话跑在一个新的 worktree 里，目录变了，Claude Code 就把它当成另一个项目，给它单独开一个文件夹，里面只有一份聊天记录，没有 memory。我自己的机器上，这样的 worktree 碎片文件夹已经有 13 个。</p>
+  <p class="prose">桌面 app 记的是另一套：<code>originCwd</code>，也就是最初开工的那个仓库。所以在 app 眼里，子会话还属于原来的项目。好比孩子搬去了另一个城市，户口本上算另一户，家谱上还是这家的孩子。</p>
+  <div class="tablebox"><table>
+    <thead><tr><th>关系</th><th>app 档案里的字段</th><th>我机器上的数量</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><td><b>开卡片</b></td><td><code>spawnedFrom</code></td><td>21</td><td class="note">顺路发现的事，点卡片后另开一个会话</td></tr>
+      <tr><td><b>分叉</b></td><td><code>forkedFromSessionId</code> + <code>forkedAtMessageUuid</code></td><td>44</td><td class="note">从某一条消息分出去，换条路接着聊</td></tr>
+      <tr><td><b>主动启动</b></td><td><code>startedBy</code></td><td>—</td><td class="note">一个会话直接启动另一个会话去干活</td></tr>
+    </tbody>
+  </table></div>
+  <p class="prose">有了这层关系，app 能多做几件事：</p>
+  <ul class="prose">
+    <li><b>像线程一样挂在父会话下面。</b>会话信息里有 <code>parentSessionId</code> 和 <code>detached</code>；<code>detached</code> 为 true，表示它已被移到顶层。</li>
+    <li><b>自动归到父会话的侧栏分组</b>，不用手动整理。</li>
+    <li><b>做完会回报</b>：子会话结束后，app 通知父会话（字段 <code>spawnedFromEndNotified</code>）。</li>
+    <li><b>按家族查找</b>：一次列出一整家相关的会话。</li>
+  </ul>
+  <p class="prose">AI 会自己生出新的工作：开卡片、分叉、派活。会话因此不再是一份份独立的聊天，而会长成一棵树。不记来历，侧栏就会被碎片会话淹没；记下来历，才能按项目归类、按线程浏览、做完回报、一起归档。</p>
+  <div class="tldr"><p><span class="hl">一句话：</span>Claude Code 按文件夹管会话，AI 一开新会话关系就断了；app 记下 <code>spawnedFrom</code> 这类关系，才能把项目和线程重新连起来。</p></div>
   <h3>什么时候不该用</h3>
   <ul class="prose">
     <li>只是觉得“代码有点丑”，说不出具体问题。</li>
