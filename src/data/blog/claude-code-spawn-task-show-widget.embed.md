@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:27:26+08:00
+modDatetime: 2026-10-15T10:32:19+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -68,10 +68,9 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .tldr{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent); padding:18px 22px;margin:22px 0 4px}
 .html-embed .tldr p{margin:0;color:var(--ink-2);font-size:14.5px;max-width:var(--measure);text-wrap:pretty}
 .html-embed .tldr .hl{color:var(--accent-ink);font-weight:650}
-.html-embed .prose{max-width:var(--measure);color:var(--ink-2);text-wrap:pretty}
-.html-embed .prose p:first-child{margin-top:0}
-.html-embed p.prose,.html-embed ul.prose,.html-embed ul.prose li{font-size:15px}
-.html-embed p.prose.note{font-size:13px;color:var(--ink-3)}
+.html-embed .pg-prose{max-width:var(--measure);color:var(--ink-2);text-wrap:pretty}
+.html-embed .pg-prose p:first-child{margin-top:0}
+.html-embed p.pg-prose.note{font-size:13px;color:var(--ink-3)}
 .html-embed .lead{max-width:58ch;font-size:17px;line-height:1.72;color:var(--ink-2);text-wrap:pretty}
 .html-embed .rule{height:1px;border:0;background:var(--line);margin:30px 0}
 .html-embed .toc{border:1px solid var(--line);background:var(--surface);padding:18px 22px;margin-top:24px}
@@ -302,10 +301,10 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <span class="go">点一下，另开会话</span>
     </div>
   </div>
-  <p class="prose">这个例子是真的：给这个博客发文章时，自定义域名一直打不开，但它跟“发文章”这件事无关。正确的做法就是记一张卡片，而不是在发文章的改动里顺手去改 DNS。</p>
+  <p class="pg-prose">这个例子是真的：给这个博客发文章时，自定义域名一直打不开，但它跟“发文章”这件事无关。正确的做法就是记一张卡片，而不是在发文章的改动里顺手去改 DNS。</p>
   <h3>新会话怎么知道自己是谁开出来的</h3>
-  <p class="prose">两个会话自己并不知道对方。<code>spawn_task</code> 的参数里没有“父会话”这一项，新会话的聊天记录里也找不到旧会话的 ID。这层关系由桌面 app 记录：它给每个会话存一份 JSON 档案，放在 <code>~/Library/Application Support/Claude/claude-code-sessions/</code> 下面。就像前台的登记簿，上面写着“这个人是那个人介绍来的”。</p>
-  <p class="prose">一个真实例子：排查一个插件路由 404 时，Claude 发现“卸载插件后再装回来，路由一直 404，要重启才好”。这件事跟当时的任务无关，于是它开了一张卡片。点开之后，新会话的档案里多了这几项：</p>
+  <p class="pg-prose">两个会话自己并不知道对方。<code>spawn_task</code> 的参数里没有“父会话”这一项，新会话的聊天记录里也找不到旧会话的 ID。这层关系由桌面 app 记录：它给每个会话存一份 JSON 档案，放在 <code>~/Library/Application Support/Claude/claude-code-sessions/</code> 下面。就像前台的登记簿，上面写着“这个人是那个人介绍来的”。</p>
+  <p class="pg-prose">一个真实例子：排查一个插件路由 404 时，Claude 发现“卸载插件后再装回来，路由一直 404，要重启才好”。这件事跟当时的任务无关，于是它开了一张卡片。点开之后，新会话的档案里多了这几项：</p>
   <div class="tablebox"><table>
     <thead><tr><th>字段</th><th>记的是什么</th></tr></thead>
     <tbody>
@@ -315,10 +314,10 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <tr><td><code>worktreePath</code> / <code>branch</code></td><td class="note">新建的 worktree 和分支，从当时所在的分支拉出来</td></tr>
     </tbody>
   </table></div>
-  <p class="prose">父会话那边也会收到一条消息：“你建议的任务已经在另一个会话里开工了，结束时会通知你。”所以新会话做完后，消息还能回到旧会话。</p>
+  <p class="pg-prose">父会话那边也会收到一条消息：“你建议的任务已经在另一个会话里开工了，结束时会通知你。”所以新会话做完后，消息还能回到旧会话。</p>
   <div class="tldr"><p><span class="hl">一句话：</span>父子关系不在会话里，而是记在桌面 app 的档案字段 <code>spawnedFrom</code> 里，由 app 负责牵线和回报。</p></div>
   <h3>为什么这层关系值得记：项目和线程都靠它</h3>
-  <p class="prose">这一个字段背后，是 Claude Code 对“项目”的理解在变。可以分三步看：</p>
+  <p class="pg-prose">这一个字段背后，是 Claude Code 对“项目”的理解在变。可以分三步看：</p>
   <div class="tablebox"><table>
     <thead><tr><th>阶段</th><th>“项目”是什么</th><th>会话之间的关系</th></tr></thead>
     <tbody>
@@ -327,14 +326,14 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <tr><td><b>3. Projects</b></td><td class="note">2026 年 9 月推出的 Projects（公测）。官方博客的标题就叫“from folder to conversation”：项目不再是一个文件夹，而是一段由 Claude 当协调人的长对话。</td><td class="note">协调人为每件事开一个 thread（线程），并跟踪自己开过的每一个。thread 做完会向项目对话汇报，你可以在 Overview 里一次看到全部 thread。</td></tr>
     </tbody>
   </table></div>
-  <p class="prose">把三步放在一起看，<code>spawn_task</code> 其实是 thread 的手动版：Claude 提议，你点卡片；新会话做完，回报给开它的那个会话。到了 Projects，提议和开工都交给协调人，你只说要什么。</p>
-  <p class="prose">这只是类比，不是同一个功能。Projects 里的 thread 默认是云端会话，要在你自己的电脑上跑，也得由项目通过 Remote Control 来开；你在本机自己开的会话，加不进项目。<code>spawn_task</code> 开出来的却是本机会话，跑在一个新的 git worktree 里。两者相同的地方只有一个：新会话都记得是谁开的它。</p>
-  <p class="prose">两者靠的是同一件事：每个会话都记得是谁开的它。官方文档写得很直接：一个 thread 只属于开它的那个项目，不能搬到别的项目，也不能拎出来单独存在。归档项目时，它的 thread 会一起归档。没有这条“谁开了谁”的线，就没有项目对话里的汇报，没有 Overview，也没有一起归档。</p>
-  <p class="prose">AI 会自己生出新的工作：开卡片、分叉、派活。会话因此不再是一份份独立的聊天，而会长成一棵树。软件要做的，是把这棵树管起来。</p>
+  <p class="pg-prose">把三步放在一起看，<code>spawn_task</code> 其实是 thread 的手动版：Claude 提议，你点卡片；新会话做完，回报给开它的那个会话。到了 Projects，提议和开工都交给协调人，你只说要什么。</p>
+  <p class="pg-prose">这只是类比，不是同一个功能。Projects 里的 thread 默认是云端会话，要在你自己的电脑上跑，也得由项目通过 Remote Control 来开；你在本机自己开的会话，加不进项目。<code>spawn_task</code> 开出来的却是本机会话，跑在一个新的 git worktree 里。两者相同的地方只有一个：新会话都记得是谁开的它。</p>
+  <p class="pg-prose">两者靠的是同一件事：每个会话都记得是谁开的它。官方文档写得很直接：一个 thread 只属于开它的那个项目，不能搬到别的项目，也不能拎出来单独存在。归档项目时，它的 thread 会一起归档。没有这条“谁开了谁”的线，就没有项目对话里的汇报，没有 Overview，也没有一起归档。</p>
+  <p class="pg-prose">AI 会自己生出新的工作：开卡片、分叉、派活。会话因此不再是一份份独立的聊天，而会长成一棵树。软件要做的，是把这棵树管起来。</p>
   <div class="tldr"><p><span class="hl">一句话：</span>项目从“一个文件夹”变成“一段协调的对话”，靠的就是 <code>spawnedFrom</code> 这类“谁开了谁”的记录；<code>spawn_task</code> 是这条路上手动的那一步。</p></div>
-  <p class="prose note">参考：<a href="https://code.claude.com/docs/en/claude-projects">Claude Code 文档：Projects</a>，<a href="https://claude.com/blog/projects-redesigned">Projects redesigned: from folder to conversation</a>，<a href="https://code.claude.com/docs/en/desktop">Claude Code 桌面版文档</a>。</p>
+  <p class="pg-prose note">参考：<a href="https://code.claude.com/docs/en/claude-projects">Claude Code 文档：Projects</a>，<a href="https://claude.com/blog/projects-redesigned">Projects redesigned: from folder to conversation</a>，<a href="https://code.claude.com/docs/en/desktop">Claude Code 桌面版文档</a>。</p>
   <h3>什么时候不该用</h3>
-  <ul class="prose">
+  <ul class="pg-prose">
     <li>只是觉得“代码有点丑”，说不出具体问题。</li>
     <li>一行就能顺手改好的小事——直接改就行。</li>
     <li>没把握的猜测。卡片要指向确定的问题。</li>
@@ -358,7 +357,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <div class="layer"><div class="rank">4</div><div class="body"><div class="t">你点，它就收到：<code>sendPrompt(text)</code></div><div class="d">控件里有一个全局函数。调用它，等于你在聊天框里打了这段字并发送。Claude 也能用 <code>read_widget_context</code> 读控件现在的状态。</div></div></div>
   </div>
   <h3>真实例子：这个博客的图标就是这么选出来的</h3>
-  <p class="prose">原来标签页上是 Astro 自带的图标。Claude 把一轮候选画成一个可以点的选择器。第一轮都不满意，于是点了“都不要，再出一轮”，还在输入框里补了一句要求。这两样被 <code>sendPrompt</code> 一起发回聊天，Claude 照着出了第二轮，最后选了 K。</p>
+  <p class="pg-prose">原来标签页上是 Astro 自带的图标。Claude 把一轮候选画成一个可以点的选择器。第一轮都不满意，于是点了“都不要，再出一轮”，还在输入框里补了一句要求。这两样被 <code>sendPrompt</code> 一起发回聊天，Claude 照着出了第二轮，最后选了 K。</p>
   <div class="mock-label">示意：选择器大概长这样</div>
   <div class="widgetmock">
     <div class="q">Favicon：选一个？</div>
@@ -369,7 +368,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     </div>
     <div class="send">点完之后发回聊天的是：<b>Favicon: 都不要，再出一轮 · Favicon (other): include element fu</b></div>
   </div>
-  <p class="prose">K 是一个绿色的小写 f，旁边的 u 被画成一张笑脸——“fu”就是 FunFun 的 fu。现在你在浏览器标签上看到的就是它。</p>
+  <p class="pg-prose">K 是一个绿色的小写 f，旁边的 u 被画成一张笑脸——“fu”就是 FunFun 的 fu。现在你在浏览器标签上看到的就是它。</p>
   <h3>它和 Artifact 有什么不同</h3>
   <div class="tablebox"><table>
     <thead><tr><th></th><th>show_widget</th><th>Artifact</th></tr></thead>
