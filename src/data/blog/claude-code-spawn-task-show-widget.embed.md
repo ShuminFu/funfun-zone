@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:17:46+08:00
+modDatetime: 2026-10-15T10:27:26+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -70,6 +70,8 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .tldr .hl{color:var(--accent-ink);font-weight:650}
 .html-embed .prose{max-width:var(--measure);color:var(--ink-2);text-wrap:pretty}
 .html-embed .prose p:first-child{margin-top:0}
+.html-embed p.prose,.html-embed ul.prose,.html-embed ul.prose li{font-size:15px}
+.html-embed p.prose.note{font-size:13px;color:var(--ink-3)}
 .html-embed .lead{max-width:58ch;font-size:17px;line-height:1.72;color:var(--ink-2);text-wrap:pretty}
 .html-embed .rule{height:1px;border:0;background:var(--line);margin:30px 0}
 .html-embed .toc{border:1px solid var(--line);background:var(--surface);padding:18px 22px;margin-top:24px}
