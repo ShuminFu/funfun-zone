@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:34:25+08:00
+modDatetime: 2026-10-15T10:39:36+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -71,6 +71,25 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .pg-prose{max-width:var(--measure);color:var(--ink-2);text-wrap:pretty}
 .html-embed .pg-prose p:first-child{margin-top:0}
 .html-embed p.pg-prose.note{font-size:13px;color:var(--ink-3)}
+.html-embed .stages td:first-child{white-space:nowrap}
+.html-embed .st-tree{border:1px solid var(--line);background:var(--surface);border-radius:var(--rp);padding:14px 18px;max-width:640px}
+.html-embed .st-tree ul{list-style:none;margin:0;padding:0 0 0 13px}
+.html-embed .st-tree li{position:relative;margin:0;padding:0 0 0 22px}
+.html-embed .st-tree li::before{content:"";position:absolute;left:0;top:0;bottom:0;border-left:1.5px solid var(--line)}
+.html-embed .st-tree li:last-child::before{bottom:auto;height:19px;width:14px;border-bottom:1.5px solid var(--line);border-bottom-left-radius:9px}
+.html-embed .st-tree li:not(:last-child)::after{content:"";position:absolute;left:0;top:19px;width:14px;border-top:1.5px solid var(--line)}
+.html-embed .st-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:38px;padding:4px 0}
+.html-embed .st-root .st-name{font-size:15px}
+.html-embed .st-ic{width:20px;height:20px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);font-size:12px;display:flex;align-items:center;justify-content:center}
+.html-embed .st-name{font-size:14px;font-weight:600;color:var(--ink)}
+.html-embed .st-pend .st-name{font-weight:500;color:var(--ink-3);border:1px dashed var(--line);border-radius:6px;padding:0 8px}
+.html-embed .st-tag{font-size:11.5px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-3);white-space:nowrap}
+.html-embed .st-tag.st-card{color:var(--blu);background:var(--blubg);border-color:var(--blu-line)}
+.html-embed .st-tag.st-fork{color:var(--pur);background:var(--purbg);border-color:var(--pur-line)}
+.html-embed .st-tag.st-start{color:var(--grn);background:var(--grnbg);border-color:var(--grn-line)}
+.html-embed .st-st{font-size:12px;color:var(--ink-3);white-space:nowrap}
+.html-embed .st-st.done{color:var(--grn)}
+.html-embed .st-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft);font-size:12px;color:var(--ink-3)}
 .html-embed .lead{max-width:58ch;font-size:17px;line-height:1.72;color:var(--ink-2);text-wrap:pretty}
 .html-embed .rule{height:1px;border:0;background:var(--line);margin:30px 0}
 .html-embed .toc{border:1px solid var(--line);background:var(--surface);padding:18px 22px;margin-top:24px}
@@ -304,7 +323,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <p class="pg-prose">这个例子是真的：给这个博客发文章时，自定义域名一直打不开，但它跟“发文章”这件事无关。正确的做法就是记一张卡片，而不是在发文章的改动里顺手去改 DNS。</p>
   <h3>新会话怎么知道自己是谁开出来的</h3>
   <p class="pg-prose">它自己不知道。<b>这层关系由桌面 app 记录</b>：<code>spawn_task</code> 的参数里没有父会话，新会话的聊天记录里也没有。app 把来历写进自己的会话档案。下面是一张真实卡片点开后，新会话档案里的字段：</p>
-  <div class="tablebox"><table>
+  <div class="tablebox stages"><table>
     <thead><tr><th>字段</th><th>记的是什么</th></tr></thead>
     <tbody>
       <tr><td><code>spawnedFrom.sessionId</code></td><td class="note">父会话的 ID</td></tr>
@@ -316,7 +335,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <p class="pg-prose">新会话做完后，app 再按这条记录通知父会话。</p>
   <h3>为什么这层关系值得记：项目和线程都靠它</h3>
   <p class="pg-prose">Claude Code 里的“项目”，正在从一个文件夹变成一段对话：</p>
-  <div class="tablebox"><table>
+  <div class="tablebox stages"><table>
     <thead><tr><th>阶段</th><th>“项目”是什么</th><th>会话之间的关系</th></tr></thead>
     <tbody>
       <tr><td><b>1. 文件夹</b></td><td class="note">命令行版按启动目录归档会话（<code>~/.claude/projects/</code>）。</td><td class="note">没有。spawn 出来的会话跑在新 worktree 里，被当成另一个项目。</td></tr>
@@ -324,6 +343,25 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <tr><td><b>3. Projects</b></td><td class="note">2026 年 9 月公测。项目是一段由 Claude 当协调人的对话。</td><td class="note">协调人为每件事开一个 thread 并跟踪它；thread 做完向项目汇报。</td></tr>
     </tbody>
   </table></div>
+  <p class="pg-prose">有了“谁开了谁”这条线，一个项目里的会话会长成一棵树：</p>
+  <div class="mock-label">示意：一个项目里的会话关系</div>
+  <div class="st-tree">
+    <div class="st-row st-root"><span class="st-ic">▦</span><span class="st-name">博客改版</span><span class="st-tag">项目 · 协调对话</span></div>
+    <ul>
+      <li><div class="st-row"><span class="st-name">首页重新排版</span><span class="st-tag st-start">派活</span><span class="st-st">进行中</span></div>
+        <ul>
+          <li><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-tag st-card">卡片开出</span><span class="st-st done">✓ 已向上汇报</span></div></li>
+          <li><div class="st-row"><span class="st-name">换一套配色试试</span><span class="st-tag st-fork">从第 12 条消息分叉</span><span class="st-st">进行中</span></div></li>
+        </ul>
+      </li>
+      <li><div class="st-row"><span class="st-name">给旧文章补封面图</span><span class="st-tag st-start">派活</span><span class="st-st done">✓ 已向上汇报</span></div>
+        <ul>
+          <li class="st-pend"><div class="st-row"><span class="st-name">压缩过大的图片</span><span class="st-tag st-card">卡片</span><span class="st-st">等你点开</span></div></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="st-legend"><span><span class="st-tag st-start">派活</span> 协调人开的 thread</span><span><span class="st-tag st-card">卡片开出</span> <code>spawnedFrom</code></span><span><span class="st-tag st-fork">分叉</span> <code>forkedFromSessionId</code></span></div>
+  </div>
   <p class="pg-prose"><code>spawn_task</code> 像 thread 的手动版：Claude 提议，你点卡片开工。但这只是类比：thread 默认跑在云端，你在本机自己开的会话加不进项目。</p>
   <p class="pg-prose">两者靠的是同一条线：谁开了谁。官方文档写明，一个 thread 只属于开它的项目，归档项目时会一起归档。AI 会自己生出新会话，会话就长成一棵树；记住来历，软件才管得住这棵树。</p>
   <div class="tldr"><p><span class="hl">一句话：</span>项目从“一个文件夹”变成“一段对话”，靠的就是 app 记下的“谁开了谁”。</p></div>
