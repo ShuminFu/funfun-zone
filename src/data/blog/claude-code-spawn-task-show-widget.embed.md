@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:10:57+08:00
+modDatetime: 2026-10-15T10:17:46+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -326,6 +326,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     </tbody>
   </table></div>
   <p class="prose">把三步放在一起看，<code>spawn_task</code> 其实是 thread 的手动版：Claude 提议，你点卡片；新会话做完，回报给开它的那个会话。到了 Projects，提议和开工都交给协调人，你只说要什么。</p>
+  <p class="prose">这只是类比，不是同一个功能。Projects 里的 thread 默认是云端会话，要在你自己的电脑上跑，也得由项目通过 Remote Control 来开；你在本机自己开的会话，加不进项目。<code>spawn_task</code> 开出来的却是本机会话，跑在一个新的 git worktree 里。两者相同的地方只有一个：新会话都记得是谁开的它。</p>
   <p class="prose">两者靠的是同一件事：每个会话都记得是谁开的它。官方文档写得很直接：一个 thread 只属于开它的那个项目，不能搬到别的项目，也不能拎出来单独存在。归档项目时，它的 thread 会一起归档。没有这条“谁开了谁”的线，就没有项目对话里的汇报，没有 Overview，也没有一起归档。</p>
   <p class="prose">AI 会自己生出新的工作：开卡片、分叉、派活。会话因此不再是一份份独立的聊天，而会长成一棵树。软件要做的，是把这棵树管起来。</p>
   <div class="tldr"><p><span class="hl">一句话：</span>项目从“一个文件夹”变成“一段协调的对话”，靠的就是 <code>spawnedFrom</code> 这类“谁开了谁”的记录；<code>spawn_task</code> 是这条路上手动的那一步。</p></div>
