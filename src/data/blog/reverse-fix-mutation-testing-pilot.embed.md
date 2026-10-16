@@ -1,7 +1,8 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-16T11:28:03+08:00
-title: "我们修过的 bug，测试还守着吗？"
+pubDatetime: 2026-10-16T13:53:24+08:00
+modDatetime: 2026-10-16T01:53:24+08:00
+title: "同一套测试，变异得分从 3% 到 96%：三种造变异体的方法对比"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
 draft: false
@@ -9,7 +10,7 @@ tags:
   - "testing"
   - "mutation-testing"
   - "ai-agents"
-description: "把 20 个已修 bug 的修复代码撤回去，看测试会不会变红；附变异测试与大模型相关研究速览。"
+description: "规则工具、大模型、撤回历史修复在 Go 新代码和 Python 老代码上实测对比，附四种工具假结果、研究速览和参考文献。"
 ---
 
 <style>
@@ -208,180 +209,264 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 
 <div class="html-embed not-prose" lang="zh-CN">
   <header>
-    <div class="kicker">测试复盘 · 变异测试 · 一次小实验</div>
-    <p class="lead">把 20 个历史修复撤回去，看测试会不会报警</p>
+    <div class="kicker">测试研究 · 变异测试 · 三方对比</div>
+    <p class="lead">规则工具、大模型、撤回历史修复：三种造变异体的方法实测对比</p>
     <div class="chips">
       <span class="chip">日期 <b>2026-10-16</b></span>
-      <span class="chip">样本 <b>20 个修复</b></span>
-      <span class="chip">语言 <b>Go + Python</b></span>
-      <span class="chip ok">两个漏洞 <b>已补测试</b></span>
+      <span class="chip">代码 <b>Go 新代码 + Python 老代码</b></span>
+      <span class="chip">变异体 <b>385 个有效</b></span>
+      <span class="chip warn">工具假结果 <b>4 种</b></span>
     </div>
   </header>
-  <div class="verdict warn">
+  <div class="verdict">
     <div class="verdict-head">
-      <span class="verdict-word">17 / 20</span>
-      <span class="verdict-zh">修 bug 时带了测试的全部守住；没带测试的，有一半能悄悄回来。</span>
+      <span class="verdict-word">3% – 96%</span>
+      <span class="verdict-zh">变异得分不只取决于测试，也取决于变异体从哪来。</span>
     </div>
     <div class="verdict-body">
-      <p>我们把 20 个已修 bug 的修复代码撤回去，<strong>只撤生产代码，测试不动</strong>，然后跑测试。17 次有测试变红，3 次没反应。</p>
-      <p>没反应的 3 次里，1 次是后来的修复已经覆盖了同样的行为，撤掉也没影响。另外 2 次是<strong>真漏洞</strong>：bug 回来了，测试全绿。这两处已经补上测试，撤掉修复后新测试会红。</p>
+      <p>我们用同一套测试，换三种方法造变异体。<strong>规则工具</strong>造的变异体几乎全被杀死，得分 96%；<strong>大模型</strong>造的几乎全部存活，得分只有 3%–6%；<strong>撤回历史修复</strong>在两者之间。</p>
+      <p>得分最低的那组反而找到的真漏洞最多。只有撤回修复找回了两个已知漏洞。规则工具最便宜，但留下的大多是边角。另外，两个变异测试工具都给过假结果，不处理会直接得出错误结论。</p>
     </div>
     <div class="vstats">
-      <div class="vstat"><b>15 / 15</b><span>修复时带了测试</span></div>
-      <div class="vstat"><b>2 / 4</b><span>修复时没带测试</span></div>
-      <div class="vstat"><b>2</b><span>真漏洞，已补测试</span></div>
-      <div class="vstat"><b>1</b><span>等价变异，不算漏洞</span></div>
+      <div class="vstat"><b>96%</b><span>规则工具的得分（Go）</span></div>
+      <div class="vstat"><b>28 / 39</b><span>大模型每 100 个变异体找到的真漏洞（Go / Python）</span></div>
+      <div class="vstat"><b>2 / 2</b><span>已知漏洞，只有撤回修复找回</span></div>
+      <div class="vstat"><b>4</b><span>种工具假结果</span></div>
     </div>
   </div>
   <section>
-  <h2>先说背景：测试绿了，不等于测试有用</h2>
+  <h2>先说清楚：变异测试是在检查测试</h2>
   <div class="pg-prose">
-    <p>测试通过只能说明代码按测试写的样子跑通了，不能说明代码出错时测试会发现。</p>
-    <p><strong>变异测试</strong>就是用来检查这一点的：故意往代码里放一个小 bug，看测试会不会变红。红了叫「杀死」，没红叫「存活」。每个存活的变异体都指向一处测试没守住的地方。</p>
-    <p>打个比方：你雇了一个保安，想知道他是不是真在看仓库，就偷偷把一箱货挪个位置。他发现了，说明他在看；没发现，说明他在打瞌睡。</p>
-    <p>我们其实一直在手工做这件事。修完 bug 后，我们会把修复撤掉，确认新写的测试会变红，然后才算修完。2026 年以来的提交说明里，提到「变异」的有 164 个，提到「假绿」的有 76 个。</p>
-    <p>但我们一直没有回头系统地查过：<strong>以前修过的那些 bug，现在还有测试守着吗？</strong></p>
+    <p>平时写的单元测试是保安，每天都在岗。<strong>变异测试</strong>是突击检查：故意往代码里放一个小 bug（叫「变异体」），看保安会不会发现。测试变红叫「杀死」，没变红叫「存活」。杀死的比例就是<strong>变异得分</strong>。</p>
+    <p>变异测试本身不留在仓库里。它的价值是找出测试没守住的地方，然后你再补一条普通测试。</p>
+    <p>这次研究的起因是之前做的一个小试点：我们把 20 个已修 bug 的修复撤回去，看现有测试会不会报警。修复时带了测试的 15 个全部被抓住，没带测试的 4 个只抓住一半。那次的结论讲的其实是「普通测试有没有用」。这次我们把重点放回变异测试本身：<strong>造变异体的方法不同，结论会差多少？</strong></p>
   </div>
   </section>
   <section>
-  <h2>这次怎么做：把修复撤回去</h2>
-  <div class="pg-prose">
-    <p>常见的变异测试工具会随机改代码，比如把 <code>&gt;</code> 改成 <code>&gt;=</code>。这样能造出很多变异体，但其中不少没有意义，需要人一个个判断。</p>
-    <p>我们换了个思路：<strong>每个修过的 bug 都留下了一个修复提交。</strong>把修复提交里的生产代码反着打回去，得到的就是一个真实出现过的 bug，不用再猜它有没有意义。</p>
+  <h2>三种造变异体的方法</h2>
+  <p class="sub">还是那个比方：同一个保安，换三种人去试探他。</p>
+  <div class="grid g3">
+    <div class="card">
+      <h3><span class="pill blu">规则工具</span>随手乱挪</h3>
+      <p>工具按固定规则改代码：<code>==</code> 改成 <code>!=</code>，<code>&amp;&amp;</code> 改成 <code>||</code>，<code>continue</code> 改成 <code>break</code>。量大、便宜、全自动。Go 用 <code>gremlins</code>，Python 用 <code>mutmut</code>。</p>
+    </div>
+    <div class="card">
+      <h3><span class="pill pur">大模型</span>先看站位再下手</h3>
+      <p>把代码和相关测试一起交给大模型，让它造「它认为现有测试抓不住」的真实型 bug，比如写错 ID、少个保护条件、状态记错。参考 2026 年 test-aware 变异的做法。每个文件 12 个。</p>
+    </div>
+    <div class="card">
+      <h3><span class="pill grn">撤回修复</span>照旧案再偷一次</h3>
+      <p>把历史上的 bug 修复反向打回去，得到的是一个真实发生过的 bug。打不上的（代码已经变了），交给大模型按意思移植成最小补丁。</p>
+    </div>
   </div>
-  <div class="grid g2" style="margin-top:14px">
+  </section>
+  <section>
+  <h2>实验怎么做</h2>
+  <div class="grid g2">
     <div class="phase">
-      <div class="ph">怎么挑样本</div>
+      <div class="ph">两段代码</div>
       <ul>
-        <li><b>主样本 17 个</b>：issue 文档里引用过的修复，2026 年 8 月之后的，生产代码改动不超过 30 行，只碰一两个文件。这批修复大多带着测试一起提交。</li>
-        <li><b>对照组 5 个</b>：条件一样，但修复提交里没有测试。</li>
-        <li>有 2 个已经撤不回去：一个所在的函数被重构掉了，另一个的代码已经被改回旧写法。实际判定 <b>20 个</b>。</li>
+        <li><b>Go 新代码</b>：一个上下文引擎包里修 bug 最多的 3 个文件，约 1,230 行，2026 年 7 月才写的。包内测试跑一遍约 27 秒。</li>
+        <li><b>Python 老代码</b>：定时任务调度模块的 3 个文件，约 1,890 行，2025 年 12 月就有了，修过 30 次。相关测试 236 条，跑一遍约 5 秒。</li>
+        <li>基线选在补测试<b>之前</b>的提交，所以试点里发现的两个已知漏洞还在，可以当标准答案。</li>
       </ul>
     </div>
     <div class="phase">
       <div class="ph">怎么判定</div>
       <ul>
-        <li>只在一次性的工作副本里撤回，<b>测试文件不动</b>。</li>
-        <li>先在没改过的代码上跑同一组测试，记下基线。基线本来就红的测试不算数。</li>
-        <li>撤回后有<b>具名测试变红</b>，算抓住；全绿，算漏网。</li>
-        <li>能直接反向打补丁就直接打；打不上就手工做一个意思相同的最小回退。</li>
+        <li>只认<b>具名测试失败</b>或测试超时算杀死；编译、导入失败记「无效」。</li>
+        <li>每个存活的变异体交给一个<b>独立评审</b>（另一个大模型 agent），它不知道变异体是谁造的、也不知道生成方的预测，分成三类：<b>真漏洞</b>、<b>无关紧要</b>、<b>等价</b>（行为没变）。</li>
+        <li><b>评审校准</b>：把两个已知漏洞混在存活变异体里，不告诉评审。它两个都判成了「真漏洞，高置信」。</li>
       </ul>
     </div>
   </div>
   </section>
   <section>
-  <h2>结果：差别在「修的时候有没有带测试」</h2>
-  <div class="grid g2">
-    <div class="stat good"><div class="v">15 / 15</div><div class="l">修复时带了测试：撤回去全部被抓住（另有 1 个等价变异，见下文）</div></div>
-    <div class="stat bad"><div class="v">2 / 4</div><div class="l">修复时没带测试：只抓住一半，其中 1 个还要跑调用方的测试才抓得住</div></div>
-  </div>
-  <div class="tablebox" style="margin-top:14px">
-    <table>
-      <thead><tr><th>分组</th><th>判定数</th><th>抓住</th><th>没抓住</th></tr></thead>
-      <tbody>
-        <tr><td>修复时带了测试</td><td>16</td><td class="y">15</td><td class="note">1 个，等价变异，不是漏洞</td></tr>
-        <tr><td>修复时没带测试</td><td>4</td><td class="y">2</td><td class="n">2 个真漏洞</td></tr>
-        <tr><td><b>合计</b></td><td>20</td><td class="y">17</td><td class="note">击杀率 85%；去掉等价变异是 17 / 19</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="tldr"><p><span class="hl">一句话：</span>带测试的修复，这次 15 个一个都没漏，抽查它们几乎没有新信息。值得抽查的是修复时没带测试的那一批。</p></div>
-  </section>
-  <section>
-  <h2>两个漏洞长什么样</h2>
-  <p class="sub">两个漏洞的具体代码不重要，重要的是它们的形状。这两种形状以后还会再出现。</p>
-  <div class="grid g2">
-    <div class="card">
-      <h3><span class="pill red">形状一</span>测试数据让两个值碰巧相等</h3>
-      <p>修复内容：子代理运行时记下一条证据，应该记<strong>父代理</strong>的身份，而不是子代理自己的。原来的代码记错了。</p>
-      <p style="margin-top:8px">可是相关测试全都在父代理自己运行时跑。这时候「父代理」和「自己」是同一个值，记哪个都一样。修复撤回去，测试分不出来。</p>
-      <p style="margin-top:8px">就像测试收银员会不会找错零钱，却每次都让顾客刚好付整钱。</p>
-    </div>
-    <div class="card">
-      <h3><span class="pill amb">形状二</span>现成的测试装置，没套到兄弟入口上</h3>
-      <p>修复内容：删除会话时要先拿一把写锁。修复给这一步加了等待上限，等不到就记一行日志然后继续，不能让删除请求一直卡着。</p>
-      <p style="margin-top:8px">测试里其实已经有一个专门把锁卡住的装置，用来验证其他几个写入口会及时放弃等待。但它从没跑过删除这条路，其他删除测试又都是在锁空闲时跑的。</p>
-      <p style="margin-top:8px">装置已经造好了，只是少测了一个入口。</p>
-    </div>
-  </div>
-  <div class="insight" style="margin-top:14px">
-    <p><b>共同点：</b>两处都有测试，而且测试都是绿的，读代码也看不出问题。只有把修复真的撤回去跑一遍，才能看到测试分不出对错。</p>
-  </div>
-  </section>
-  <section>
-  <h2>另外四个发现</h2>
+  <h2>结果</h2>
   <div class="tablebox">
     <table>
-      <thead><tr><th>现象</th><th>说明了什么</th><th>以后怎么做</th></tr></thead>
+      <thead><tr><th>组</th><th>有效</th><th>杀死</th><th>存活</th><th>真漏洞</th><th>无关紧要</th><th>等价</th><th>变异得分</th><th>每 100 个的真漏洞</th></tr></thead>
+      <tbody>
+        <tr><td>Go · 规则</td><td>178</td><td>171</td><td>7</td><td class="n">2</td><td>2</td><td>3</td><td>96%</td><td>1.1</td></tr>
+        <tr><td>Go · 大模型</td><td>36</td><td>2</td><td>34</td><td class="n">10</td><td>19</td><td>5</td><td>6%</td><td><b>28</b></td></tr>
+        <tr><td>Go · 撤回修复</td><td>10</td><td>8</td><td>2</td><td class="n">2</td><td>0</td><td>0</td><td>80%</td><td>20</td></tr>
+        <tr><td>Py · 规则（抽样）</td><td>106</td><td>59</td><td>47</td><td class="n">6</td><td>29</td><td>12</td><td>56%</td><td>5.7</td></tr>
+        <tr><td>Py · 大模型</td><td>36</td><td>1</td><td>35</td><td class="n">14</td><td>9</td><td>12</td><td>3%</td><td><b>39</b></td></tr>
+        <tr><td>Py · 撤回修复</td><td>19</td><td>18</td><td>1</td><td class="n">1</td><td>0</td><td>0</td><td>95%</td><td>5.3</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="sub" style="margin-top:10px">Python 规则组是从 <code>mutmut</code> 造的 885 个里按文件各抽 40 个。Python 撤回修复组：30 个修复里自动撤回 3 个、移植 16 个，另 11 个牵涉已删除的代码，没有做。</p>
+  <h3>存活的里面，有多少是真漏洞</h3>
+  <div class="grid g3">
+    <div class="stat"><div class="v">13% – 29%</div><div class="l">规则工具（Py / Go）</div></div>
+    <div class="stat warn"><div class="v">29% – 40%</div><div class="l">大模型（Go / Py）</div></div>
+    <div class="stat good"><div class="v">3 / 3</div><div class="l">撤回修复：存活的全是真漏洞</div></div>
+  </div>
+  <h3>已知漏洞找回了几个</h3>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>方法</th><th>漏洞一：子代理记录证据时记错身份</th><th>漏洞二：删会话等锁没有上限</th></tr></thead>
+      <tbody>
+        <tr><td>规则工具</td><td class="n">没造出来</td><td class="n">没造出来</td></tr>
+        <tr><td>大模型</td><td class="note">不算数：它能读到仓库历史，看到这两处后来补了测试，故意避开了</td><td class="note">同左</td></tr>
+        <tr><td>撤回修复</td><td class="y">✓ 存活</td><td class="y">✓ 存活</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>三种方法找到的是不是同一批漏洞</h3>
+  <div class="pg-prose">
+    <ul>
+      <li><strong>Go</strong>：规则工具的 2 个真漏洞，大模型都找到了。大模型另外找到 8 个规则工具没碰到的。撤回修复的 2 个，另外两组都没有。去重后共 12 个。</li>
+      <li><strong>Python</strong>：规则 6 个、大模型 14 个，只有 1 处重叠。撤回修复唯一存活的那个，和大模型造的某一个是<strong>同一个改动</strong>。去重后共 19 个。</li>
+    </ul>
+  </div>
+  <div class="tldr"><p><span class="hl">一句话：</span>得分最高的方法找到的真漏洞最少，得分最低的方法找到的最多。变异得分只有在说明了「变异体从哪来」之后才有意义。</p></div>
+  </section>
+  <section>
+  <h2>大模型找到的漏洞长什么样</h2>
+  <p class="sub">挑几个评审判为高置信的，只描述行为。</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>改动</th><th>后果</th></tr></thead>
+      <tbody>
+        <tr><td>中止判断里多加了一个「结果为空」的条件</td><td class="note">被中止的定时任务又会被记成「成功」。代码注释里记着，这正是一次线上事故的形状。</td></tr>
+        <tr><td>执行锁按「任务」而不是按「员工」</td><td class="note">同一个员工的两个定时任务会并发执行，违背文档约定的串行。</td></tr>
+        <tr><td>重新注册任务时不更新会话 ID</td><td class="note">改过会话的任务继续往旧会话发。撤回修复组也撞到了同一处。</td></tr>
+        <tr><td>证据工具去掉等锁的 3 秒上限</td><td class="note">后台重建期间，一轮对话会一直卡着。</td></tr>
+        <tr><td>已核实的证据走进默认分支</td><td class="note">模型被告知「已记为推测」，拿到错误引导。规则工具也翻出了这一处。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pg-prose" style="margin-top:14px">
+    <p>大模型的噪声也不少：Go 存活的 34 个里，19 个被判「无关紧要」，多是错误分支和极少走到的组合。所以大模型这组<strong>离不开评审这一步</strong>，否则 34 个存活没法解读。</p>
+  </div>
+  </section>
+  <section>
+  <h2>工具的坑：四种假结果</h2>
+  <p class="sub">这一节比上面的数字更重要。每一种不处理，都会直接得出错误结论。</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>现象</th><th>看上去像</th><th>实际是</th><th>怎么防</th></tr></thead>
       <tbody>
         <tr>
-          <td>有一个修复撤回后，本包测试全绿，跑了调用它的包才变红</td>
-          <td class="note">只看本包会把它误判成漏洞</td>
-          <td class="note">测试范围要包括依赖它的包</td>
+          <td><code>gremlins</code> 6 秒跑完 160 个，全部杀死</td>
+          <td class="note">测试很强</td>
+          <td class="note">它把代码复制到临时目录跑，<code>go.mod</code> 里用相对路径替换的本地依赖找不到，<b>每次都编译失败</b>，被算成杀死</td>
+          <td class="note">耗时不合理就是假的。实验副本里把替换改成绝对路径</td>
         </tr>
         <tr>
-          <td>有一个修复撤回后行为不变，因为后来一个更通用的修复已经覆盖了这种情况</td>
-          <td class="note">这是等价变异，也说明那一行代码已经多余</td>
-          <td class="note">遇到等价变异，先查是不是被后来的提交覆盖了，可以顺手清理</td>
+          <td><code>gremlins</code> 报 19 个「没有覆盖」，不跑</td>
+          <td class="note">这些行没测试</td>
+          <td class="note"><code>switch</code> 里 <code>case</code> 后面的条件不进 Go 覆盖率统计，这些行其实<b>每次都跑</b>。补跑后 11 个杀死、7 个存活</td>
+          <td class="note">「没覆盖」的要看是不是 <code>case</code> 条件，必要时自己生成补丁跑</td>
         </tr>
         <tr>
-          <td>22 个候选里有 2 个已经撤不回去</td>
-          <td class="note">代码会演化，越晚回头查越难</td>
-          <td class="note">「撤掉修复看红」要在<b>提交时</b>做，不要事后补</td>
+          <td><code>mutmut</code> 2.5.1 跑了 291 个，<b>全部存活</b></td>
+          <td class="note">测试很弱</td>
+          <td class="note">同一个变异体手动跑，测试是红的。问题在工具调度，不在测试</td>
+          <td class="note">只用它造变异体，用自己验证过的脚本跑</td>
         </tr>
         <tr>
-          <td>第一次自己验证时，工作副本放错了位置，Go 的本地依赖路径解析失败，结果显示 <code>setup failed</code></td>
-          <td class="note">这是「假红」：看着是红，其实测试根本没运行</td>
-          <td class="note">只有某条<b>具名测试</b>失败才算抓住；编译失败、环境失败都不算</td>
+          <td>自己的脚本把一个变异体判成存活</td>
+          <td class="note">发现了新漏洞</td>
+          <td class="note">测试<b>卡死</b>，跑满 10 分钟超时，输出里没有「测试失败」那一行</td>
+          <td class="note">超时单独记一类，算作检测到</td>
         </tr>
       </tbody>
     </table>
   </div>
+  <div class="insight" style="margin-top:14px"><p><b>规则：</b>全杀死和全存活一样可疑，先怀疑工具。只认具名测试失败；耗时、计数和日志对不上时，手动复现一个再说。</p></div>
   </section>
   <section>
-  <h2>和最近的研究对一下</h2>
-  <div class="pg-prose">
-    <p>这次的做法和几篇 2026 年的论文思路相近，可以互相对照：</p>
-    <ul>
-      <li><a href="https://arxiv.org/abs/2603.24560">SMART</a>（FSE 2026）用大模型生成变异体时，会先从约 13 万对真实的「出错代码 → 修复代码」里检索相似例子作为参考，生成的变异体在真实 bug 上的检出率是 92.61%。我们的反向修复是同一个思路，只不过直接用了自己项目的修复历史。</li>
-      <li><a href="https://arxiv.org/abs/2607.22880">ISSTA 2026 的一篇复现研究</a>发现：被测代码本身没有 bug 时，覆盖率和变异得分有参考价值；被测代码本身已经有 bug 时，这两个指标都不可靠。测试照着有 bug 的代码写断言，bug 就被当成了正确答案。</li>
-      <li><a href="https://arxiv.org/abs/2603.23443">一项软件演化研究</a>测了 8 个模型写的测试：代码语义变了以后，失败的测试里超过 99% 在旧代码上仍能通过。这说明这些测试记住的是旧行为，而不是需求。</li>
-    </ul>
-    <p>这些研究和我们的观察指向同一件事：测试要从需求出发，而不是照着现有代码写。形状一正好是这个问题：测试数据刚好落在对错不分的地方。</p>
-  </div>
-  </section>
-  <section>
-  <h2>流程上要改什么</h2>
+  <h2>关于变异测试，学到了什么</h2>
   <div class="layers">
-    <div class="layer l1">
+    <div class="layer l2">
       <div class="rank">1</div>
-      <div class="body"><div class="t">修复提交写明「撤掉修复会变红的测试」</div>
-      <div class="d">写不出来，就说明为什么没有测试。这一条决定了 15 / 15 和 2 / 4 的差别。</div></div>
-      <div class="tag">提交时</div>
-    </div>
-    <div class="layer l1">
-      <div class="rank">2</div>
-      <div class="body"><div class="t">写测试时多问一句：修复前后，测试数据里的值不一样吗？</div>
-      <div class="d">修复是把 A 换成 B 时，测试数据必须让 A 和 B 不同。</div></div>
-      <div class="tag">写测试时</div>
+      <div class="body"><div class="t">变异得分不能跨方法比较</div>
+      <div class="d">同一套测试，规则工具 96%，大模型 6%。只报一个分数没有意义，要同时说明变异体从哪来。</div></div>
+      <div class="tag">度量</div>
     </div>
     <div class="layer l2">
-      <div class="rank">3</div>
-      <div class="body"><div class="t">给一类入口加了保证，就用同一个装置把所有兄弟入口都跑一遍</div>
-      <div class="d">修一个，就要把同一类的都找出来。</div></div>
-      <div class="tag">写测试时</div>
+      <div class="rank">2</div>
+      <div class="body"><div class="t">规则工具的高分，是「便宜变异体」的高分</div>
+      <div class="d">测试写得密的代码，简单的运算符翻转几乎都会被抓住。Go 那组留下的 7 个里，3 个只改了一个最后会被丢弃的返回值。</div></div>
+      <div class="tag">规则</div>
     </div>
     <div class="layer l3">
+      <div class="rank">3</div>
+      <div class="body"><div class="t">大模型先看测试再造，命中最高，噪声也多</div>
+      <div class="d">得分低是设计使然：它专挑测试抓不住的地方下手。存活的里约 30%–40% 是真漏洞，剩下的要靠评审筛。</div></div>
+      <div class="tag">大模型</div>
+    </div>
+    <div class="layer l1">
       <div class="rank">4</div>
-      <div class="body"><div class="t">定期抽查没带测试的修复，把它们撤回去跑一遍</div>
-      <div class="d">测试范围包括调用方；只认具名测试失败；遇到等价变异，先查是不是被后来的修复覆盖了。</div></div>
-      <div class="tag">定期</div>
+      <div class="body"><div class="t">撤回修复最准，但会随时间衰减</div>
+      <div class="d">存活即真漏洞，也是唯一能找回「已经出过的 bug」的方法。代价是移植：Go 同一天密集修的 10 个只有 1 个能自动撤回，Python 老代码 30 个只有 3 个。大模型按意思移植后，25 个全部可用。</div></div>
+      <div class="tag">撤回修复</div>
+    </div>
+    <div class="layer l1">
+      <div class="rank">5</div>
+      <div class="body"><div class="t">独立评审必不可少，而且可以校准</div>
+      <div class="d">把已知漏洞混进去检验评审。没有这一步，大模型那组的结果没法解读。</div></div>
+      <div class="tag">评审</div>
     </div>
   </div>
-  <div class="pg-prose" style="margin-top:18px">
-    <p><strong>还没做的：</strong>第 4 条现在还是手工的，没有做成定时任务。这次样本只有 20 个，以 Go 为主，Python 的修复只有几个，85% 这个数字不能当成整个项目的情况。</p>
+  </section>
+  <section>
+  <h2>成本</h2>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>环节</th><th>大致量</th></tr></thead>
+      <tbody>
+        <tr><td>规则工具 · Go 全量</td><td class="note">约 3 分钟（2 个并行）。被杀死的大多很快就失败退出</td></tr>
+        <tr><td>规则工具 · Python 抽样 120 个</td><td class="note">约 15 分钟</td></tr>
+        <tr><td>大模型造变异体</td><td class="note">每种语言 36 个，约 16–18 万 token，4–6 分钟</td></tr>
+        <tr><td>移植撤不回去的修复</td><td class="note">Go 9 个约 15 万 token，Python 16 个约 17 万 token</td></tr>
+        <tr><td>独立评审</td><td class="note">每批存活约 11–15 万 token</td></tr>
+        <tr><td>跑存活的变异体</td><td class="note">存活的要跑满整套测试：Go 每个 30–50 秒，一次卡死跑满 10 分钟</td></tr>
+      </tbody>
+    </table>
   </div>
-  <div class="tldr"><p><span class="hl">一句话：</span>测试能不能守住 bug，主要看修 bug 时有没有顺手写一条「撤掉修复就会红」的测试。最容易漏掉的，是测试数据让对和错看起来一样的地方。</p></div>
+  <p class="sub" style="margin-top:10px">评审的工作量和存活数成正比。规则工具在 Python 上抽 120 个就要判 47 个，其中大部分无关紧要。</p>
+  </section>
+  <section>
+  <h2>怎么用到日常流程</h2>
+  <div class="grid g3">
+    <div class="phase">
+      <div class="ph">PR 上 · 规则工具</div>
+      <ul>
+        <li>只跑改动的文件，当便宜的底线。</li>
+        <li>注意 <code>case</code> 条件的「没覆盖」和相对路径依赖这两个坑。</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="ph">高风险改动 · 大模型</div>
+      <ul>
+        <li>让大模型先看测试，再造 3–5 个变异体。</li>
+        <li>存活的交给独立评审，只把「真漏洞」给作者看。</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="ph">修 bug 时 · 撤回修复</div>
+      <ul>
+        <li>当场撤掉修复，确认新测试会红。越晚越撤不回去。</li>
+        <li>定期抽查修复时没带测试的那些。</li>
+      </ul>
+    </div>
+  </div>
+  </section>
+  <section>
+  <h2>局限</h2>
+  <div class="pg-prose">
+    <ul>
+      <li>每种语言只有 3 个文件；Python 规则组是抽样。</li>
+      <li>造变异体的和评审的是同一类模型，可能有共同的偏好；评审只用两个已知漏洞校准过。</li>
+      <li>大模型能读到仓库历史，所以「已知漏洞召回」这一项对它无效。下次要在看不到后续提交的代码上生成。</li>
+      <li>「真漏洞」是评审的判断，不是线上真的出过的 bug（撤回修复组除外）。</li>
+    </ul>
+  </div>
+  <div class="tldr"><p><span class="hl">一句话：</span>规则工具适合当便宜的底线，大模型适合找新漏洞，撤回修复适合守住「修过的不再坏」。三者互补，不能互相替代。用任何一个之前，先确认工具给的结果是真的。</p></div>
   </section>
   <section>
   <h2>附：变异测试研究速览</h2>
@@ -467,7 +552,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </ol>
   </section>
   <footer class="footer">
-    <div>方法与数据来自一次内部试点：20 个历史修复，Go 与 Python 混合代码库，2026-10。</div>
+    <div>数据来自一次内部实验：Go 与 Python 混合代码库，2026-10。</div>
   </footer>
 <!-- theme toggle: light is default; follows OS preference until the viewer clicks.
      Inline (not external) — keep this behavior in generated reports. -->
