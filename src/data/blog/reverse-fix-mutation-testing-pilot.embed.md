@@ -1,8 +1,8 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T13:53:24+08:00
-modDatetime: 2026-10-16T01:53:24+08:00
-title: "同一套测试，变异得分从 3% 到 96%：三种造变异体的方法对比"
+modDatetime: 2026-10-16T02:03:34+08:00
+title: "造变异体的方法，决定变异测试能找到什么"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
 draft: false
@@ -10,7 +10,7 @@ tags:
   - "testing"
   - "mutation-testing"
   - "ai-agents"
-description: "规则工具、大模型、撤回历史修复在 Go 新代码和 Python 老代码上实测对比，附四种工具假结果、研究速览和参考文献。"
+description: "规则工具、大模型、撤回历史修复实测对比：同一套测试换一种造法，得分从 3% 变成 96%；真漏洞主要来自大模型和撤回修复。附四种工具假结果、研究速览和参考文献。"
 ---
 
 <style>
@@ -210,7 +210,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 <div class="html-embed not-prose" lang="zh-CN">
   <header>
     <div class="kicker">测试研究 · 变异测试 · 三方对比</div>
-    <p class="lead">规则工具、大模型、撤回历史修复：三种造变异体的方法实测对比</p>
+    <p class="lead">规则工具、大模型、撤回历史修复实测对比：同一套测试，换一种造法，得分从 3% 变成 96%；真漏洞主要来自大模型和撤回修复</p>
     <div class="chips">
       <span class="chip">日期 <b>2026-10-16</b></span>
       <span class="chip">代码 <b>Go 新代码 + Python 老代码</b></span>
@@ -220,12 +220,13 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </header>
   <div class="verdict">
     <div class="verdict-head">
-      <span class="verdict-word">3% – 96%</span>
-      <span class="verdict-zh">变异得分不只取决于测试，也取决于变异体从哪来。</span>
+      <span class="verdict-word">看真漏洞，不看分数</span>
+      <span class="verdict-zh">造变异体的方法决定了你能找到什么；分数只在同一种造法下才能比。</span>
     </div>
     <div class="verdict-body">
       <p>我们用同一套测试，换三种方法造变异体。<strong>规则工具</strong>造的变异体几乎全被杀死，得分 96%；<strong>大模型</strong>造的几乎全部存活，得分只有 3%–6%；<strong>撤回历史修复</strong>在两者之间。</p>
       <p>得分最低的那组反而找到的真漏洞最多。只有撤回修复找回了两个已知漏洞。规则工具最便宜，但留下的大多是边角。另外，两个变异测试工具都给过假结果，不处理会直接得出错误结论。</p>
+      <p>这不是说分数没用。同一种造法下，测试补强了，分数会涨，这时分数能反映测试质量。但换了造法，分数比的就是变异体的难度，不是测试。所以评估时该数的是「找到了几个真漏洞」。</p>
     </div>
     <div class="vstats">
       <div class="vstat"><b>96%</b><span>规则工具的得分（Go）</span></div>
@@ -384,7 +385,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <div class="layer l2">
       <div class="rank">1</div>
       <div class="body"><div class="t">变异得分不能跨方法比较</div>
-      <div class="d">同一套测试，规则工具 96%，大模型 6%。只报一个分数没有意义，要同时说明变异体从哪来。</div></div>
+      <div class="d">同一套测试，规则工具 96%，大模型 6%。分数只在同一种造法下才能比：用来看测试改动前后的趋势可以，跨方法比较不行。报分数时要同时说明变异体从哪来。</div></div>
       <div class="tag">度量</div>
     </div>
     <div class="layer l2">
