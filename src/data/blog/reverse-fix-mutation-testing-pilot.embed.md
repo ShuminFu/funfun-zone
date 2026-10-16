@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T13:53:24+08:00
-modDatetime: 2026-10-16T02:24:00+08:00
+modDatetime: 2026-10-16T02:28:09+08:00
 title: "造变异体的方法，决定变异测试能找到什么"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
@@ -10,7 +10,7 @@ tags:
   - "testing"
   - "mutation-testing"
   - "ai-agents"
-description: "规则工具、大模型、撤回历史修复实测对比：同一套测试换一种造法，得分从 3% 变成 96%；真漏洞主要来自大模型和撤回修复。附四种工具假结果、研究速览和参考文献。"
+description: "规则工具、大模型、撤回历史修复三种造变异体的方法实测对比：同一套测试，得分从 3% 变成 96%；真漏洞主要靠大模型造的变异体和撤回的历史修复找到。附四种工具假结果、研究速览和参考文献。"
 ---
 
 <style>
@@ -216,7 +216,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 <div class="html-embed not-prose" lang="zh-CN">
   <header>
     <div class="kicker">测试研究 · 变异测试 · 三方对比</div>
-    <p class="lead">规则工具、大模型、撤回历史修复实测对比：同一套测试，换一种造法，得分从 3% 变成 96%；真漏洞主要来自大模型和撤回修复</p>
+    <p class="lead">规则工具、大模型、撤回历史修复实测对比：同一套测试，换一种造法，得分从 3% 变成 96%；真漏洞主要靠大模型造的变异体和撤回的历史修复找到</p>
     <div class="chips">
       <span class="chip">日期 <b>2026-10-16</b></span>
       <span class="chip">代码 <b>Go 新代码 + Python 老代码</b></span>
@@ -226,24 +226,24 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </header>
   <div class="verdict">
     <div class="verdict-head">
-      <span class="verdict-word">想找测试漏洞，用大模型造假 bug</span>
-      <span class="verdict-zh">想守住修过的 bug，撤回历史修复；规则工具只适合当便宜的底线。</span>
+      <span class="verdict-word">想找测试漏洞，让大模型造变异体</span>
+      <span class="verdict-zh">想守住修过的 bug，撤回历史修复当变异体；规则工具造的变异体只适合当便宜的底线。</span>
     </div>
     <div class="verdict-body">
       <p><strong>我们做了什么：</strong>变异测试是故意往代码里放假 bug（变异体），看现有测试能不能发现，没被发现的就是测试的漏洞。假 bug 有三种造法：<strong>规则工具</strong>机械地改符号，<strong>大模型</strong>先读测试再挑盲区下手，<strong>撤回历史修复</strong>把以前修好的 bug 放回去。我们拿同一套现有测试（Go 新代码 + Python 老代码），三种造法各跑一遍。</p>
       <p><strong>发现：</strong></p>
       <ul>
-        <li>大模型每 100 个假 bug 找到 28 个（Go）和 39 个（Python）真漏洞，最多。</li>
-        <li>撤回修复是唯一找回两个已知漏洞的方法，但代码一变就很难撤回去。</li>
-        <li>规则工具在 Go 上造了 178 个，只找到 2 个真漏洞。</li>
-        <li>同一套测试，面对规则工具得分 96%，面对大模型只有 3%–6%。测试没变，变的是假 bug 的难度。</li>
+        <li>大模型造的变异体最能找到真漏洞：每 100 个里有 28 个（Go）和 39 个（Python）指出了真漏洞。</li>
+        <li>撤回历史修复得到的变异体，是唯一找回两个已知漏洞的；但代码一变，修复就很难撤回去。</li>
+        <li>规则工具在 Go 上造了 178 个变异体，只有 2 个指出了真漏洞。</li>
+        <li>同一套测试，对规则工具造的变异体得分 96%，对大模型造的变异体只有 3%–6%。测试没变，变的是变异体的难度。</li>
         <li>两个变异测试工具都给过假结果，不处理会得出错误结论。</li>
       </ul>
-      <p><strong>结论：</strong>想找测试的盲区，用大模型造假 bug；想守住修过的 bug 不再坏，撤回历史修复；规则工具便宜，适合当底线。比较造法时数真漏洞，不要比分数；分数只适合在同一种造法下看前后变化。</p>
+      <p><strong>结论：</strong>想找测试的盲区，让大模型造变异体；想守住修过的 bug 不再坏，撤回历史修复当变异体；规则工具造变异体便宜，适合当底线。比较造法时数真漏洞，不要比分数；分数只适合在同一种造法下看前后变化。</p>
     </div>
     <div class="vstats">
-      <div class="vstat"><b>28 / 39</b><span>大模型每 100 个假 bug 找到的真漏洞（Go / Python）</span></div>
-      <div class="vstat"><b>2 / 2</b><span>已知漏洞，只有撤回修复找回</span></div>
+      <div class="vstat"><b>28 / 39</b><span>大模型造的每 100 个变异体里，指出真漏洞的个数（Go / Python）</span></div>
+      <div class="vstat"><b>2 / 2</b><span>已知漏洞，只有撤回修复造的变异体找回</span></div>
       <div class="vstat"><b>96% vs 3%</b><span>同一套测试的得分，只因造法不同</span></div>
       <div class="vstat"><b>4</b><span>种工具假结果</span></div>
     </div>
@@ -319,32 +319,32 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <p class="sub" style="margin-top:10px">Python 规则组是从 <code>mutmut</code> 造的 885 个里按文件各抽 40 个。Python 撤回修复组：30 个修复里自动撤回 3 个、移植 16 个，另 11 个牵涉已删除的代码，没有做。</p>
   <h3>存活的里面，有多少是真漏洞</h3>
   <div class="grid g3">
-    <div class="stat"><div class="v">13% – 29%</div><div class="l">规则工具（Py / Go）</div></div>
-    <div class="stat warn"><div class="v">29% – 40%</div><div class="l">大模型（Go / Py）</div></div>
-    <div class="stat good"><div class="v">3 / 3</div><div class="l">撤回修复：存活的全是真漏洞</div></div>
+    <div class="stat"><div class="v">13% – 29%</div><div class="l">规则工具造的变异体（Py / Go）</div></div>
+    <div class="stat warn"><div class="v">29% – 40%</div><div class="l">大模型造的变异体（Go / Py）</div></div>
+    <div class="stat good"><div class="v">3 / 3</div><div class="l">撤回修复造的变异体：存活的全是真漏洞</div></div>
   </div>
   <h3>已知漏洞找回了几个</h3>
   <div class="tablebox">
     <table>
       <thead><tr><th>方法</th><th>漏洞一：子代理记录证据时记错身份</th><th>漏洞二：删会话等锁没有上限</th></tr></thead>
       <tbody>
-        <tr><td>规则工具</td><td class="n">没造出来</td><td class="n">没造出来</td></tr>
-        <tr><td>大模型</td><td class="note">不算数：它能读到仓库历史，看到这两处后来补了测试，故意避开了</td><td class="note">同左</td></tr>
-        <tr><td>撤回修复</td><td class="y">✓ 存活</td><td class="y">✓ 存活</td></tr>
+        <tr><td>规则工具造的</td><td class="n">没造出来</td><td class="n">没造出来</td></tr>
+        <tr><td>大模型造的</td><td class="note">不算数：大模型能读到仓库历史，看到这两处后来补了测试，故意避开了</td><td class="note">同左</td></tr>
+        <tr><td>撤回修复造的</td><td class="y">✓ 存活</td><td class="y">✓ 存活</td></tr>
       </tbody>
     </table>
   </div>
   <h3>三种方法找到的是不是同一批漏洞</h3>
   <div class="pg-prose">
     <ul>
-      <li><strong>Go</strong>：规则工具的 2 个真漏洞，大模型都找到了。大模型另外找到 8 个规则工具没碰到的。撤回修复的 2 个，另外两组都没有。去重后共 12 个。</li>
-      <li><strong>Python</strong>：规则 6 个、大模型 14 个，只有 1 处重叠。撤回修复唯一存活的那个，和大模型造的某一个是<strong>同一个改动</strong>。去重后共 19 个。</li>
+      <li><strong>Go</strong>：规则工具造的变异体指出的 2 个真漏洞，大模型造的变异体也都指出了；大模型造的另外指出 8 个规则工具没碰到的。撤回修复组的 2 个，另外两组都没有。去重后共 12 个。</li>
+      <li><strong>Python</strong>：规则组 6 个、大模型组 14 个，只有 1 处重叠。撤回修复组唯一存活的那个，和大模型造的某一个变异体是<strong>同一个改动</strong>。去重后共 19 个。</li>
     </ul>
   </div>
-  <div class="tldr"><p><span class="hl">一句话：</span>现有测试在规则工具面前得分最高，但这组找到的真漏洞最少；在大模型面前得分最低，这组找到的真漏洞却最多。变异得分只有在说明了「变异体从哪来」之后才有意义。</p></div>
+  <div class="tldr"><p><span class="hl">一句话：</span>现有测试对规则工具造的变异体得分最高，但这组指出的真漏洞最少；对大模型造的变异体得分最低，这组指出的真漏洞却最多。变异得分只有在说明了「变异体从哪来」之后才有意义。</p></div>
   </section>
   <section>
-  <h2>大模型找到的漏洞长什么样</h2>
+  <h2>大模型造的变异体指出了哪些漏洞</h2>
   <p class="sub">挑几个评审判为高置信的，只描述行为。</p>
   <div class="tablebox">
     <table>
@@ -359,7 +359,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     </table>
   </div>
   <div class="pg-prose" style="margin-top:14px">
-    <p>大模型的噪声也不少：Go 存活的 34 个里，19 个被判「无关紧要」，多是错误分支和极少走到的组合。所以大模型这组<strong>离不开评审这一步</strong>，否则 34 个存活没法解读。</p>
+    <p>大模型造的变异体噪声也不少：Go 存活的 34 个里，19 个被判「无关紧要」，多是错误分支和极少走到的组合。所以大模型组<strong>离不开评审这一步</strong>，否则 34 个存活没法解读。</p>
   </div>
   </section>
   <section>
@@ -404,31 +404,31 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <div class="layer l2">
       <div class="rank">1</div>
       <div class="body"><div class="t">变异得分不能跨方法比较</div>
-      <div class="d">同一套测试，规则工具 96%，大模型 6%。分数只在同一种造法下才能比：用来看测试改动前后的趋势可以，跨方法比较不行。报分数时要同时说明变异体从哪来。</div></div>
+      <div class="d">同一套测试，对规则工具造的变异体得分 96%，对大模型造的只有 6%。分数只在同一种造法下才能比：用来看测试改动前后的趋势可以，跨方法比较不行。报分数时要同时说明变异体从哪来。</div></div>
       <div class="tag">度量</div>
     </div>
     <div class="layer l2">
       <div class="rank">2</div>
-      <div class="body"><div class="t">规则工具的高分，是「便宜变异体」的高分</div>
+      <div class="body"><div class="t">规则工具造的变异体得分高，因为它们便宜好抓</div>
       <div class="d">测试写得密的代码，简单的运算符翻转几乎都会被抓住。Go 那组留下的 7 个里，3 个只改了一个最后会被丢弃的返回值。</div></div>
       <div class="tag">规则</div>
     </div>
     <div class="layer l3">
       <div class="rank">3</div>
-      <div class="body"><div class="t">大模型先看测试再造，命中最高，噪声也多</div>
+      <div class="body"><div class="t">大模型先看测试再造变异体，指出真漏洞最多，噪声也多</div>
       <div class="d">得分低是设计使然：它专挑测试抓不住的地方下手。存活的里约 30%–40% 是真漏洞，剩下的要靠评审筛。</div></div>
       <div class="tag">大模型</div>
     </div>
     <div class="layer l1">
       <div class="rank">4</div>
-      <div class="body"><div class="t">撤回修复最准，但会随时间衰减</div>
+      <div class="body"><div class="t">撤回修复造的变异体最准，但会随时间衰减</div>
       <div class="d">存活即真漏洞，也是唯一能找回「已经出过的 bug」的方法。代价是移植：Go 同一天密集修的 10 个只有 1 个能自动撤回，Python 老代码 30 个只有 3 个。大模型按意思移植后，25 个全部可用。</div></div>
       <div class="tag">撤回修复</div>
     </div>
     <div class="layer l1">
       <div class="rank">5</div>
       <div class="body"><div class="t">独立评审必不可少，而且可以校准</div>
-      <div class="d">把已知漏洞混进去检验评审。没有这一步，大模型那组的结果没法解读。</div></div>
+      <div class="d">把已知漏洞混进去检验评审。没有这一步，大模型组的结果没法解读。</div></div>
       <div class="tag">评审</div>
     </div>
   </div>
@@ -482,11 +482,11 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <ul>
       <li>每种语言只有 3 个文件；Python 规则组是抽样。</li>
       <li>造变异体的和评审的是同一类模型，可能有共同的偏好；评审只用两个已知漏洞校准过。</li>
-      <li>大模型能读到仓库历史，所以「已知漏洞召回」这一项对它无效。下次要在看不到后续提交的代码上生成。</li>
+      <li>造变异体的大模型能读到仓库历史，所以「已知漏洞召回」这一项对大模型组无效。下次要在看不到后续提交的代码上生成。</li>
       <li>「真漏洞」是评审的判断，不是线上真的出过的 bug（撤回修复组除外）。</li>
     </ul>
   </div>
-  <div class="tldr"><p><span class="hl">一句话：</span>规则工具适合当便宜的底线，大模型适合找新漏洞，撤回修复适合守住「修过的不再坏」。三者互补，不能互相替代。用任何一个之前，先确认工具给的结果是真的。</p></div>
+  <div class="tldr"><p><span class="hl">一句话：</span>规则工具造的变异体适合当便宜的底线，大模型造的适合找新漏洞，撤回修复适合守住「修过的不再坏」。三者互补，不能互相替代。用任何一个之前，先确认工具给的结果是真的。</p></div>
   </section>
   <section>
   <h2>附：变异测试研究速览</h2>
