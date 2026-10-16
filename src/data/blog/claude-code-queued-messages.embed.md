@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T16:05:46+08:00
-modDatetime: 2026-10-16T16:39:02+08:00
+modDatetime: 2026-10-16T16:43:02+08:00
 title: "Claude Code 忙的时候，你发的消息什么时候被读到"
 slug: claude-code-queued-messages
 featured: false
@@ -14,11 +14,12 @@ description: "从桌面 App 日志和会话记录看，排队消息只会在工�
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.note{border-left:2px solid var(--accent);padding-left:.8em;color:var(--muted)}
+.note,blockquote{border-left:2px solid var(--accent);padding-left:.8em;color:var(--foreground);opacity:1}
+.note code,blockquote code{color:var(--foreground);background:color-mix(in srgb,var(--foreground) 10%,transparent);padding:0 .25em;border-radius:3px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .illus{margin:1.5em 0}
 .illus img{width:100%;height:auto;border-radius:8px}
-.illus figcaption{font-size:.85em;color:var(--muted);text-align:center;margin-top:.4em}
+.illus figcaption{font-size:.9em;color:var(--foreground);opacity:.85;text-align:center;margin-top:.4em}
 </style>
 
 <div class="html-embed" lang="zh">
