@@ -1,9 +1,10 @@
 import type { CollectionEntry } from "astro:content";
 import postFilter from "./postFilter";
+import { twinLang } from "./twins";
 
 const getSortedPosts = (posts: CollectionEntry<"blog">[]) => {
   return posts
-    .filter(postFilter)
+    .filter(post => postFilter(post) && !twinLang(post.id))
     .sort(
       (a, b) =>
         Math.floor(

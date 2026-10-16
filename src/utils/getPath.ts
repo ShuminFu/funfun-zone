@@ -1,5 +1,6 @@
 import { BLOG_PATH } from "@/content.config";
 import { slugifyStr } from "./slugify";
+import { twinLang } from "./twins";
 
 /**
  * Get full path of a blog post
@@ -25,7 +26,8 @@ export function getPath(
 
   // Making sure `id` does not contain the directory
   const blogId = id.split("/");
-  const slug = blogId.length > 0 ? blogId.slice(-1) : blogId;
+  // A twin keeps its language ending: `front-desk-agent/zh`
+  const slug = blogId.slice(twinLang(id) ? -2 : -1).join("/");
 
   // If not inside the sub-dir, simply return the file path
   if (!pathSegments || pathSegments.length < 1) {

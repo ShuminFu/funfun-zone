@@ -1,5 +1,5 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -14,6 +14,8 @@ import { slugifyStr } from "@/utils/slugify";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
+import postFilter from "@/utils/postFilter";
+import { guessLang, mainId, twinLang, type Lang } from "@/utils/twins";
 
 export interface Props {
   post: CollectionEntry<"blog">;
@@ -65,7 +67,23 @@ const layoutProps = {
   canonicalURL,
   ogImage,
   scrollSmooth: true,
+  lang: twinLang(post.id) ?? guessLang(title),
 };
+
+/* ========== Language twin (GitHub README style) ========== */
+
+const LABELS: Record<Lang, string> = { en: "English", zh: "中文" };
+const published = (await getCollection("blog")).filter(postFilter);
+const twin = twinLang(post.id)
+  ? published.find(p => p.id === mainId(post.id))
+  : published.find(p => twinLang(p.id) && mainId(p.id) === post.id);
+const langLinks = twin
+  ? (["en", "zh"] as const).map(lang => ({
+      lang,
+      label: LABELS[lang],
+      href: lang === layoutProps.lang ? null : getPath(twin.id, twin.filePath),
+    }))
+  : [];
 
 /* ========== Prev/Next Posts ========== */
 
@@ -75,7 +93,8 @@ const allPosts = posts.map(({ data: { title }, id, filePath }) => ({
   filePath,
 }));
 
-const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
+// A twin is not in the list; it takes its main post's place
+const currentPostIndex = allPosts.findIndex(a => a.id === mainId(post.id));
 
 const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
@@ -99,8 +118,34 @@ const nextPost =
     >
       {title}
     </h1>
-    <div class="my-2 flex items-center gap-2">
+    <div class="my-2 flex flex-wrap items-center gap-2">
       <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+      {
+        langLinks.length > 0 && (
+          <>
+            <span aria-hidden="true">|</span>
+            <span class="text-sm opacity-80 sm:text-base">
+              {langLinks.map(({ lang, label, href }, i) => (
+                <>
+                  {i > 0 && " · "}
+                  {href ? (
+                    <a
+                      href={href}
+                      hreflang={lang}
+                      lang={lang}
+                      class="underline decoration-dashed underline-offset-4 hover:text-accent"
+                    >
+                      {label}
+                    </a>
+                  ) : (
+                    <span aria-current="page">{label}</span>
+                  )}
+                </>
+              ))}
+            </span>
+          </>
+        )
+      }
       <span
         aria-hidden="true"
         class:list={[
