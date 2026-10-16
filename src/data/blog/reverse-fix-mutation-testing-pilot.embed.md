@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T13:53:24+08:00
-modDatetime: 2026-10-16T02:08:54+08:00
+modDatetime: 2026-10-16T02:22:20+08:00
 title: "造变异体的方法，决定变异测试能找到什么"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
@@ -37,6 +37,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed h2{font-size:21.5px;margin:58px 0 10px;padding-top:22px;border-top:2px solid var(--line); font-weight:750;letter-spacing:.01em;text-wrap:balance;scroll-margin-top:16px}
 .html-embed h2 .n{font-family:var(--mono);color:var(--accent);font-weight:700;font-size:14px;margin-right:11px; font-variant-numeric:tabular-nums;border:1px solid var(--accent-ink);border-radius:var(--r);padding:1px 7px}
 .html-embed h3{font-size:15.5px;font-weight:650;text-wrap:balance}
+.html-embed section > h3{margin:30px 0 10px}
 .html-embed .sub{color:var(--ink-3);font-size:13.5px;margin:0 0 18px;max-width:var(--measure);text-wrap:pretty}
 .html-embed .themebtn{position:fixed;top:16px;right:16px;z-index:20;width:40px;height:40px;border-radius:50%; border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer; display:flex;align-items:center;justify-content:center;line-height:1; transition:background-color .2s ease,border-color .2s ease,color .2s ease}
 .html-embed .themebtn:hover{border-color:var(--ink-3)}
@@ -223,18 +224,18 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </header>
   <div class="verdict">
     <div class="verdict-head">
-      <span class="verdict-word">看真漏洞，不看分数</span>
-      <span class="verdict-zh">造变异体的方法决定了你能找到什么；分数只在同一种造法下才能比。</span>
+      <span class="verdict-word">想找测试漏洞，用大模型造假 bug</span>
+      <span class="verdict-zh">想守住修过的 bug，撤回历史修复；规则工具只适合当便宜的底线。</span>
     </div>
     <div class="verdict-body">
-      <p>测试始终是仓库里现有的那一套，大模型和工具都没写测试，只负责往代码里放假 bug（变异体）。<strong>规则工具</strong>放的假 bug，现有测试几乎全抓住了，得分 96%；<strong>大模型</strong>先读过现有测试，专挑测试看不到的地方放，现有测试几乎全没抓住，得分只有 3%–6%；<strong>撤回历史修复</strong>在两者之间。</p>
-      <p>没被抓住的假 bug，正好指出了现有测试的盲区。所以得分最低的大模型那组，反而找到的真漏洞最多。只有撤回修复找回了两个已知漏洞。规则工具最便宜，但留下的大多是边角。另外，两个变异测试工具都给过假结果，不处理会直接得出错误结论。</p>
-      <p>这不是说分数没用。同一种造法下，测试补强了，分数会涨，这时分数能反映测试质量。但换了造法，分数比的就是变异体的难度，不是测试。所以评估时该数的是「找到了几个真漏洞」。</p>
+      <p><strong>这篇在比什么：</strong>变异测试是故意往代码里放假 bug（变异体），看现有测试能不能发现。没被发现的，就是测试的漏洞。假 bug 有三种造法：<strong>规则工具</strong>机械地改符号，<strong>大模型</strong>先读测试再挑盲区下手，<strong>撤回历史修复</strong>把以前修好的 bug 放回去。我们拿同一套现有测试，比哪种造法能找出最多真漏洞。</p>
+      <p><strong>结果：</strong>大模型每 100 个假 bug 找到 28 个（Go）和 39 个（Python）真漏洞，最多。撤回修复是唯一找回两个已知漏洞的方法。规则工具在 Go 上造了 178 个，只找到 2 个真漏洞。</p>
+      <p><strong>顺带的教训：别拿分数比方法。</strong>同一套测试，面对规则工具得分 96%，面对大模型只有 3%–6%。测试没变，变的是假 bug 的难度。分数只适合在同一种造法下看前后变化。另外，两个变异测试工具都给过假结果，不处理会得出错误结论。</p>
     </div>
     <div class="vstats">
-      <div class="vstat"><b>96%</b><span>规则工具的得分（Go）</span></div>
-      <div class="vstat"><b>28 / 39</b><span>大模型每 100 个变异体找到的真漏洞（Go / Python）</span></div>
+      <div class="vstat"><b>28 / 39</b><span>大模型每 100 个假 bug 找到的真漏洞（Go / Python）</span></div>
       <div class="vstat"><b>2 / 2</b><span>已知漏洞，只有撤回修复找回</span></div>
+      <div class="vstat"><b>96% vs 3%</b><span>同一套测试的得分，只因造法不同</span></div>
       <div class="vstat"><b>4</b><span>种工具假结果</span></div>
     </div>
   </div>
