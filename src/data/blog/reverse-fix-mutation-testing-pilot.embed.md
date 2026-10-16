@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T13:53:24+08:00
-modDatetime: 2026-10-16T02:03:34+08:00
+modDatetime: 2026-10-16T02:06:50+08:00
 title: "造变异体的方法，决定变异测试能找到什么"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
@@ -224,8 +224,8 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <span class="verdict-zh">造变异体的方法决定了你能找到什么；分数只在同一种造法下才能比。</span>
     </div>
     <div class="verdict-body">
-      <p>我们用同一套测试，换三种方法造变异体。<strong>规则工具</strong>造的变异体几乎全被杀死，得分 96%；<strong>大模型</strong>造的几乎全部存活，得分只有 3%–6%；<strong>撤回历史修复</strong>在两者之间。</p>
-      <p>得分最低的那组反而找到的真漏洞最多。只有撤回修复找回了两个已知漏洞。规则工具最便宜，但留下的大多是边角。另外，两个变异测试工具都给过假结果，不处理会直接得出错误结论。</p>
+      <p>测试始终是仓库里现有的那一套，大模型和工具都没写测试，只负责往代码里放假 bug（变异体）。<strong>规则工具</strong>放的假 bug，现有测试几乎全抓住了，得分 96%；<strong>大模型</strong>先读过现有测试，专挑测试看不到的地方放，现有测试几乎全没抓住，得分只有 3%–6%；<strong>撤回历史修复</strong>在两者之间。</p>
+      <p>没被抓住的假 bug，正好指出了现有测试的盲区。所以得分最低的大模型那组，反而找到的真漏洞最多。只有撤回修复找回了两个已知漏洞。规则工具最便宜，但留下的大多是边角。另外，两个变异测试工具都给过假结果，不处理会直接得出错误结论。</p>
       <p>这不是说分数没用。同一种造法下，测试补强了，分数会涨，这时分数能反映测试质量。但换了造法，分数比的就是变异体的难度，不是测试。所以评估时该数的是「找到了几个真漏洞」。</p>
     </div>
     <div class="vstats">
@@ -322,7 +322,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <li><strong>Python</strong>：规则 6 个、大模型 14 个，只有 1 处重叠。撤回修复唯一存活的那个，和大模型造的某一个是<strong>同一个改动</strong>。去重后共 19 个。</li>
     </ul>
   </div>
-  <div class="tldr"><p><span class="hl">一句话：</span>得分最高的方法找到的真漏洞最少，得分最低的方法找到的最多。变异得分只有在说明了「变异体从哪来」之后才有意义。</p></div>
+  <div class="tldr"><p><span class="hl">一句话：</span>现有测试在规则工具面前得分最高，但这组找到的真漏洞最少；在大模型面前得分最低，这组找到的真漏洞却最多。变异得分只有在说明了「变异体从哪来」之后才有意义。</p></div>
   </section>
   <section>
   <h2>大模型找到的漏洞长什么样</h2>
