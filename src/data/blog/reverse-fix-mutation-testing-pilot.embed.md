@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T13:53:24+08:00
-modDatetime: 2026-10-16T02:22:20+08:00
+modDatetime: 2026-10-16T02:24:00+08:00
 title: "造变异体的方法，决定变异测试能找到什么"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
@@ -63,6 +63,8 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .verdict-zh{font-size:16px;font-weight:650}
 .html-embed .verdict-body{padding:14px 24px 18px;font-size:14.5px;color:var(--ink-2)}
 .html-embed .verdict-body p{margin:8px 0}
+.html-embed .verdict-body ul{margin:4px 0 10px;padding-left:20px;list-style:disc}
+.html-embed .verdict-body li{margin:3px 0}
 .html-embed .vstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:1px; border-top:1px solid var(--line-soft);background:var(--line-soft)}
 .html-embed .vstat{padding:14px 18px;background:var(--surface)}
 .html-embed .vstat b{display:block;font-family:var(--mono);font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}
@@ -228,9 +230,16 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
       <span class="verdict-zh">想守住修过的 bug，撤回历史修复；规则工具只适合当便宜的底线。</span>
     </div>
     <div class="verdict-body">
-      <p><strong>这篇在比什么：</strong>变异测试是故意往代码里放假 bug（变异体），看现有测试能不能发现。没被发现的，就是测试的漏洞。假 bug 有三种造法：<strong>规则工具</strong>机械地改符号，<strong>大模型</strong>先读测试再挑盲区下手，<strong>撤回历史修复</strong>把以前修好的 bug 放回去。我们拿同一套现有测试，比哪种造法能找出最多真漏洞。</p>
-      <p><strong>结果：</strong>大模型每 100 个假 bug 找到 28 个（Go）和 39 个（Python）真漏洞，最多。撤回修复是唯一找回两个已知漏洞的方法。规则工具在 Go 上造了 178 个，只找到 2 个真漏洞。</p>
-      <p><strong>顺带的教训：别拿分数比方法。</strong>同一套测试，面对规则工具得分 96%，面对大模型只有 3%–6%。测试没变，变的是假 bug 的难度。分数只适合在同一种造法下看前后变化。另外，两个变异测试工具都给过假结果，不处理会得出错误结论。</p>
+      <p><strong>我们做了什么：</strong>变异测试是故意往代码里放假 bug（变异体），看现有测试能不能发现，没被发现的就是测试的漏洞。假 bug 有三种造法：<strong>规则工具</strong>机械地改符号，<strong>大模型</strong>先读测试再挑盲区下手，<strong>撤回历史修复</strong>把以前修好的 bug 放回去。我们拿同一套现有测试（Go 新代码 + Python 老代码），三种造法各跑一遍。</p>
+      <p><strong>发现：</strong></p>
+      <ul>
+        <li>大模型每 100 个假 bug 找到 28 个（Go）和 39 个（Python）真漏洞，最多。</li>
+        <li>撤回修复是唯一找回两个已知漏洞的方法，但代码一变就很难撤回去。</li>
+        <li>规则工具在 Go 上造了 178 个，只找到 2 个真漏洞。</li>
+        <li>同一套测试，面对规则工具得分 96%，面对大模型只有 3%–6%。测试没变，变的是假 bug 的难度。</li>
+        <li>两个变异测试工具都给过假结果，不处理会得出错误结论。</li>
+      </ul>
+      <p><strong>结论：</strong>想找测试的盲区，用大模型造假 bug；想守住修过的 bug 不再坏，撤回历史修复；规则工具便宜，适合当底线。比较造法时数真漏洞，不要比分数；分数只适合在同一种造法下看前后变化。</p>
     </div>
     <div class="vstats">
       <div class="vstat"><b>28 / 39</b><span>大模型每 100 个假 bug 找到的真漏洞（Go / Python）</span></div>
