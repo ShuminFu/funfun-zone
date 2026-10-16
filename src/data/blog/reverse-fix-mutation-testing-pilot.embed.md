@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T13:53:24+08:00
-modDatetime: 2026-10-16T02:06:50+08:00
+modDatetime: 2026-10-16T02:08:54+08:00
 title: "造变异体的方法，决定变异测试能找到什么"
 slug: reverse-fix-mutation-testing-pilot
 featured: false
@@ -168,6 +168,9 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .b-keep{background:var(--blubg);color:var(--blu)}
 .html-embed .file .fp{font-family:var(--mono);font-size:13px;color:var(--ink)}
 .html-embed .file .fd{color:var(--ink-2);font-size:13px;margin-top:3px}
+.html-embed .defquote{margin:14px 0 4px;padding:4px 0 4px 16px;border-left:2px solid var(--accent);color:var(--ink-2)}
+.html-embed .defquote p{margin:6px 0}
+.html-embed .defquote .src{font-size:13px;color:var(--ink-3)}
 .html-embed .insight{background:var(--grnbg);border:1px solid var(--grn-line);padding:16px 20px;margin-top:6px}
 .html-embed .insight b{color:var(--grn)}
 .html-embed .insight p{margin:0;color:var(--grn-soft);font-size:14px;max-width:var(--measure);text-wrap:pretty}
@@ -239,6 +242,12 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <h2>先说清楚：变异测试是在检查测试</h2>
   <div class="pg-prose">
     <p>平时写的单元测试是保安，每天都在岗。<strong>变异测试</strong>是突击检查：故意往代码里放一个小 bug（叫「变异体」），看保安会不会发现。测试变红叫「杀死」，没变红叫「存活」。杀死的比例就是<strong>变异得分</strong>。</p>
+    <blockquote class="defquote">
+      <p>变异得分（mutation score）= 被杀死的变异体数 ÷（变异体总数 − 等价变异体数）。它衡量的是测试集发现这批变异体的能力。</p>
+      <p class="src">— 定义见 Jia &amp; Harman 的变异测试综述 <a href="#r18">[18]</a>；该定义可追溯到 DeMillo、Lipton、Sayward 1978 年提出变异测试时的说法。</p>
+    </blockquote>
+    <p>注意分母里是「这批变异体」。定义本身就说明了：分数是测试和变异体两方面一起决定的。研究也发现，扣掉测试集大小这个因素以后，变异得分和发现真实 bug 的能力只是弱相关 <a href="#r2">[2]</a>。</p>
+    <p>本文的算法稍有不同：分母用的是「有效变异体」（能编译、能跑的），没有先扣掉等价变异体。原因是等价要逐个人工判定，我们只对存活的做了判定。所以表里的得分比按定义算的略低。比如 Go 规则组扣掉 3 个等价后是 171 ÷ 175 ≈ 98%。</p>
     <p>变异测试本身不留在仓库里。它的价值是找出测试没守住的地方，然后你再补一条普通测试。</p>
     <p>这次研究的起因是之前做的一个小试点：我们把 20 个已修 bug 的修复撤回去，看现有测试会不会报警。修复时带了测试的 15 个全部被抓住，没带测试的 4 个只抓住一半。那次的结论讲的其实是「普通测试有没有用」。这次我们把重点放回变异测试本身：<strong>造变异体的方法不同，结论会差多少？</strong></p>
   </div>
@@ -550,6 +559,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <li id="r15">Chang et al. <a href="https://arxiv.org/abs/2602.08146">Test vs Mutant: Adversarial LLM Agents for Robust Unit Test Generation</a>. arXiv 2602.08146.</li>
     <li id="r16">Otterson. <a href="https://arxiv.org/abs/2607.23002">Adversarial Test-Hardening for AI-Written Code</a>. arXiv 2607.23002.</li>
     <li id="r17"><a href="https://www.awesome-testing.com/2026/08/mutation-testing-for-agent-written-code">Mutation Testing for Agent-Written Code</a>. awesome-testing.com, 2026-08.</li>
+    <li id="r18">Jia, Harman. <a href="https://doi.org/10.1109/TSE.2010.62">An Analysis and Survey of the Development of Mutation Testing</a>. IEEE Transactions on Software Engineering 37(5), 2011.</li>
   </ol>
   </section>
   <footer class="footer">
