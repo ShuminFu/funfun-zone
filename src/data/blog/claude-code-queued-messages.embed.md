@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-16T16:05:46+08:00
-modDatetime: 2026-10-16T16:43:02+08:00
+modDatetime: 2026-10-16T16:46:46+08:00
 title: "Claude Code 忙的时候，你发的消息什么时候被读到"
 slug: claude-code-queued-messages
 featured: false
@@ -63,6 +63,24 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 07:53:52.924Z queue-operation dequeue
 07:53:52.935Z user "可以继续查原因"</code></pre>
 <p>这里的 dequeue 没有 reason 字段，和中途吸收的 <code>absorbed_mid_turn</code> 区分开。「它自己找时机才读」的感觉，多半来自这种情况。</p>
+<h2>第三种时机：按停止或 API 报错</h2>
+<p>除了「工具结果返回后中途插入」和「这一轮正常结束后再发」，还有一种：这一轮被提前打断。我按停止（会话里记为 <code>[Request interrupted by user]</code>）时，或者这一轮因为 API 报错死掉时，排队的消息会马上作为新一轮发出去，不用等 Claude 把话说完。</p>
+<pre><code>02:52:27 assistant [text "没有——而且"没有"本身就是最重要的诊断信息…"]
+02:52:27 user      "[Request interrupted by user]"
+02:52:34 queue-operation enqueue / dequeue
+02:52:34 user      "[DEBUG] nodeJS - [AMQP] connected…"     ← 排队的消息作为新一轮发出</code></pre>
+<h3>按「交付前一条记录」分类</h3>
+<p>我把所有排队后送达的消息（去重后）按交付前紧挨着的那条记录分了类。中途插入一共 911 次，全部紧跟在工具结果后面：</p>
+<ul>
+<li>901 次是普通工具结果。</li>
+<li>6 次是被 auto mode 拒绝的工具调用。拒绝也会返回一个工具结果，消息照样跟着插进去。</li>
+<li>3 次是加载技能（Skill）。加载技能本身也是一次工具调用，先返回结果，再附上技能正文，然后才是我的消息。</li>
+</ul>
+<pre><code>21:27:33 assistant [tool_use Bash]
+21:27:44 user      [tool_result "Permission for this action was denied by the Claude Code auto mode classifier…"]
+         attachment {"type":"queued_command","prompt":"新的 1.3.192，目前是1.3.178"}</code></pre>
+<p>作为新一轮发出的情况里，绝大多数是这一轮正常结束（Stop hook 之后）；另有 46 次是按了停止，10 次是 API 报错。子代理返回结果、各类 hook（PreToolUse、PostToolUse、UserPromptSubmit）、退出 plan mode、上下文压缩这些时刻，都没有看到消息插进去。</p>
+<p class="note">这些数字只来自本地会话记录，没有对照 Claude Code 的文档或程序代码核实。作为新一轮发出的消息里也混有自动化任务发来的消息，少数小类（比如十几次排在工具结果之后的）只是推测。</p>
 <h2>统计：全部本地会话</h2>
 <p>同一个队列还会装后台任务通知（<code>&lt;task-notification&gt;</code>）和系统提醒，统计时已排除。</p>
 <table>
@@ -117,8 +135,8 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 <p><strong>小结：</strong>两条正常路径（中途吸收、轮次结束后送达）都很可靠，没找到系统主动丢弃的记录。唯一的风险点是中途被 <code>dequeue</code> 却没有送达记录的消息，大约 6700 条里有 5 条，其中 2 条是撤回改字。重要的话，发完看一眼 Claude 有没有接住。</p>
 <h2>实际用起来</h2>
 <ul>
-<li>消息基本不会丢（极少数例外见上一节），只是只能在工具结果返回时插进去，Claude 写文字的过程中打断不了它。</li>
-<li>想让它马上改方向，最可靠的是按 Esc 或点停止，直接中断。</li>
+<li>消息基本不会丢（极少数例外见上一节）。这一轮中途，消息只能在工具结果返回时插进去，Claude 写文字的过程中打断不了它。</li>
+<li>想让它马上改方向，最可靠的是按 Esc 或点停止：这一轮立刻结束，排队的消息马上作为新一轮发出。代价是当前这一步做到一半就停了。</li>
 <li>「Send now」出现在 App 扣着消息的阶段，点了应该会立刻放行。这一点我没有在日志里直接验证到。</li>
 </ul>
 </div>
