@@ -20,6 +20,14 @@ html[data-theme="dark"] {
   --border: transparent;
 }
 
+/* The default mono stack has no CJK font, so Windows falls back to SimSun (宋体).
+   Name the CJK fonts after the Latin mono fonts: Latin stays mono, Chinese gets a sans. */
+@theme {
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
+    "Source Han Sans SC", monospace;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
