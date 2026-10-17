@@ -14,7 +14,12 @@ const { page } = Astro.props;
 
 {
   page.lastPage > 1 && (
-    <nav class="mt-auto mb-8 flex justify-center" aria-label="Pagination">
+    <nav
+      class="mt-auto mb-8 flex justify-center"
+      aria-label="Pagination"
+      data-infinite
+      data-next={page.url.next}
+    >
       <LinkButton
         disabled={!page.url.prev}
         href={page.url.prev as string}
@@ -37,3 +42,41 @@ const { page } = Astro.props;
     </nav>
   )
 }
+
+<script>
+  // Infinite scroll: with JS, hide Prev/Next and append the next page's cards
+  // when the reader nears the bottom. Without JS the links still work.
+  function setupInfiniteScroll() {
+    const nav = document.querySelector<HTMLElement>("nav[data-infinite]");
+    const list = document.querySelector("#main-content ul");
+    let next = nav?.dataset.next;
+    if (!nav || !list || !next) return;
+
+    nav.hidden = true;
+    const sentinel = document.createElement("div");
+    nav.before(sentinel);
+
+    const io = new IntersectionObserver(
+      async ([entry]) => {
+        if (!entry.isIntersecting || !next) return;
+        io.unobserve(sentinel);
+        try {
+          const html = await (await fetch(next)).text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          list.append(...doc.querySelectorAll("#main-content ul > li"));
+          next = doc.querySelector<HTMLElement>("nav[data-infinite]")?.dataset
+            .next;
+        } catch {
+          nav.hidden = false; // fetch failed: fall back to the page links
+          next = undefined;
+        }
+        if (next) io.observe(sentinel);
+        else sentinel.remove();
+      },
+      { rootMargin: "400px" }
+    );
+    io.observe(sentinel);
+  }
+
+  document.addEventListener("astro:page-load", setupInfiniteScroll);
+</script>
