@@ -44,39 +44,43 @@ const { page } = Astro.props;
 }
 
 <script>
-  // Infinite scroll: with JS, hide Prev/Next and append the next page's cards
-  // when the reader nears the bottom. Without JS the links still work.
-  function setupInfiniteScroll() {
+  // "Load more": with JS, swap Prev/Next for a button that appends the next
+  // page's cards in place. Without JS the page links still work.
+  function setupLoadMore() {
     const nav = document.querySelector<HTMLElement>("nav[data-infinite]");
     const list = document.querySelector("#main-content ul");
     let next = nav?.dataset.next;
     if (!nav || !list || !next) return;
 
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Load more";
+    button.className =
+      "mx-auto mt-auto mb-8 block rounded border border-accent px-4 py-1 text-accent hover:bg-accent hover:text-background disabled:opacity-50";
     nav.hidden = true;
-    const sentinel = document.createElement("div");
-    nav.before(sentinel);
+    nav.before(button);
 
-    const io = new IntersectionObserver(
-      async ([entry]) => {
-        if (!entry.isIntersecting || !next) return;
-        io.unobserve(sentinel);
-        try {
-          const html = await (await fetch(next)).text();
-          const doc = new DOMParser().parseFromString(html, "text/html");
-          list.append(...doc.querySelectorAll("#main-content ul > li"));
-          next = doc.querySelector<HTMLElement>("nav[data-infinite]")?.dataset
-            .next;
-        } catch {
-          nav.hidden = false; // fetch failed: fall back to the page links
-          next = undefined;
-        }
-        if (next) io.observe(sentinel);
-        else sentinel.remove();
-      },
-      { rootMargin: "400px" }
-    );
-    io.observe(sentinel);
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      button.textContent = "Loading…";
+      try {
+        const html = await (await fetch(next!)).text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        list.append(...doc.querySelectorAll("#main-content ul > li"));
+        next = doc.querySelector<HTMLElement>("nav[data-infinite]")?.dataset
+          .next;
+      } catch {
+        nav.hidden = false; // fetch failed: fall back to the page links
+        next = undefined;
+      }
+      if (next) {
+        button.disabled = false;
+        button.textContent = "Load more";
+      } else {
+        button.remove();
+      }
+    });
   }
 
-  document.addEventListener("astro:page-load", setupInfiniteScroll);
+  document.addEventListener("astro:page-load", setupLoadMore);
 </script>
