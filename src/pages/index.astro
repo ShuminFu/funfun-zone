@@ -92,7 +92,10 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     }
 
     <div id="all-posts" class="my-8 text-center">
-      <LinkButton href="/posts/">
+      <LinkButton
+        href="/posts/"
+        class="rounded border border-accent px-4 py-1 text-accent transition-colors duration-200 hover:bg-accent hover:text-background"
+      >
         All Posts
         <IconArrowRight class="inline-block rtl:-rotate-180" />
       </LinkButton>
@@ -102,6 +105,8 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 </Layout>
 
 <script>
+  import { fadeIn } from "@/utils/fadeIn";
+
   // "All Posts" continues the list in place instead of leaving the page:
   // each click appends the next posts from /posts/ (skipping ones already
   // shown), then the button turns into "Load more". Without JS it is a link.
@@ -133,6 +138,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
             const h2 = a.querySelector("h2");
             if (h2) h2.outerHTML = h2.outerHTML.replace(/<(\/?)h2/g, "<$1h3"); // match the home cards
             list.append(card);
+            fadeIn(card);
             added++;
           }
           next = doc.querySelector<HTMLElement>("nav[data-infinite]")?.dataset

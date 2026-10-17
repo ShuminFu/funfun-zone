@@ -44,6 +44,8 @@ const { page } = Astro.props;
 }
 
 <script>
+  import { fadeIn } from "@/utils/fadeIn";
+
   // "Load more": with JS, swap Prev/Next for a button that appends the next
   // page's cards in place. Without JS the page links still work.
   function setupLoadMore() {
@@ -56,7 +58,7 @@ const { page } = Astro.props;
     button.type = "button";
     button.textContent = "Load more";
     button.className =
-      "mx-auto mt-auto mb-8 block rounded border border-accent px-4 py-1 text-accent hover:bg-accent hover:text-background disabled:opacity-50";
+      "mx-auto mt-auto mb-8 block rounded border border-accent px-4 py-1 text-accent transition-colors duration-200 hover:bg-accent hover:text-background disabled:opacity-50";
     nav.hidden = true;
     nav.before(button);
 
@@ -66,7 +68,9 @@ const { page } = Astro.props;
       try {
         const html = await (await fetch(next!)).text();
         const doc = new DOMParser().parseFromString(html, "text/html");
-        list.append(...doc.querySelectorAll("#main-content ul > li"));
+        const cards = [...doc.querySelectorAll("#main-content ul > li")];
+        list.append(...cards);
+        cards.forEach(fadeIn);
         next = doc.querySelector<HTMLElement>("nav[data-infinite]")?.dataset
           .next;
       } catch {
