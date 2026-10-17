@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
+import OlderPostsHint from "@/components/OlderPostsHint.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
 import Hr from "@/components/Hr.astro";
@@ -81,6 +82,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
           <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
+          <div class="mt-2"><OlderPostsHint /></div>
           <ul>
             {recentPosts.map(
               (data, index) =>
@@ -96,8 +98,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         href="/posts/"
         class="rounded border border-accent px-4 py-1 text-accent transition-colors duration-200 hover:bg-accent hover:text-background"
       >
-        All Posts
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
+        Load more
       </LinkButton>
     </div>
   </main>
