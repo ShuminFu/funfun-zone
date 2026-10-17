@@ -91,7 +91,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       )
     }
 
-    <div class="my-8 text-center">
+    <div id="all-posts" class="my-8 text-center">
       <LinkButton href="/posts/">
         All Posts
         <IconArrowRight class="inline-block rtl:-rotate-180" />
@@ -102,6 +102,54 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 </Layout>
 
 <script>
+  // "All Posts" continues the list in place instead of leaving the page:
+  // each click appends the next posts from /posts/ (skipping ones already
+  // shown), then the button turns into "Load more". Without JS it is a link.
+  function setupHomeMore() {
+    const box = document.querySelector<HTMLElement>("#all-posts");
+    const link = box?.querySelector("a");
+    const list = document.querySelector("#recent-posts ul");
+    if (!box || !link || !list) return;
+    let next: string | undefined = link.getAttribute("href") ?? undefined;
+
+    link.addEventListener("click", async e => {
+      e.preventDefault();
+      if (!next || link.dataset.busy) return;
+      link.dataset.busy = "1";
+      link.style.opacity = "0.5";
+      const seen = new Set(
+        [...document.querySelectorAll("#main-content li > a")].map(a =>
+          a.getAttribute("href")
+        )
+      );
+      try {
+        let added = 0;
+        while (next && !added) {
+          const html = await (await fetch(next)).text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          for (const card of doc.querySelectorAll("#main-content ul > li")) {
+            const a = card.querySelector("a");
+            if (!a || seen.has(a.getAttribute("href"))) continue;
+            const h2 = a.querySelector("h2");
+            if (h2) h2.outerHTML = h2.outerHTML.replace(/<(\/?)h2/g, "<$1h3"); // match the home cards
+            list.append(card);
+            added++;
+          }
+          next = doc.querySelector<HTMLElement>("nav[data-infinite]")?.dataset
+            .next;
+        }
+      } catch {
+        location.href = "/posts/"; // fetch failed: just open the page
+        return;
+      }
+      if (!next) return box.remove();
+      delete link.dataset.busy;
+      link.style.opacity = "";
+      link.textContent = "Load more";
+    });
+  }
+  document.addEventListener("astro:page-load", setupHomeMore);
+
   document.addEventListener("astro:page-load", () => {
     const indexLayout = (document.querySelector("#main-content") as HTMLElement)
       ?.dataset?.layout;
