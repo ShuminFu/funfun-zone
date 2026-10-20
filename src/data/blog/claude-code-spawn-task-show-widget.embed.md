@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-15T10:39:36+08:00
+modDatetime: 2026-10-20T11:54:02+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -366,6 +366,21 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <p class="pg-prose">两者靠的是同一条线：谁开了谁。官方文档写明，一个 thread 只属于开它的项目，归档项目时会一起归档。AI 会自己生出新会话，会话就长成一棵树；记住来历，软件才管得住这棵树。</p>
   <div class="tldr"><p><span class="hl">一句话：</span>项目从“一个文件夹”变成“一段对话”，靠的就是 app 记下的“谁开了谁”。</p></div>
   <p class="pg-prose note">参考：<a href="https://code.claude.com/docs/en/claude-projects">Claude Code 文档：Projects</a>，<a href="https://claude.com/blog/projects-redesigned">Projects redesigned: from folder to conversation</a>。</p>
+  <h3>把子会话挪到顶层，变成平级会话</h3>
+  <p class="pg-prose">Claude 开出来的会话，一开始总挂在开它的会话下面。Claude 不能一步开出一个平级的会话，但可以分两步做到：</p>
+  <ol class="pg-prose">
+    <li>用 <code>start_session</code> 开一个新会话。这时它是子会话。</li>
+    <li>再用 <code>detach_session</code> 把它挪到顶层（侧栏里叫 “Detach to top level”）。挪完它就和原来的会话平级了。</li>
+  </ol>
+  <div class="tablebox stages"><table>
+    <thead><tr><th>挪到顶层以后</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><b>会变</b></td><td class="note">侧栏里它不再缩在原会话下面；归档原会话时，它不会被一起归档；它每轮结束，原会话不再收到通知；这一步撤不回来。</td></tr>
+      <tr><td><b>不变</b></td><td class="note">它的对话、文件夹、设置都和原来一样。</td></tr>
+      <tr><td><b>不能挪</b></td><td class="note">你手动 fork 出来的会话；和别的会话共用一个 worktree 的会话。只有 Claude 自己开的会话能挪。</td></tr>
+    </tbody>
+  </table></div>
+  <p class="pg-prose">挪到顶层，就是剪断上面那条“谁开了谁”的线。代价是原会话不再自动跟进它，它做没做完要你自己去看。</p>
   <h3>什么时候不该用</h3>
   <ul class="pg-prose">
     <li>只是觉得“代码有点丑”，说不出具体问题。</li>
