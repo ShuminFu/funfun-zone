@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-20T11:58:43+08:00
+modDatetime: 2026-10-20T12:07:21+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -87,7 +87,8 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .st-tag.st-card{color:var(--blu);background:var(--blubg);border-color:var(--blu-line)}
 .html-embed .st-tag.st-fork{color:var(--pur);background:var(--purbg);border-color:var(--pur-line)}
 .html-embed .st-tag.st-start{color:var(--grn);background:var(--grnbg);border-color:var(--grn-line)}
-.html-embed .st-tag.st-detach{color:var(--amb);background:var(--ambbg);border-color:var(--amb-line)}
+.html-embed .st-moved .st-name{border:1.5px solid var(--accent);border-radius:6px;padding:0 8px;color:var(--accent-ink)}
+.html-embed .st-ghost .st-name{border:1.5px dashed var(--accent);border-radius:6px;padding:0 8px;font-weight:500;color:var(--ink-3)}
 .html-embed .st-st{font-size:12px;color:var(--ink-3);white-space:nowrap}
 .html-embed .st-st.done{color:var(--grn)}
 .html-embed .st-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft);font-size:12px;color:var(--ink-3)}
@@ -373,23 +374,24 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <li>用 <code>start_session</code> 开一个新会话。这时它是子会话。</li>
     <li>再用 <code>detach_session</code> 把它挪到顶层（侧栏里叫 “Detach to top level”）。挪完它就和原来的会话平级了。</li>
   </ol>
-  <div class="mock-label">示意：挪之前</div>
+  <div class="mock-label">示意：把「修复自定义域名 530」挪到顶层</div>
   <div class="st-tree">
-    <div class="st-row st-root"><span class="st-ic">▦</span><span class="st-name">首页重新排版</span><span class="st-tag">原会话</span></div>
+    <div class="st-row st-root"><span class="st-ic">▦</span><span class="st-name">博客改版</span><span class="st-tag">项目 · 协调对话</span></div>
     <ul>
-      <li><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-tag st-start">Claude 直接开的</span><span class="st-st">进行中</span></div></li>
-      <li><div class="st-row"><span class="st-name">换一套配色试试</span><span class="st-tag st-fork">从第 12 条消息分叉</span><span class="st-st">进行中</span></div></li>
+      <li><div class="st-row"><span class="st-name">首页重新排版</span><span class="st-tag st-start">派活</span><span class="st-st">进行中</span></div>
+        <ul>
+          <li class="st-ghost"><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">原来在这里</span></div></li>
+          <li><div class="st-row"><span class="st-name">换一套配色试试</span><span class="st-tag st-fork">从第 12 条消息分叉</span><span class="st-st">进行中</span></div></li>
+        </ul>
+      </li>
+      <li><div class="st-row"><span class="st-name">给旧文章补封面图</span><span class="st-tag st-start">派活</span><span class="st-st done">✓ 已向上汇报</span></div>
+        <ul>
+          <li class="st-pend"><div class="st-row"><span class="st-name">压缩过大的图片</span><span class="st-tag st-card">卡片</span><span class="st-st">等你点开</span></div></li>
+        </ul>
+      </li>
+      <li class="st-moved"><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">挪到顶层后：不再挂在「首页重新排版」下面，做完也不再通知它</span></div></li>
     </ul>
-  </div>
-  <div class="mock-label">示意：挪之后</div>
-  <div class="st-tree">
-    <div class="st-row st-root"><span class="st-ic">▦</span><span class="st-name">首页重新排版</span><span class="st-tag">原会话</span></div>
-    <ul>
-      <li><div class="st-row"><span class="st-name">换一套配色试试</span><span class="st-tag st-fork">从第 12 条消息分叉</span><span class="st-st">进行中，仍在下面</span></div></li>
-      <li class="st-pend"><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">已挪走</span></div></li>
-    </ul>
-    <div class="st-row st-root"><span class="st-ic">▦</span><span class="st-name">修复自定义域名 530</span><span class="st-tag st-detach">挪到顶层</span><span class="st-st">进行中，做完不再通知原会话</span></div>
-    <div class="st-legend"><span><span class="st-tag st-start">Claude 直接开的</span> <code>start_session</code></span><span><span class="st-tag st-fork">分叉</span> 你手动 fork 的，不能挪</span><span><span class="st-tag st-detach">挪到顶层</span> <code>detach_session</code></span></div>
+    <div class="st-legend"><span>强调色虚线框：原来的位置</span><span>强调色实线框：挪到顶层以后</span></div>
   </div>
   <div class="tablebox stages"><table>
     <thead><tr><th>挪到顶层以后</th><th>说明</th></tr></thead>
