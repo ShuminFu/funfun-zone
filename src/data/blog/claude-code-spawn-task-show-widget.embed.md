@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-10-14T13:39:52+08:00
-modDatetime: 2026-10-20T12:07:21+08:00
+modDatetime: 2026-10-20T12:21:26+08:00
 title: "Claude Code 的 spawn_task 和 show_widget 是做什么的"
 slug: claude-code-spawn-task-show-widget
 featured: false
@@ -88,6 +88,9 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .st-tag.st-fork{color:var(--pur);background:var(--purbg);border-color:var(--pur-line)}
 .html-embed .st-tag.st-start{color:var(--grn);background:var(--grnbg);border-color:var(--grn-line)}
 .html-embed .st-moved .st-name{border:1.5px solid var(--accent);border-radius:6px;padding:0 8px;color:var(--accent-ink)}
+.html-embed .st-tree li.st-moved{padding-top:16px}
+.html-embed .st-tree li.st-moved::after{top:35px}
+.html-embed .st-arrow{position:absolute;left:0;top:0;overflow:visible}
 .html-embed .st-ghost .st-name{border:1.5px dashed var(--accent);border-radius:6px;padding:0 8px;font-weight:500;color:var(--ink-3)}
 .html-embed .st-st{font-size:12px;color:var(--ink-3);white-space:nowrap}
 .html-embed .st-st.done{color:var(--grn)}
@@ -380,18 +383,18 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <ul>
       <li><div class="st-row"><span class="st-name">首页重新排版</span><span class="st-tag st-start">派活</span><span class="st-st">进行中</span></div>
         <ul>
-          <li class="st-ghost"><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">原来在这里</span></div></li>
           <li><div class="st-row"><span class="st-name">换一套配色试试</span><span class="st-tag st-fork">从第 12 条消息分叉</span><span class="st-st">进行中</span></div></li>
+          <li class="st-ghost"><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">原来在这里</span></div></li>
         </ul>
       </li>
+      <li class="st-moved"><svg class="st-arrow" width="1" height="1" aria-hidden="true"><path d="M76 -3 C 60 3, 50 7, 48 17" style="fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3"/><path d="M43.5 13 L48 20 L52.5 13" style="fill:none;stroke:var(--accent);stroke-width:1.5"/></svg><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">已挪到顶层，做完不再通知原会话</span></div></li>
       <li><div class="st-row"><span class="st-name">给旧文章补封面图</span><span class="st-tag st-start">派活</span><span class="st-st done">✓ 已向上汇报</span></div>
         <ul>
           <li class="st-pend"><div class="st-row"><span class="st-name">压缩过大的图片</span><span class="st-tag st-card">卡片</span><span class="st-st">等你点开</span></div></li>
         </ul>
       </li>
-      <li class="st-moved"><div class="st-row"><span class="st-name">修复自定义域名 530</span><span class="st-st">挪到顶层后：不再挂在「首页重新排版」下面，做完也不再通知它</span></div></li>
     </ul>
-    <div class="st-legend"><span>强调色虚线框：原来的位置</span><span>强调色实线框：挪到顶层以后</span></div>
+    <div class="st-legend"><span>虚线框 → 实线框：从原来的位置挪到顶层</span></div>
   </div>
   <div class="tablebox stages"><table>
     <thead><tr><th>挪到顶层以后</th><th>说明</th></tr></thead>
