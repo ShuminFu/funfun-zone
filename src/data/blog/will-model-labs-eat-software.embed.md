@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-23T17:39:35+08:00
+pubDatetime: 2026-10-23T17:43:11+08:00
 title: "基模公司会吃掉软件公司吗"
 slug: will-model-labs-eat-software
 featured: false
@@ -83,9 +83,19 @@ description: "软件的钱，以前从哪来，现在去了哪，以后会去哪
 <tr><td>占住注意力的 IP 和内容</td><td>图案和品牌</td><td>大家想穿的是那个图案，就像 LOL 的皮肤</td></tr>
 <tr><td>能复用的行业经验</td><td>版型</td><td>服务过很多家才知道这个行业的人穿多大码</td></tr>
 </table>
+<p><strong>一人公司还有没有机会？</strong>先说不乐观的一面。长尾的饼会变大，但我猜大部分会被企业自家的流水线消化掉。只靠写代码接活的个人，我看不到什么希望，写代码正是那根针最先接走的活。</p>
+<p>不过这根针不只在毛线厂和企业手里，个人手里也有。PetaPixel 报道过一个例子：Brandon Thomas 用 AI 做了 Word、Excel、PowerPoint 的开源替代品 WordCraft、GridCraft、DeckCraft，有 macOS、Windows、Linux 桌面版。他说：「AI models enable me to work as an entire company.」（AI 模型让我一个人就能像一整家公司那样干活。）</p>
+<p>我猜一人公司的机会在三处，都对得上上面那张表：</p>
+<ul>
+<li><strong>自己做产品。</strong>卡住你的不再是开发，而是有没有人看见。拼的是注意力和信任，也就是表里的 IP 和图案。</li>
+<li><strong>当企业流水线的主管。</strong>说清楚要什么、验收、出了事签字。岗位还在，只是从写代码换成了管针，对应表里的资质。</li>
+<li><strong>带着行业经验又会用 AI 的人。</strong>懂一个行业的版型，再用针把它织成能复用的种子。</li>
+</ul>
+<p>这一段比第 3 节更偏猜测。我比较确定的只有前半句：只会写代码的个人路会越来越窄。</p>
 <p>留个问题给你：你做的事情里，哪一部分是那根针织不出来的？</p>
 <h2>参考</h2>
 <ul>
+<li><a href="https://petapixel.com/2026/10/12/there-are-free-open-source-versions-of-microsoft-office-apps-thanks-to-ai/">PetaPixel：There are free, open-source versions of Microsoft Office apps thanks to AI</a></li>
 <li><a href="https://cheekypint.substack.com/p/a-cheeky-pint-with-anthropic-ceo">A Cheeky Pint with Anthropic CEO Dario Amodei</a>（单个模型能回本的说法）</li>
 <li><a href="https://korrents.com/k/every-frontier-model-is-profitable-on-af48cf">Dario Amodei：“Each model makes money, but the company loses money.”（2026-02）</a></li>
 <li><a href="https://www.axios.com/2025/08/15/sam-altman-gpt5-launch-chatgpt-future">Axios：Sam Altman defends GPT-5 launch（推理赚钱的说法）</a></li>
