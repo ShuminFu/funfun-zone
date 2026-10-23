@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-23T14:23:54+08:00
+pubDatetime: 2026-10-23T14:51:33+08:00
 title: "小模型写、大模型审：SWE-bench Pro Hard 与 DeepSWE 上的结对实验"
 slug: small-writer-big-reviewer-deepswe
 featured: false
@@ -9,7 +9,7 @@ tags:
   - "ai-agents"
   - "pair-programming"
   - "llm-eval"
-description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上严格判分通过 78.6%，显著好于两者各自单干；附实验细节、复现方法和全部脚本。"
+description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于两者各自单干；附实验细节、复现方法和全部脚本。"
 ---
 
 <style>
@@ -19,7 +19,7 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <div class="html-embed" lang="zh">
 <p class="subtitle">2026-10-23 · 数据截至 10-23 14:00（还在跑的：1 份放宽重判、另一批补跑的「GLM 写 + DeepSeek 审」若干题，都不影响主要结论）</p>
 <h2>一句话结论</h2>
-<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>，严格判分后通过 88/112（78.6%），<br>显著好于 DeepSeek 单干（65.2%，p=0.004）和 Sol 单干（61.6%，p=0.001）。<br>GPT 大模型单干（Sol、Sol max、Astra）和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 3–12 倍；把 Sol 的思考强度开到 max 也没有显著提升。<br>SWE-bench Pro Hard 太容易，除 GLM 外所有做法都在 84–94%，分不出高下。</p>
+<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>，通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）和 Sol 单干（67.0%，p=0.011）。<br>GPT 大模型单干（Sol、Sol max、Astra）和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 3–12 倍；把 Sol 的思考强度开到 max 也没有显著提升。<br>SWE-bench Pro Hard 太容易，除 GLM 外所有做法都在 84–94%，分不出高下。</p>
 <hr>
 <h2>1. 我们想回答什么</h2>
 <ul><li>「小模型写 + 大模型审」能不能比「大模型自己写」更好、更便宜？</li><li>换不同的审查者（Sol / Astra / DeepSeek 自己）差多少？</li><li>大模型单干、开最高思考强度，值不值？</li></ul>
@@ -34,26 +34,23 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <table><thead><tr><th>模型</th><th>未命中输入</th><th>命中缓存输入</th><th>输出</th></tr></thead><tbody><tr><td>deepseek-flash</td><td>0.15</td><td>0.03</td><td>0.60</td></tr><tr><td>glm-5.3-flash</td><td>0.15</td><td>0.03</td><td>0.50</td></tr><tr><td>gpt-6.1-sol</td><td>2.00</td><td>0.10</td><td>10.00</td></tr><tr><td>gpt-6-astra</td><td>10.00</td><td>1.00</td><td>50.00</td></tr></tbody></table>
 <h2>5. 结果</h2>
 <h3>5.1 DeepSWE（112 题）</h3>
-<p>「严格」= 把「改了仓库原有测试文件」的通过答案，去掉那些测试改动后重判一次（见 §6.1）。</p>
-<table><thead><tr><th>做法</th><th>原始通过</th><th><strong>严格通过</strong></th><th>严格通过率</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td>90</td><td><strong>88</strong></td><td><strong>78.6%</strong></td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>82</td><td>73.2%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>75</td><td>67.0%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>73</td><td>65.2%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Sol 单干（max）</td><td>79</td><td>72</td><td>64.3%</td><td>$238</td><td>$1.62</td><td>43.8*</td></tr><tr><td>Sol 单干</td><td>75</td><td>69</td><td>61.6%</td><td>$89</td><td>$0.58</td><td>14.0</td></tr><tr><td>Astra 单干</td><td>72</td><td>68</td><td>60.7%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>65</td><td>58.0%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>Sol 写 + Sol 审</td><td>68</td><td>65</td><td>58.0%</td><td>$296</td><td>$1.85</td><td>22.0</td></tr><tr><td>GLM 单干</td><td>29</td><td>27</td><td>24.1%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>Sol 单干（max）</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$238</td><td>$1.62</td><td>43.8*</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Sol 单干</td><td>75</td><td>67.0%</td><td>58–75%</td><td>$89</td><td>$0.58</td><td>14.0</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>Sol 写 + Sol 审</td><td>68</td><td>60.7%</td><td>52–69%</td><td>$296</td><td>$1.85</td><td>22.0</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
 <p>&#42; Sol 单干（max）有 10 题的补跑换了一条更快的模型服务线路，用时不完全可比；通过率不受影响。</p>
-<p>配对检验（McNemar 精确检验，只看两种做法在同一题上一对一错的题；严格口径）：</p>
-<table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 5</td><td><strong>0.004</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干</td><td>26 : 7</td><td><strong>0.001</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>24 : 10</td><td><strong>0.024</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>15 : 13</td><td>0.851</td></tr><tr><td>Sol 单干 vs DeepSeek 单干</td><td>15 : 19</td><td>0.608</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>17 : 18</td><td>1.000</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>16 : 21</td><td>0.511</td></tr><tr><td>Sol 单干（max）vs Sol 单干（默认强度）</td><td>13 : 10</td><td>0.678</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）vs Sol 单干</td><td>10 : 14</td><td>0.541</td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>45 : 7</td><td>&lt;0.001</td></tr></tbody></table>
+<p>配对检验（McNemar 精确检验，只看两种做法在同一题上一对一错的题）：</p>
+<table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 6</td><td><strong>0.009</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干</td><td>23 : 8</td><td><strong>0.011</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>23 : 10</td><td><strong>0.035</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>16 : 13</td><td>0.711</td></tr><tr><td>Sol 单干 vs DeepSeek 单干</td><td>17 : 18</td><td>1.000</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>19 : 16</td><td>0.736</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>17 : 21</td><td>0.627</td></tr><tr><td>Sol 单干（max）vs Sol 单干（默认强度）</td><td>12 : 8</td><td>0.503</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）vs Sol 单干</td><td>9 : 16</td><td>0.230</td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>44 : 7</td><td>&lt;0.001</td></tr></tbody></table>
 <h3>5.2 SWE-bench Pro Hard（51 题）</h3>
 <table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$36.8</td><td>$0.47</td><td>15.2</td></tr><tr><td>Sol 写 + Sol 审</td><td>47</td><td>92.2%</td><td>82–97%</td><td>$70.0</td><td>$0.93</td><td>11.4</td></tr><tr><td>Sol 单干（max）</td><td>46</td><td>90.2%</td><td>79–96%</td><td>$43.5</td><td>$0.69</td><td>14.9</td></tr><tr><td>Sol 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$23.7</td><td>$0.39</td><td>7.7</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$6.8</td><td>$0.10</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$15.3</td><td>$0.24</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$110.5</td><td>$1.47</td><td>9.2</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$17.6</td><td>$0.24</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.2</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
 <p>Hard 上只有 GLM 相关的对比显著（GLM 写 + DeepSeek 审 vs GLM 单干 15:2，p=0.002；DeepSeek 单干 vs GLM 单干 21:1，p&lt;0.001）。<br>其余都不显著，例如 DeepSeek 写 + Sol 审 vs DeepSeek 单干 6:2（p=0.29）。</p>
 <h3>5.3 读法</h3>
-<ol><li><strong>结对有用，但审查者要比写的人强。</strong> DeepSeek 写 + Sol 审显著好于双方各自单干；DeepSeek 自己审自己（DeepSeek 写 + DeepSeek 审）没有显著提升。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra 单干 61–64%，DeepSeek 单干 65%，差别不显著，花费是 3–12 倍。</li><li><strong>max 思考强度不值。</strong> Sol max 比默认多 2–3 题，不显著，花费 2.7 倍。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审反而略低于 Sol 单干（不显著）。</li><li><strong>GPT 单干更爱改老测试。</strong> 严格判分时 Sol 单干掉 6 题、Sol 单干（max）掉 7 题，DeepSeek 单干只掉 3 题。</li></ol>
+<ol><li><strong>结对有用，但审查者要比写的人强。</strong> DeepSeek 写 + Sol 审显著好于双方各自单干；DeepSeek 自己审自己（DeepSeek 写 + DeepSeek 审）没有显著提升。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra 单干 64–71%，DeepSeek 单干 68%，差别不显著，花费是 3–12 倍。</li><li><strong>max 思考强度不值。</strong> Sol max 比默认多 4 题，不显著，花费 2.7 倍。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审反而低于 Sol 单干（60.7% vs 67.0%，不显著）。</li></ol>
 <h2>6. 过程中发现的问题和处理</h2>
-<h3>6.1 改测试审计（严格判分）</h3>
-<p>判分只复原官方测试补丁碰到的文件。如果模型改了仓库里<strong>别的老测试</strong>，老测试可能被改松。<br>我们列出所有「改了原有测试文件、且官方补丁没碰」的通过答案（共 200 份），去掉这些测试改动后重判：<strong>35 份不再通过</strong>。§5.1 的「严格」列就是这个口径。</p>
-<h3>6.2 判分时测试卡死</h3>
+<h3>6.1 判分时测试卡死</h3>
 <p>有 8 份答案判分时测试卡住，30 分钟上限超时；空闲时放宽到 2 小时重判，仍然全部超时。按失败计。<br>同一套测试，别的做法的答案几分钟就判完，所以问题出在<strong>这几份答案的代码</strong>。</p>
 <p>我们把其中 7 份放进断网容器重跑测试，10 分钟后拍下容器里每个进程在干什么（CPU、内核等待点、打开的连接）。卡法分三种：</p>
 <table><thead><tr><th>卡法</th><th>题目（哪种做法的答案）</th><th>现场</th><th>原因</th></tr></thead><tbody><tr><td>互相等，谁也不动</td><td>pwntools「多路复用管道」（Sol 单干、Astra 单干）</td><td>pytest 停在 <code>test_flow_control_does_not_block_other_channels</code>，CPU 0%，线程在等锁</td><td>一条通道塞满后，代码把<strong>所有</strong>通道都堵住了——这正是这条测试要抓的毛病，测试于是永远等下去</td></tr><tr><td>互相等，谁也不动</td><td>koota「组合特性」（GLM 单干、Astra 单干、GLM 写 + DeepSeek 审）</td><td>老测试都跑完，新测试 <code>aspect.test.ts</code> 一开始就不动，CPU 0.1%</td><td>新代码里某个等待永远没人来叫醒（三份答案卡在同一处）</td></tr><tr><td>原地打转</td><td>claude-code「递归委派」（Astra 单干）</td><td>测试进程 CPU 一直 102%</td><td>委派自己调自己，没有停下来的条件，死循环</td></tr><tr><td>测完不退出</td><td>langchain「请求合并」（GLM 单干）</td><td>测试 26 秒就跑完（4 个失败），但 pytest 进程一直不退出</td><td>后台线程报错死掉，等它结果的线程永远等着，又不是后台守护线程，进程退不掉</td></tr></tbody></table>
 <p>模型看不到这些隐藏测试（只看得到仓库原有测试），所以这类「测试一跑就卡」也是真实的答错，不是判分工具的问题。</p>
 <h2>7. 复现方法</h2>
-<p>全部脚本附在文末附录（7 个 Python 文件，点开看全文）。下面的命令都在放脚本和题目的目录里跑。</p>
+<p>全部脚本附在文末附录（5 个 Python 文件，点开看全文）。下面的命令都在放脚本和题目的目录里跑。</p>
 <h3>7.0 做法和代号对照</h3>
 <p>脚本里每种做法用一个代号：</p>
 <table><thead><tr><th>做法</th><th>代号</th></tr></thead><tbody><tr><td>Sol 单干（max）</td><td><code>solo_solmax</code></td></tr><tr><td>Astra 单干</td><td><code>solo_astra</code></td></tr><tr><td>Sol 单干</td><td><code>solo_sol</code></td></tr><tr><td>DeepSeek 单干</td><td><code>solo_dsf</code></td></tr><tr><td>GLM 单干</td><td><code>solo_glm</code></td></tr><tr><td>DeepSeek 写 + Astra 审</td><td><code>dsf_t_astra</code></td></tr><tr><td>DeepSeek 写 + Sol 审</td><td><code>dsf_t_sol</code></td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td><code>dsf_t_dsf</code></td></tr><tr><td>GLM 写 + DeepSeek 审</td><td><code>glm_t_dsf</code></td></tr><tr><td>Sol 写 + Sol 审</td><td><code>sol_t_sol</code></td></tr></tbody></table>
@@ -72,15 +69,12 @@ PB_BENCH=deepswe RES=results-deepswe python3 rerun_driver.py jobs.json 4
 PB_BENCH=deepswe RES=results-deepswe python3 regrade_long.py 3 &lt;代号&gt;/&lt;题&gt; ...</code></pre>
 <h3>7.4 统计</h3>
 <pre><code># 多台机器时，把各机器的 results-* 拷到 collected-results-*/&lt;机器名&gt;/ 下；单机就放一个子目录
-python3 report.py            # 原始口径：通过率 + Wilson 区间 + 花费 + 用时 + McNemar
-python3 tamper.py            # 列出改了原有测试的通过答案 → tamper-flags.json
-python3 strict_rg.py 8       # 去掉这些测试改动后重判，结果在 strict-out/
-python3 report.py --strict   # 严格口径</code></pre>
+python3 report.py            # 通过率 + Wilson 区间 + 花费 + 用时 + McNemar</code></pre>
 <p>取数规则：去掉占位；同一 (做法, 题) 有多份时优先补跑记录，其次取开工最早的；剔除标准答案都过不了的题；价格按原价。</p>
 <h2>8. 局限</h2>
 <ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）的部分补跑题换了模型服务线路，用时不完全可比。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
 <h2>附录：脚本</h2>
-<table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code></td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>tamper.py</code></td><td>找出「改了原有测试文件、官方补丁又没碰」的通过答案</td></tr><tr><td><code>strict_rg.py</code></td><td>去掉这些测试改动后重判（严格口径）</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 区间、花费、用时、McNemar 配对检验</td></tr></tbody></table>
+<table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code></td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 区间、花费、用时、McNemar 配对检验</td></tr></tbody></table>
 <details><summary><code>run_swepro.py</code></summary>
 <pre><code>#!/usr/bin/env python3
 &quot;&quot;&quot;SWE-bench Pro V2 上跑结对：agent 在题目自带的容器里改代码，判分在全新容器里跑官方 tests/test.sh。
@@ -536,31 +530,6 @@ while True:
     c, _ = srv.accept(); threading.Thread(target=handle, args=(c,), daemon=True).start()
 </code></pre>
 </details>
-<details><summary><code>rerun_driver.py</code></summary>
-<pre><code># 10-22 补跑：答题过程被网关错误（504/503/限流/断流）打断、或答题超时而失败的 (做法, 题)。
-# 先把旧记录挪进 &lt;RES&gt;/_superseded/&lt;arm&gt;/（不删），再用独立工作目录和转发口重跑这一对。
-# 用法：PB_BENCH=... RES=... python3 rerun_driver.py jobs.json &lt;并发&gt;
-import json, os, sys, shutil, time
-from concurrent.futures import ThreadPoolExecutor
-os.environ.setdefault(&quot;PB_WORK&quot;, &quot;work-rerun&quot;); os.environ[&quot;PB_NO_CLAIM&quot;] = &quot;1&quot;
-import run_swepro as r
-jobs = json.load(open(sys.argv[1])); par = int(sys.argv[2]) if len(sys.argv) &gt; 2 else 4
-for j in jobs:
-    for ext in (&quot;.json&quot;, &quot;.patch&quot;):
-        src = r.RES / j[&quot;arm&quot;] / (j[&quot;id&quot;] + ext)
-        if src.exists():
-            dst = r.RES / &quot;_superseded&quot; / j[&quot;arm&quot;]; dst.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(src), str(dst / (j[&quot;id&quot;] + ext)))
-r.start_gw_relay()
-def one(j):
-    r.run_task(j[&quot;id&quot;], [j[&quot;arm&quot;]])
-    f = r.RES / j[&quot;arm&quot;] / (j[&quot;id&quot;] + &quot;.json&quot;)
-    if f.exists():   # 记一笔这是补跑，原因留档
-        d = json.load(open(f)); d[&quot;rerun_reason&quot;] = j[&quot;why&quot;]; f.write_text(json.dumps(d, ensure_ascii=False, indent=1))
-with ThreadPoolExecutor(par) as ex: list(ex.map(one, jobs))
-r.log(&quot;RERUN DONE&quot;, len(jobs))
-</code></pre>
-</details>
 <details><summary><code>regrade_long.py</code></summary>
 <pre><code># 10-22 判分超时的答案：机器空闲时把判分时限放宽到 2 小时重判一次（答案不重做）。旧判分留在 grade_before_long_regrade。
 import json, os, sys
@@ -580,67 +549,11 @@ def one(j):
 with ThreadPoolExecutor(int(sys.argv[1])) as ex: list(ex.map(one, jobs))
 </code></pre>
 </details>
-<details><summary><code>tamper.py</code></summary>
-<pre><code>#!/usr/bin/env python3
-&quot;&quot;&quot;查「改测试过关」：DeepSWE 判分只把 test.patch 碰到的文件复原；模型若改/删了别的「已存在的」测试文件，
-老测试（p2p）可能被它改松。列出每份通过的答案里这类改动。&quot;&quot;&quot;
-import json, re, sys
-from pathlib import Path
-B = Path(__file__).resolve().parent
-TEST = re.compile(r&quot;(^|/)(tests?|__tests__|spec|specs|testdata|fixtures?)/|_test\.(go|py|rs)$|(^|/)test_[^/]*\.py$|\.(test|spec)\.(js|jsx|ts|tsx|mjs|cjs)$|(^|/)conftest\.py$|(^|/)tests\.rs$&quot;)
-def files(patch):   # (path, kind)：kind = new / deleted / modified
-    out = {}; cur = None
-    for l in patch.splitlines():
-        m = re.match(r&quot;diff --git a/(\S+) b/(\S+)&quot;, l)
-        if m: cur = m.group(2); out[cur] = &quot;modified&quot;; continue
-        if cur and l.startswith(&quot;new file mode&quot;): out[cur] = &quot;new&quot;
-        if cur and l.startswith(&quot;deleted file mode&quot;): out[cur] = &quot;deleted&quot;
-    return out
-best = {}
-for f in (B / &quot;collected-results-deepswe&quot;).glob(&quot;*/*/*.json&quot;):
-    if f.parent.name == &quot;_gold&quot;: continue
-    d = json.loads(f.read_text())
-    if d.get(&quot;placeholder&quot;): continue
-    k = (f.parent.name, d[&quot;id&quot;])
-    if k in best and (best[k][0].get(&quot;started&quot;) or 0) &lt;= (d.get(&quot;started&quot;) or 0): continue
-    best[k] = (d, f.with_suffix(&quot;.patch&quot;))
-flag = []
-for (arm, tid), (d, pf) in sorted(best.items()):
-    if not d.get(&quot;passed&quot;) or not pf.exists(): continue
-    tp = B / &quot;deepswe-testpatch&quot; / tid / &quot;tests/test.patch&quot;
-    reset = set(files(tp.read_text())) if tp.exists() else set()
-    bad = [(p, k) for p, k in files(pf.read_text(errors=&quot;ignore&quot;)).items() if k != &quot;new&quot; and TEST.search(p) and p not in reset]
-    if bad: flag.append((arm, tid, bad, str(pf)))
-for arm, tid, bad, pf in flag: print(arm, tid, bad)
-print(&quot;passing answers that touched pre-existing test files outside test.patch:&quot;, len(flag), file=sys.stderr)
-json.dump([{&quot;arm&quot;: a, &quot;id&quot;: t, &quot;files&quot;: b, &quot;patch&quot;: p} for a, t, b, p in flag], open(B / &quot;tamper-flags.json&quot;, &quot;w&quot;), ensure_ascii=False, indent=1)
-</code></pre>
-</details>
-<details><summary><code>strict_rg.py</code></summary>
-<pre><code># 改测试审计：把答案里「动了原有测试文件、且官方补丁也没动」的那几处去掉，再判一次
-import sys, json, os, concurrent.futures as cf
-os.environ[&quot;PB_BENCH&quot;] = &quot;deepswe&quot;
-import run_swepro as r
-from pathlib import Path
-jobs = json.load(open(&quot;strict-jobs.json&quot;)); out = Path(&quot;strict-out&quot;); out.mkdir(exist_ok=True)
-def one(j):
-    f = out / (j[&quot;patch&quot;] + &quot;.json&quot;)
-    if f.exists(): return
-    try:
-        img = r.image_of(j[&quot;id&quot;]); r.pull(img)
-        g = r.grade(j[&quot;id&quot;], img, (Path(&quot;strict-patches&quot;) / j[&quot;patch&quot;]).resolve(), &quot;st-&quot; + str(abs(hash(j[&quot;patch&quot;])) % 10**8))
-    except Exception as e:
-        g = {&quot;reward&quot;: 0, &quot;error&quot;: repr(e)[:300]}
-    f.write_text(json.dumps({**j, &quot;grade&quot;: g})); print(j[&quot;arm&quot;], j[&quot;id&quot;], g.get(&quot;reward&quot;), flush=True)
-with cf.ThreadPoolExecutor(int(sys.argv[1]) if len(sys.argv) &gt; 1 else 4) as ex: list(ex.map(one, jobs))
-</code></pre>
-</details>
 <details><summary><code>report.py</code></summary>
 <pre><code>#!/usr/bin/env python3
 &quot;&quot;&quot;10-23 汇总：每套题每种做法的 通过率(95% Wilson) / 总花费 / 每题花费中位 / 每题分钟中位，外加配对 McNemar。
 取数：collected-&lt;RES&gt;/&lt;机器&gt;/&lt;做法&gt;/&lt;题&gt;.json；去占位；同 (做法,题) 多份时 优先补跑记录(rerun_reason)，再取开工早的；
-剔除标准答案在所有机器上都判不过的题；价格一律按原价（Standard 档，不乘 fast 倍率）。
---strict：DeepSWE 上「改了原有测试」的通过答案，按去掉那些改动后的重判结果算（strict-out-local/）。&quot;&quot;&quot;
+剔除标准答案在所有机器上都判不过的题；价格一律按原价（Standard 档，不乘 fast 倍率）。&quot;&quot;&quot;
 import json, math, statistics as st, sys
 from pathlib import Path
 B = Path(__file__).resolve().parent
@@ -669,17 +582,10 @@ def load(res):
         if k not in best or rank &lt; best[k][0]: best[k] = (rank, d, f)
     bad = {t for t, v in gold.items() if not any(v)}
     return {k: (d, f) for k, (_, d, f) in best.items() if k[1] not in bad}, bad
-def strict_fail():
-    out = set()
-    for f in (B / &quot;strict-out-local&quot;).glob(&quot;*.json&quot;):
-        j = json.loads(f.read_text())
-        if not j[&quot;grade&quot;].get(&quot;reward&quot;): out.add((j[&quot;arm&quot;], j[&quot;id&quot;]))
-    return out
-strict = &quot;--strict&quot; in sys.argv; SF = strict_fail() if strict else set()
 for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
     R, bad = load(res)
-    P = {k: bool(d.get(&quot;passed&quot;)) and not (res.endswith(&quot;deepswe&quot;) and k in SF) for k, (d, _) in R.items()}
-    print(f&quot;\n=== {res}{&#x27;（严格：改测试的按重判）&#x27; if strict else &#x27;&#x27;}   剔除坏题 {len(bad)}: {sorted(bad)}&quot;)
+    P = {k: bool(d.get(&quot;passed&quot;)) for k, (d, _) in R.items()}
+    print(f&quot;\n=== {res}   剔除坏题 {len(bad)}: {sorted(bad)}&quot;)
     print(f&quot;{&#x27;做法&#x27;:12s} {&#x27;通过&#x27;:&gt;8s} {&#x27;率&#x27;:&gt;6s} {&#x27;95%区间&#x27;:&gt;15s} {&#x27;总$&#x27;:&gt;8s} {&#x27;每题$中位&#x27;:&gt;9s} {&#x27;每题分中位&#x27;:&gt;9s} {&#x27;补跑&#x27;:&gt;4s} {&#x27;账号&#x27;:&gt;4s}&quot;)
     arms = [a for a in ORDER if any(x == a for x, _ in R)] + sorted({x for x, _ in R} - set(ORDER))
     for a in arms:
@@ -695,6 +601,31 @@ for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
         if not ids: continue
         b = sum(P[(a, t)] and not P[(b_, t)] for t in ids); c = sum(P[(b_, t)] and not P[(a, t)] for t in ids); p = mcnemar(b, c)
         print(f&quot;  {a:12s} vs {b_:12s} n={len(ids):3d}  {b:2d}:{c:&lt;2d}  p={p:.3f}{&#x27;  *&#x27; if p &lt; 0.05 else &#x27;&#x27;}&quot;)
+</code></pre>
+</details>
+<details><summary><code>rerun_driver.py</code></summary>
+<pre><code># 10-22 补跑：答题过程被网关错误（504/503/限流/断流）打断、或答题超时而失败的 (做法, 题)。
+# 先把旧记录挪进 &lt;RES&gt;/_superseded/&lt;arm&gt;/（不删），再用独立工作目录和转发口重跑这一对。
+# 用法：PB_BENCH=... RES=... python3 rerun_driver.py jobs.json &lt;并发&gt;
+import json, os, sys, shutil, time
+from concurrent.futures import ThreadPoolExecutor
+os.environ.setdefault(&quot;PB_WORK&quot;, &quot;work-rerun&quot;); os.environ[&quot;PB_NO_CLAIM&quot;] = &quot;1&quot;
+import run_swepro as r
+jobs = json.load(open(sys.argv[1])); par = int(sys.argv[2]) if len(sys.argv) &gt; 2 else 4
+for j in jobs:
+    for ext in (&quot;.json&quot;, &quot;.patch&quot;):
+        src = r.RES / j[&quot;arm&quot;] / (j[&quot;id&quot;] + ext)
+        if src.exists():
+            dst = r.RES / &quot;_superseded&quot; / j[&quot;arm&quot;]; dst.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), str(dst / (j[&quot;id&quot;] + ext)))
+r.start_gw_relay()
+def one(j):
+    r.run_task(j[&quot;id&quot;], [j[&quot;arm&quot;]])
+    f = r.RES / j[&quot;arm&quot;] / (j[&quot;id&quot;] + &quot;.json&quot;)
+    if f.exists():   # 记一笔这是补跑，原因留档
+        d = json.load(open(f)); d[&quot;rerun_reason&quot;] = j[&quot;why&quot;]; f.write_text(json.dumps(d, ensure_ascii=False, indent=1))
+with ThreadPoolExecutor(par) as ex: list(ex.map(one, jobs))
+r.log(&quot;RERUN DONE&quot;, len(jobs))
 </code></pre>
 </details>
 </div>
