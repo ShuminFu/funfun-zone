@@ -1,7 +1,7 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-23T17:43:11+08:00
-title: "基模公司会吃掉软件公司吗"
+pubDatetime: 2026-10-23T17:48:22+08:00
+title: "毛线厂拿到了一根会自己织毛衣的针"
 slug: will-model-labs-eat-software
 featured: false
 draft: false
