@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-23T14:55:40+08:00
+pubDatetime: 2026-10-23T14:57:16+08:00
 title: "小模型写、大模型审：SWE-bench Pro Hard 与 DeepSWE 上的结对实验"
 slug: small-writer-big-reviewer-deepswe
 featured: false
@@ -79,12 +79,12 @@ python3 report.py            # 通过率 + Wilson 置信区间 + 花费 + 用时
 <pre><code>#!/usr/bin/env python3
 &quot;&quot;&quot;SWE-bench Pro V2 上跑结对：agent 在题目自带的容器里改代码，判分在全新容器里跑官方 tests/test.sh。
 <span></span>
-只用公司网关的模型（deepseek-flash / glm-5.3-flash / gpt-6.1-sol），不碰 Opus。
+模型都经一个兼容 OpenAI Responses 接口的模型服务调用（deepseek-flash / glm-5.3-flash / gpt-6.1-sol / gpt-6-astra）。
 - 每道题一个镜像 ghcr.io/scaleapi/swe-bench_pro-v2:&lt;id&gt;；同一道题的几个做法共用一次拉取，全部判完就删镜像。
 - codex（官方 musl 静态版 0.155.1）只读挂进容器，用 docker exec 在容器里跑，所以 agent 的命令都在题目环境里执行。
-- 结对协议与 real/run_real.py 相同：开发者写完 → 独立测试员只按题目写自己的测试去跑 → REVISE 带反例打回，最多 5 轮。
+- 结对协议：开发者写完 → 独立测试员只按题目写自己的测试去跑 → REVISE 带反例打回，最多 5 轮。
 - 判分照官方 patch_replay：抓 agent 容器里的 git diff，套到全新容器，跑 tests/test.sh，读 /logs/verifier/reward.txt。
-网关地址/令牌从环境变量 PAIRBENCH_GATEWAY_URL / PAIRBENCH_GATEWAY_TOKEN 读；令牌只按变量名透传给 docker exec，从不打印。
+模型服务地址/令牌从环境变量 PAIRBENCH_GATEWAY_URL / PAIRBENCH_GATEWAY_TOKEN 读；令牌只按变量名透传给 docker exec，从不打印。
 用法：source ~/.pairbench.env &amp;&amp; python3 run_swepro.py &lt;arms&gt; [--tasks sample100.json] [--par 4]
       python3 run_swepro.py --smoke &lt;id&gt;...   # 官方答案应判对、空补丁应判错
 &quot;&quot;&quot;
@@ -103,7 +103,7 @@ GW = os.environ.get(&quot;PAIRBENCH_GATEWAY_URL&quot;, &quot;&quot;).rstrip(&quo
 # 官方锁定协议：每题 50 分钟硬上限（结对两方共用），容器里用 timeout 掐，到点照样抓 diff 去判
 # DeepSWE 官方 agent 上限 10800s（3 小时）
 BUDGET_S, MAX_CONT, MAX_REVIEW = (10800 if BENCH == &quot;deepswe&quot; else 50 * 60) - 60, 6, 5
-AGENT_GW = &quot;http://127.0.0.1:18080&quot;   # agent 容器断网，只能经这个回环端口 -&gt; 宿主转发器 -&gt; 网关
+AGENT_GW = &quot;http://127.0.0.1:18080&quot;   # agent 容器断网，只能经这个回环端口 -&gt; 宿主转发器 -&gt; 模型服务
 GW_PATH = os.environ.get(&quot;PB_GW_PATH&quot;, &quot;/v1&quot;)  # local-pool proxy path override
 SOCK = Path(os.environ.get(&quot;PB_SOCK&quot;, T / (&quot;sock-&quot; + BENCH)))   # 每套评测一个转发口：两个进程抢同一个 gw.sock 会互相顶掉
 GRADE_CAP_S = 1800 if BENCH == &quot;deepswe&quot; else 3000
@@ -117,7 +117,7 @@ ARMS = {&quot;solo_dsf&quot;: (&quot;dsf&quot;, None), &quot;solo_glm&quot;: (&q
         &quot;dsf_t_astra&quot;: (&quot;dsf&quot;, &quot;astra&quot;),
         &quot;solo_sol&quot;: (&quot;sol&quot;, None), &quot;solo_astra&quot;: (&quot;astra&quot;, None),
         &quot;sol_t_sol&quot;: (&quot;sol&quot;, &quot;sol&quot;),
-        &quot;solo_solmax&quot;: (&quot;solmax&quot;, None)}   # 10-22 加：Sol 推理开到 max 单干（榜单用 max；不设时网关默认 medium）   # 10-22 加：Sol 写 + Sol 审   # 10-22 加：大模型单干对照   # 10-21 加：最强的 GPT 当审查者
+        &quot;solo_solmax&quot;: (&quot;solmax&quot;, None)}   # 10-22 加：Sol 推理开到 max 单干（榜单用 max；不设时模型服务默认 medium）   # 10-22 加：Sol 写 + Sol 审   # 10-22 加：大模型单干对照   # 10-21 加：最强的 GPT 当审查者
 MODELS = {&quot;glm&quot;: (&quot;glm-5.3-flash&quot;, &quot;low&quot;), &quot;dsf&quot;: (&quot;deepseek-flash&quot;, &quot;&quot;), &quot;sol&quot;: (&quot;gpt-6.1-sol&quot;, &quot;&quot;), &quot;astra&quot;: (&quot;gpt-6-astra&quot;, &quot;&quot;), &quot;solmax&quot;: (&quot;gpt-6.1-sol&quot;, &quot;max&quot;)}
 <span></span>
 <span></span>
@@ -150,7 +150,7 @@ def image_of(tid):
     return m.group(1)
 <span></span>
 <span></span>
-MIRROR = os.environ.get(&quot;PB_MIRROR&quot;, &quot;ghcr.nju.edu.cn&quot;)   # dev2 直连 ghcr 的数据只有 ~130KB/s，走国内镜像站
+MIRROR = os.environ.get(&quot;PB_MIRROR&quot;, &quot;ghcr.nju.edu.cn&quot;)   # 国内直连 ghcr 只有 ~130KB/s，走国内镜像站
 <span></span>
 <span></span>
 def official_digest(img):
@@ -232,7 +232,7 @@ def repo_root(name):
 <span></span>
 <span></span>
 def start_gw_relay():
-    &quot;&quot;&quot;宿主上的转发器：SOCK/gw.sock -&gt; 网关 host:port。agent 容器断网后唯一能出去的路，目的地写死成网关。&quot;&quot;&quot;
+    &quot;&quot;&quot;宿主上的转发器：SOCK/gw.sock -&gt; 模型服务 host:port。agent 容器断网后唯一能出去的路，目的地写死成模型服务。&quot;&quot;&quot;
     import socket
     from urllib.parse import urlparse
     u = urlparse(GW); dst = (u.hostname, u.port or (443 if u.scheme == &quot;https&quot; else 80))
@@ -506,7 +506,7 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
 </details>
 <details><summary><code>bin/inrelay.py</code></summary>
-<pre><code># 跑在 agent 容器里（容器是 --network none，只有回环）：127.0.0.1:18080 -&gt; /pbsock/gw.sock（宿主上的转发器，只通网关）
+<pre><code># 跑在 agent 容器里（容器是 --network none，只有回环）：127.0.0.1:18080 -&gt; /pbsock/gw.sock（宿主上的转发器，只通模型服务）
 import socket, threading, sys
 def pump(a, b):
     try:
@@ -586,7 +586,7 @@ for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
     R, bad = load(res)
     P = {k: bool(d.get(&quot;passed&quot;)) for k, (d, _) in R.items()}
     print(f&quot;\n=== {res}   剔除坏题 {len(bad)}: {sorted(bad)}&quot;)
-    print(f&quot;{&#x27;做法&#x27;:12s} {&#x27;通过&#x27;:&gt;8s} {&#x27;率&#x27;:&gt;6s} {&#x27;95%置信区间&#x27;:&gt;15s} {&#x27;总$&#x27;:&gt;8s} {&#x27;每题$中位&#x27;:&gt;9s} {&#x27;每题分中位&#x27;:&gt;9s} {&#x27;补跑&#x27;:&gt;4s} {&#x27;账号&#x27;:&gt;4s}&quot;)
+    print(f&quot;{&#x27;做法&#x27;:12s} {&#x27;通过&#x27;:&gt;8s} {&#x27;率&#x27;:&gt;6s} {&#x27;95%置信区间&#x27;:&gt;15s} {&#x27;总$&#x27;:&gt;8s} {&#x27;每题$中位&#x27;:&gt;9s} {&#x27;每题分中位&#x27;:&gt;9s} {&#x27;补跑&#x27;:&gt;4s} {&#x27;换线路&#x27;:&gt;4s}&quot;)
     arms = [a for a in ORDER if any(x == a for x, _ in R)] + sorted({x for x, _ in R} - set(ORDER))
     for a in arms:
         rs = [(k, d) for k, (d, _) in R.items() if k[0] == a]; n = len(rs); x = sum(P[k] for k, _ in rs)
@@ -604,7 +604,7 @@ for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
 </code></pre>
 </details>
 <details><summary><code>rerun_driver.py</code></summary>
-<pre><code># 10-22 补跑：答题过程被网关错误（504/503/限流/断流）打断、或答题超时而失败的 (做法, 题)。
+<pre><code># 10-22 补跑：答题过程被模型服务错误（504/503/限流/断流）打断、或答题超时而失败的 (做法, 题)。
 # 先把旧记录挪进 &lt;RES&gt;/_superseded/&lt;arm&gt;/（不删），再用独立工作目录和转发口重跑这一对。
 # 用法：PB_BENCH=... RES=... python3 rerun_driver.py jobs.json &lt;并发&gt;
 import json, os, sys, shutil, time
