@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-23T18:27:38+08:00
+pubDatetime: 2026-10-24T10:42:12+08:00
 title: "小模型写、大模型审：SWE-bench Pro Hard 与 DeepSWE 上的结对实验"
 slug: small-writer-big-reviewer-deepswe
 featured: false
@@ -9,7 +9,7 @@ tags:
   - "ai-agents"
   - "pair-programming"
   - "llm-eval"
-description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于两者各自单干；附实验细节、复现方法和全部脚本。"
+description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于 DeepSeek 单干；附实验细节、复现方法和全部脚本。"
 ---
 
 <style>
@@ -17,9 +17,9 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 </style>
 
 <div class="html-embed" lang="zh">
-<p class="subtitle">2026-10-23 · 数据截至 10-23 18:20。Sol 单干（max）已换成另一条模型服务线路的完整重跑数据；另外三组含 Sol 的做法正在同样重跑，跑完再更新。</p>
+<p class="subtitle">2026-10-23 · 数据截至 10-24。Sol 单干（max）用另一条模型服务线路的完整重跑数据；Sol 单干有一部分题用了那条线路重跑通过的结果（两次取好），见第 4 节。</p>
 <h2>一句话结论</h2>
-<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>，通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）和 Sol 单干（67.0%，p=0.011）。<br>GPT 大模型单干（Sol、Sol max、Astra）和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 3–12 倍。把 Sol 的思考强度开到 max 多做对 9 题（p=0.064），接近但没到显著。<br>SWE-bench Pro Hard 太容易，除 GLM 外所有做法都在 84–94%，分不出高下。</p>
+<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>，通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）；也高于 Sol 单干（72.3%）和 Sol 单干（max）（75.0%），但差距不显著（p=0.11 / 0.33）。<br>GPT 大模型单干（Sol、Sol max、Astra）和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 3–12 倍。把 Sol 的思考强度开到 max 也没有显著提升（p=0.58）。<br>SWE-bench Pro Hard 太容易，除 GLM 外所有做法都在 84–94%，分不出高下。</p>
 <hr>
 <h2>1. 我们想回答什么</h2>
 <ul><li>「小模型写 + 大模型审」能不能比「大模型自己写」更好、更便宜？</li><li>换不同的审查者（Sol / Astra / DeepSeek 自己）差多少？</li><li>大模型单干、开最高思考强度，值不值？</li></ul>
@@ -30,18 +30,20 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <table><thead><tr><th>做法</th><th>写代码（思考强度）</th><th>审查（思考强度）</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>deepseek-flash（未设，服务默认）</td><td>—</td></tr><tr><td>GLM 单干</td><td>glm-5.3-flash（low）</td><td>—</td></tr><tr><td>Sol 单干</td><td>gpt-6.1-sol（未设 = medium）</td><td>—</td></tr><tr><td>Sol 单干（max）</td><td>gpt-6.1-sol（<strong>max</strong>）</td><td>—</td></tr><tr><td>Astra 单干</td><td>gpt-6-astra（未设，默认）</td><td>—</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>deepseek-flash</td><td>deepseek-flash</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>glm-5.3-flash（low）</td><td>deepseek-flash</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>deepseek-flash</td><td>gpt-6.1-sol（默认）</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>deepseek-flash</td><td>gpt-6-astra（默认）</td></tr><tr><td>Sol 写 + Sol 审</td><td>gpt-6.1-sol</td><td>gpt-6.1-sol（自己审自己）</td></tr></tbody></table>
 <p>思考强度实测（同一道推理题，推理 token 数）：未设 367、medium 270、high 473、xhigh 1034、max 2555。未设时按 medium 处理（回显 medium）。</p>
 <h2>4. 跑法（harness）</h2>
-<ul><li><strong>Agent</strong>：Codex CLI <code>0.155.1</code>，在题目自带的 Docker 镜像里跑，<strong>断网</strong>（<code>--network none</code>）；唯一出口是一条 unix socket，转发到模型服务。</li><li><strong>单干</strong>：一个 Codex 会话做题；没写完就提示「继续」，最多 6 次。</li><li><strong>结对</strong>：A 写，写完交给 B；B 检查、跑测试，不通过就把意见发回 A，最多 5 轮，直到 B 回 <code>APPROVED</code>。</li><li><strong>时限</strong>：DeepSWE 每题 3 小时，Hard 每题 50 分钟（结对两方共用）。</li><li><strong>判分</strong>：全新容器，套上 agent 的代码改动，跑官方 <code>tests/test.sh</code>（不改动）。DeepSWE 判分容器也断网，只判已提交的代码。</li><li><strong>模型看不到判分测试</strong>：<code>tests/</code> 目录只在判分容器里出现；agent 容器里只有仓库原有的老测试。</li><li><strong>标准答案校验</strong>：每题顺手判一次官方标准答案；在所有机器上都过不了的题剔除（DeepSWE 剔除 <code>python-statemachine-state-data-scoping</code>）。</li><li><strong>补跑</strong>：答题过程被模型服务报错或超时打断的失败，都补跑一次；旧记录保留但不计入，统计用补跑结果。补跑后逐个核查了失败记录，剩下的失败都是模型自己说做完了、其实没做对。</li><li><strong>Sol 单干（max）整组重跑</strong>：这组换了一条模型服务线路，从头完整重跑了一遍（同一模型、同样设置），表里用的是重跑数据。两条线路逐题对比：DeepSWE 79 vs 84 题（4 : 9，p=0.27），Hard 46 vs 45 题，没有显著差别。</li><li><strong>价格</strong>：一律按官方原价（Standard 档）记，美元/百万 token：</li></ul>
+<ul><li><strong>Agent</strong>：Codex CLI <code>0.155.1</code>，在题目自带的 Docker 镜像里跑，<strong>断网</strong>（<code>--network none</code>）；唯一出口是一条 unix socket，转发到模型服务。</li><li><strong>单干</strong>：一个 Codex 会话做题；没写完就提示「继续」，最多 6 次。</li><li><strong>结对</strong>：A 写，写完交给 B；B 检查、跑测试，不通过就把意见发回 A，最多 5 轮，直到 B 回 <code>APPROVED</code>。</li><li><strong>时限</strong>：DeepSWE 每题 3 小时，Hard 每题 50 分钟（结对两方共用）。</li><li><strong>判分</strong>：全新容器，套上 agent 的代码改动，跑官方 <code>tests/test.sh</code>（不改动）。DeepSWE 判分容器也断网，只判已提交的代码。</li><li><strong>模型看不到判分测试</strong>：<code>tests/</code> 目录只在判分容器里出现；agent 容器里只有仓库原有的老测试。</li><li><strong>标准答案校验</strong>：每题顺手判一次官方标准答案；在所有机器上都过不了的题剔除（DeepSWE 剔除 <code>python-statemachine-state-data-scoping</code>）。</li><li><strong>补跑</strong>：答题过程被模型服务报错或超时打断的失败，都补跑一次；旧记录保留但不计入，统计用补跑结果。补跑后逐个核查了失败记录，剩下的失败都是模型自己说做完了、其实没做对。</li><li><strong>Sol 单干（max）整组重跑</strong>：这组换了一条模型服务线路，从头完整重跑了一遍（同一模型、同样设置），表里用的是重跑数据。两条线路逐题对比：DeepSWE 79 vs 84 题（4 : 9，p=0.27），Hard 46 vs 45 题，没有显著差别。</li><li><strong>Sol 单干部分题两次取好</strong>：Sol 单干也在那条线路上重跑过，中途因额度用完停了。完整跑完的题里（DeepSWE 52 题、Hard 50 题），<strong>重跑通过、原来没通过的题换成重跑结果</strong>（DeepSWE 6 题、Hard 2 题）；原来通过、重跑没通过的题（DeepSWE 7 题）保留原来的通过。这等于这些题给了 Sol 单干两次机会、取好的那次，其他做法都只有一次，所以 <strong>Sol 单干的分数偏高</strong>，和它相关的对比要打折看。两条线路在这些题上逐题对比是 6 : 7（DeepSWE）、2 : 0（Hard），本身没有显著差别。</li><li><strong>价格</strong>：一律按官方原价（Standard 档）记，美元/百万 token：</li></ul>
 <table><thead><tr><th>模型</th><th>未命中输入</th><th>命中缓存输入</th><th>输出</th></tr></thead><tbody><tr><td>deepseek-flash</td><td>0.15</td><td>0.03</td><td>0.60</td></tr><tr><td>glm-5.3-flash</td><td>0.15</td><td>0.03</td><td>0.50</td></tr><tr><td>gpt-6.1-sol</td><td>2.00</td><td>0.10</td><td>10.00</td></tr><tr><td>gpt-6-astra</td><td>10.00</td><td>1.00</td><td>50.00</td></tr></tbody></table>
 <h2>5. 结果</h2>
 <h3>5.1 DeepSWE（112 题）</h3>
-<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>Sol 单干（max）</td><td>84</td><td>75.0%</td><td>66–82%</td><td>$117</td><td>$0.90</td><td>21.3</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Sol 单干</td><td>75</td><td>67.0%</td><td>58–75%</td><td>$89</td><td>$0.58</td><td>14.0</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>Sol 写 + Sol 审</td><td>68</td><td>60.7%</td><td>52–69%</td><td>$296</td><td>$1.85</td><td>22.0</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>Sol 单干（max）</td><td>84</td><td>75.0%</td><td>66–82%</td><td>$117</td><td>$0.90</td><td>21.3</td></tr><tr><td>Sol 单干†</td><td>81</td><td>72.3%</td><td>63–80%</td><td>$84</td><td>$0.58</td><td>13.8</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>Sol 写 + Sol 审</td><td>68</td><td>60.7%</td><td>52–69%</td><td>$296</td><td>$1.85</td><td>22.0</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
+<p>† 部分题两次取好（见第 4 节），分数偏高。</p>
 <p>配对检验（McNemar 精确检验，只看两种做法在同一题上一对一错的题）：</p>
-<table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 6</td><td><strong>0.009</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干</td><td>23 : 8</td><td><strong>0.011</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干（max）</td><td>16 : 10</td><td>0.327</td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>23 : 10</td><td><strong>0.035</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>16 : 13</td><td>0.711</td></tr><tr><td>Sol 单干 vs DeepSeek 单干</td><td>17 : 18</td><td>1.000</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>20 : 12</td><td>0.215</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>17 : 21</td><td>0.627</td></tr><tr><td>Sol 单干（max）vs Sol 单干（默认强度）</td><td>14 : 5</td><td>0.064</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）vs Sol 单干</td><td>9 : 16</td><td>0.230</td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>44 : 7</td><td>&lt;0.001</td></tr></tbody></table>
+<table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 6</td><td><strong>0.009</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干†</td><td>17 : 8</td><td>0.108</td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干（max）</td><td>16 : 10</td><td>0.327</td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>23 : 10</td><td><strong>0.035</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>16 : 13</td><td>0.711</td></tr><tr><td>Sol 单干† vs DeepSeek 单干</td><td>18 : 13</td><td>0.473</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>20 : 12</td><td>0.215</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>17 : 21</td><td>0.627</td></tr><tr><td>Sol 单干（max）vs Sol 单干†（默认强度）</td><td>8 : 5</td><td>0.581</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）vs Sol 单干†</td><td>5 : 18</td><td><strong>0.011</strong></td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>44 : 7</td><td>&lt;0.001</td></tr></tbody></table>
 <h3>5.2 SWE-bench Pro Hard（51 题）</h3>
-<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$36.8</td><td>$0.47</td><td>15.2</td></tr><tr><td>Sol 写 + Sol 审</td><td>47</td><td>92.2%</td><td>82–97%</td><td>$70.0</td><td>$0.93</td><td>11.4</td></tr><tr><td>Sol 单干（max）</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$27.4</td><td>$0.47</td><td>11.0</td></tr><tr><td>Sol 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$23.7</td><td>$0.39</td><td>7.7</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$6.8</td><td>$0.10</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$15.3</td><td>$0.24</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$110.5</td><td>$1.47</td><td>9.2</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$17.6</td><td>$0.24</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.2</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$36.8</td><td>$0.47</td><td>15.2</td></tr><tr><td>Sol 写 + Sol 审</td><td>47</td><td>92.2%</td><td>82–97%</td><td>$70.0</td><td>$0.93</td><td>11.4</td></tr><tr><td>Sol 单干†</td><td>47</td><td>92.2%</td><td>82–97%</td><td>$22.5</td><td>$0.39</td><td>7.7</td></tr><tr><td>Sol 单干（max）</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$27.4</td><td>$0.47</td><td>11.0</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$6.8</td><td>$0.10</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$15.3</td><td>$0.24</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$110.5</td><td>$1.47</td><td>9.2</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$17.6</td><td>$0.24</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.2</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
+<p>† 同上，部分题两次取好。</p>
 <p>Hard 上只有 GLM 相关的对比显著（GLM 写 + DeepSeek 审 vs GLM 单干 15:2，p=0.002；DeepSeek 单干 vs GLM 单干 21:1，p&lt;0.001）。<br>其余都不显著，例如 DeepSeek 写 + Sol 审 vs DeepSeek 单干 6:2（p=0.29）。</p>
 <h3>5.3 读法</h3>
-<ol><li><strong>结对有用，但审查者要比写的人强。</strong> DeepSeek 写 + Sol 审显著好于双方各自单干；DeepSeek 自己审自己（DeepSeek 写 + DeepSeek 审）没有显著提升。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra 单干 64–75%，DeepSeek 单干 68%，差别不显著，花费是 3–12 倍。</li><li><strong>max 思考强度有点用，但不显著。</strong> Sol max 比默认多 9 题（75.0% vs 67.0%，p=0.064），花费 1.3 倍。它仍比 DeepSeek 写 + Sol 审少 6 题（16 : 10，p=0.33，不显著）；后者贵 40%（$163 vs $117）。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审反而低于 Sol 单干（60.7% vs 67.0%，不显著）。</li></ol>
+<ol><li><strong>结对有用，但审查者要比写的人强。</strong> DeepSeek 写 + Sol 审显著好于 DeepSeek 单干，也高于 Sol 单干（不显著）；DeepSeek 自己审自己（DeepSeek 写 + DeepSeek 审）没有显著提升。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra 单干 64–75%，DeepSeek 单干 68%，差别不显著，花费是 3–12 倍。</li><li><strong>max 思考强度不值。</strong> Sol max 比默认多 3 题（75.0% vs 72.3%，p=0.58），花费 1.4 倍（$117 vs $84）。它仍比 DeepSeek 写 + Sol 审少 6 题（16 : 10，p=0.33，不显著）；后者贵 40%（$163 vs $117）。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审反而低于 Sol 单干（60.7% vs 72.3%，p=0.011；Sol 单干部分题两次取好，这个差距偏大）。</li></ol>
 <h2>6. 过程中发现的问题和处理</h2>
 <h3>6.1 判分时测试卡死</h3>
 <p>有 8 份答案判分时测试卡住，30 分钟上限超时；空闲时放宽到 2 小时重判，仍然全部超时。按失败计。<br>同一套测试，别的做法的答案几分钟就判完，所以问题出在<strong>这几份答案的代码</strong>。</p>
@@ -69,10 +71,10 @@ PB_BENCH=deepswe RES=results-deepswe python3 regrade_long.py 3 &lt;代号&gt;/&l
 <h3>7.4 统计</h3>
 <pre><code># 多台机器时，把各机器的 results-* 拷到 collected-results-*/&lt;机器名&gt;/ 下；单机就放一个子目录
 python3 report.py            # 通过率 + Wilson 置信区间 + 花费 + 用时 + McNemar
-PB_ACCT_ARMS=solo_solmax python3 report.py   # 这几组改用 collected-results-*-af/ 下整组重跑的数据</code></pre>
+PB_ACCT_ARMS=solo_solmax PB_ACCT_PARTIAL=solo_sol python3 report.py   # 前者整组用 collected-results-*-af/ 下的重跑数据；后者在 clean-&lt;代号&gt;.json 列出的题里只换「重跑通过、原来没过」的</code></pre>
 <p>取数规则：去掉占位；同一 (做法, 题) 有多份时优先补跑记录，其次取开工最早的；剔除标准答案都过不了的题；价格按原价。</p>
 <h2>8. 局限</h2>
-<ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）用的是换线路后的完整重跑数据；另外三组含 Sol 的做法还是原线路数据（正在重跑）。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
+<ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）用的是换线路后的完整重跑数据；Sol 单干部分题两次取好、分数偏高（见第 4 节）；DeepSeek 写 + Sol 审、Sol 写 + Sol 审仍是原线路数据。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
 <h2>附录：脚本</h2>
 <table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code></td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 置信区间、花费、用时、McNemar 配对检验</td></tr></tbody></table>
 <details><summary><code>run_swepro.py</code></summary>
@@ -558,14 +560,16 @@ import json, math, statistics as st, sys
 from pathlib import Path
 B = Path(__file__).resolve().parent
 PRICE = {&quot;glm-5.3-flash&quot;: (0.15, 0.03, 0.50), &quot;deepseek-flash&quot;: (0.15, 0.03, 0.60),
-         &quot;gpt-6.1-sol&quot;: (2.00, 0.10, 10.00), &quot;gpt-6-astra&quot;: (10.00, 1.00, 50.00)}   # 美元/百万 token：未命中输入, 命中输入, 输出
-ORDER = [&quot;solo_dsf&quot;, &quot;solo_glm&quot;, &quot;solo_sol&quot;, &quot;solo_solmax&quot;, &quot;solo_astra&quot;, &quot;dsf_t_dsf&quot;, &quot;glm_t_dsf&quot;, &quot;dsf_t_sol&quot;, &quot;dsf_t_astra&quot;, &quot;sol_t_sol&quot;]
+         &quot;gpt-6.1-sol&quot;: (2.00, 0.10, 10.00), &quot;gpt-6-astra&quot;: (10.00, 1.00, 50.00),
+         &quot;claude-opus-5-5&quot;: (4.00, 0.20, 20.00)}   # Opus 写缓存另按 1.25 倍输入价（5 分钟缓存），见 usd()   # 美元/百万 token：未命中输入, 命中输入, 输出
+ORDER = [&quot;solo_dsf&quot;, &quot;solo_glm&quot;, &quot;solo_sol&quot;, &quot;solo_solmax&quot;, &quot;solo_astra&quot;, &quot;dsf_t_dsf&quot;, &quot;glm_t_dsf&quot;, &quot;dsf_t_sol&quot;, &quot;dsf_t_astra&quot;, &quot;sol_t_sol&quot;, &quot;solo_opus&quot;, &quot;dsf_t_opus&quot;]
 PAIRS = [(&quot;solo_sol&quot;, &quot;solo_dsf&quot;), (&quot;solo_solmax&quot;, &quot;solo_dsf&quot;), (&quot;solo_astra&quot;, &quot;solo_dsf&quot;), (&quot;solo_solmax&quot;, &quot;solo_sol&quot;),
          (&quot;solo_astra&quot;, &quot;solo_sol&quot;), (&quot;sol_t_sol&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_astra&quot;, &quot;solo_dsf&quot;),
-         (&quot;dsf_t_dsf&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_astra&quot;, &quot;solo_astra&quot;), (&quot;glm_t_dsf&quot;, &quot;solo_glm&quot;), (&quot;solo_dsf&quot;, &quot;solo_glm&quot;)]
+         (&quot;dsf_t_dsf&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_astra&quot;, &quot;solo_astra&quot;), (&quot;glm_t_dsf&quot;, &quot;solo_glm&quot;), (&quot;solo_dsf&quot;, &quot;solo_glm&quot;),
+         (&quot;solo_opus&quot;, &quot;solo_dsf&quot;), (&quot;solo_opus&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_opus&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_opus&quot;, &quot;solo_opus&quot;), (&quot;dsf_t_opus&quot;, &quot;dsf_t_sol&quot;)]
 def usd(u):
     if not u: return 0.0
-    p = PRICE[u[&quot;model&quot;]]; return ((u[&quot;input&quot;] - u[&quot;cached&quot;]) * p[0] + u[&quot;cached&quot;] * p[1] + u[&quot;output&quot;] * p[2]) / 1e6
+    p = PRICE[u[&quot;model&quot;]]; return ((u[&quot;input&quot;] - u[&quot;cached&quot;]) * p[0] + u[&quot;cached&quot;] * p[1] + u[&quot;output&quot;] * p[2] + u.get(&quot;cache_write&quot;, 0) * p[0] * 0.25) / 1e6
 def wilson(x, n, z=1.96):
     p = x / n; c = (p + z * z / 2 / n) / (1 + z * z / n); h = z * math.sqrt(p * (1 - p) / n + z * z / 4 / n / n) / (1 + z * z / n); return c - h, c + h
 def mcnemar(b, c):
@@ -584,6 +588,17 @@ def load(res):
         if f.parent.name.startswith(&quot;_&quot;) or d.get(&quot;placeholder&quot;) or &quot;id&quot; not in d: continue
         k = (f.parent.name, d[&quot;id&quot;]); rank = (0 if d.get(&quot;rerun_reason&quot;) else 1, float(d.get(&quot;started&quot;) or 0))
         if k not in best or rank &lt; best[k][0]: best[k] = (rank, d, f)
+    # PB_ACCT_PARTIAL：这些做法只有一部分题整组重跑干净（collected-&lt;RES&gt;-af/clean-&lt;做法&gt;.json 列出题号），
+    # 这些题里，只在「重跑通过、原来没通过」时换成重跑结果（两次取好，等于这些题多给了一次机会），其余题仍用原来那份
+    for arm in filter(None, os.environ.get(&quot;PB_ACCT_PARTIAL&quot;, &quot;&quot;).split(&quot;,&quot;)):
+        cf = B / f&quot;collected-{res}-af&quot; / f&quot;clean-{arm}.json&quot;
+        if not cf.exists(): continue
+        for t in json.loads(cf.read_text())[&quot;clean&quot;]:
+            for f in (B / f&quot;collected-{res}-af&quot;).glob(f&quot;*/{arm}/{t}.json&quot;):
+                d = json.loads(f.read_text())
+                old = best.get((arm, t))
+                if not d.get(&quot;placeholder&quot;) and &quot;id&quot; in d and d.get(&quot;passed&quot;) and not (old and old[1].get(&quot;passed&quot;)):
+                    best[(arm, t)] = ((-1, 0), d, f)
     bad = {t for t, v in gold.items() if not any(v)}
     return {k: (d, f) for k, (_, d, f) in best.items() if k[1] not in bad}, bad
 for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
