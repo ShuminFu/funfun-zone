@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-26T09:54:49+08:00
+pubDatetime: 2026-10-26T09:56:24+08:00
 title: "给 agent 卖东西，现在有哪几种做法"
 slug: a2a-outcome-delivery
 featured: false
@@ -12,11 +12,11 @@ description: "agent 开始自己花钱买服务了。"
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-table{border-collapse:collapse;width:100%;font-family:inherit !important;font-size:.88em;margin:1.2em 0;border-top:2px solid var(--foreground,#222);border-bottom:2px solid var(--foreground,#222);background:none}
+table{border-collapse:collapse;width:100%;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",system-ui,-apple-system,"Segoe UI",sans-serif !important;font-size:.85em;margin:1.2em 0;border-top:2px solid var(--foreground,#222) !important;border-bottom:2px solid var(--foreground,#222) !important;background:none}
 table *{font-family:inherit !important;font-variant-emoji:text}
-th,td{border:none !important;background:none !important;padding:6px 10px;white-space:nowrap;text-align:left;line-height:1.5}
-thead th{font-weight:600;border-bottom:1px solid var(--foreground,#222) !important}
-tr{background:none !important}
+table tr,table thead tr,table tbody tr,table th,table td{border:none !important;background:none !important;box-shadow:none !important}
+table th,table td{padding:6px 10px;white-space:nowrap;text-align:left;line-height:1.5}
+table thead th{font-weight:600;border-bottom:1px solid var(--foreground,#222) !important}
 img{max-width:100%;height:auto}
 </style>
 
