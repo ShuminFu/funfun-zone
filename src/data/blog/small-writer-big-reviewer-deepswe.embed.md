@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-26T09:28:14+08:00
+pubDatetime: 2026-10-26T09:29:31+08:00
 modDatetime: 2026-10-26
 title: "小模型写、大模型审：SWE-bench Pro Hard 与 DeepSWE 上的结对实验"
 slug: small-writer-big-reviewer-deepswe
@@ -10,7 +10,7 @@ tags:
   - "ai-agents"
   - "pair-programming"
   - "llm-eval"
-description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于两者各自单干；附实验细节、复现方法和全部脚本。"
+description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于 DeepSeek 单干，也高于 Sol 和 Opus 单干（不显著）；附顾问模式、实验细节、复现方法和全部脚本。"
 ---
 
 <style>
