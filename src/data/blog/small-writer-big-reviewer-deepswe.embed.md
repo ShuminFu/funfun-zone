@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-26T13:01:55+08:00
+pubDatetime: 2026-10-26T14:12:10+08:00
 modDatetime: 2026-10-26
 title: "小模型写、大模型审：SWE-bench Pro Hard 与 DeepSWE 上的结对实验"
 slug: small-writer-big-reviewer-deepswe
@@ -20,7 +20,7 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <div class="html-embed" lang="zh">
 <p class="subtitle">2026-10-23 · 数据截至 10-26。新增 Claude Opus 5.5 两组（用 Claude Code 跑）和一种新玩法「顾问模式」；跑满时限而失败的题放宽时限重跑过一次（见第 4 节）。Sol 单干（max）用另一条模型服务线路的完整重跑数据；<br>Sol 单干、Sol 写 + Sol 审两组，有一部分题用了那条线路重跑通过的结果（两次取好，标 †），见第 4 节；DeepSeek 写 + Sol 审只用原线路那一次。</p>
 <h2>一句话结论</h2>
-<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>最好：通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）；也高于 Sol 单干†（77.7%，两次取好）、Sol 单干（max）（75.0%）和 Opus 单干（74.1%），但不显著。<br>GPT 大模型单干（Sol、Sol max、Astra）和 <strong>Claude Opus 5.5 单干</strong>都和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 2.5–13 倍。<br>Opus 当审查者（DeepSeek 写 + Opus 审，72.3%）也没有显著好于 DeepSeek 单干。<br>让大模型只出方案、只看报告、DeepSeek 多干活的<strong>顾问模式</strong>（同样是 DeepSeek 写 + Sol 审，64.3%）明显不如普通的 DeepSeek 写 + Sol 审（7 : 25，p=0.002），连 DeepSeek 单干都没赢过。<br>SWE-bench Pro Hard 太容易，大多数做法都在 84–96%，分不出高下。</p>
+<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>最好：通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）；也高于 Sol 单干†（77.7%，两次取好）、Sol 单干（max）（75.0%）和 Opus 单干（74.1%），但不显著。<br>GPT 大模型单干（Sol、Sol max、Astra）和 <strong>Claude Opus 5.5 单干</strong>都和 DeepSeek 单干<strong>没有显著差别</strong>，却贵不少（DeepSWE 上 2.5–12 倍，Hard 上 3–17 倍）。<br>Opus 当审查者（DeepSeek 写 + Opus 审，72.3%）也没有显著好于 DeepSeek 单干。<br>让大模型只出方案、只看报告、DeepSeek 多干活的<strong>顾问模式</strong>（同样是 DeepSeek 写 + Sol 审，64.3%）明显不如普通的 DeepSeek 写 + Sol 审（7 : 25，p=0.002），连 DeepSeek 单干都没赢过。<br>SWE-bench Pro Hard 太容易，大多数做法都在 84–96%，分不出高下。</p>
 <hr>
 <h2>1. 我们想回答什么</h2>
 <ul><li>「小模型写 + 大模型审」能不能比「大模型自己写」更好、更便宜？</li><li>换不同的审查者（Sol / Astra / DeepSeek 自己）差多少？</li><li>大模型单干、开最高思考强度，值不值？</li></ul>
@@ -35,27 +35,27 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <ul><li><strong>Agent</strong>：Codex CLI <code>0.155.1</code>，在题目自带的 Docker 镜像里跑，<strong>断网</strong>（<code>--network none</code>）；唯一出口是一条 unix socket，转发到模型服务。</li><li><strong>Opus 用 Claude Code</strong>：两组 Opus 换成 Opus 自家的 agent，Claude Code <code>2.1.309</code>（同样断网、同一条 socket 出口、同样的提示词和时限）。思考强度显式设 <code>--effort medium</code>；关掉联网工具（WebSearch / WebFetch）；后台小任务和子代理也都用 Opus（服务上没有 Haiku）。在 DeepSeek 写 + Opus 审里，DeepSeek 仍用 Codex，只有审查者用 Claude Code。</li><li><strong>单干</strong>：一个 Codex 会话做题；没写完就提示「继续」，最多 6 次。</li><li><strong>结对</strong>：A 写，写完交给 B；B 检查、跑测试，不通过就把意见发回 A，最多 5 轮，直到 B 回 <code>APPROVED</code>。</li><li><strong>时限</strong>：DeepSWE 每题 3 小时，Hard 每题 50 分钟（结对两方共用）。跑满时限而失败的题放宽时限重跑过一次（见下面）。</li><li><strong>判分</strong>：全新容器，套上 agent 的代码改动，跑官方 <code>tests/test.sh</code>（不改动）。DeepSWE 判分容器也断网，只判已提交的代码。</li><li><strong>模型看不到判分测试</strong>：<code>tests/</code> 目录只在判分容器里出现；agent 容器里只有仓库原有的老测试。</li><li><strong>标准答案校验</strong>：每题顺手判一次官方标准答案；在所有机器上都过不了的题剔除（DeepSWE 剔除 <code>python-statemachine-state-data-scoping</code>）。</li><li><strong>补跑</strong>：答题过程被模型服务报错或超时打断的失败，都补跑一次；旧记录保留但不计入，统计用补跑结果。补跑后逐个核查了失败记录，剩下的失败都是模型自己说做完了、其实没做对。</li><li><strong>Sol 单干（max）整组重跑</strong>：这组换了一条模型服务线路，从头完整重跑了一遍（同一模型、同样设置），表里用的是重跑数据。两条线路逐题对比：DeepSWE 79 vs 84 题（4 : 9，p=0.27），Hard 46 vs 45 题，没有显著差别。</li><li><strong>两组 Sol 两次取好（†）</strong>：Sol 单干、Sol 写 + Sol 审这两组，也在另一条线路上整组重跑过（中途额度用完的题后来换账号补齐）。<strong>只在「重跑通过、原来没通过」时换成重跑结果</strong>，反过来的保留原来的通过。换掉的题数：</li></ul>
 <table><thead><tr><th>做法</th><th>DeepSWE 换了</th><th>Hard 换了</th><th>DeepSWE 只用原线路时</th></tr></thead><tbody><tr><td>Sol 单干†</td><td>12</td><td>3</td><td>75（67.0%）</td></tr><tr><td>Sol 写 + Sol 审†</td><td>17</td><td>2</td><td>68（60.7%）</td></tr></tbody></table>
 <p>  这等于这些题给了 Sol 两次机会、取好的那次，其他做法都只有一次，所以 <strong>† 组的分数偏高</strong>，和不带 † 的做法比要打折看。DeepSeek 写 + Sol 审也重跑过，但<strong>不换</strong>，表里只用原线路那一次。</p>
-<ul><li><strong>Opus 两次中断后从头重跑</strong>：10-24 晚模型服务把 Opus 5.5 下线约 15 小时（报 <code>model_not_found</code>），刚恢复时又满载（报 <code>Too many pending requests</code>）。这期间失败或没跑到的 145 题，等服务稳定后<strong>从头重跑一次</strong>，旧记录保留但不计入。</li><li><strong>跑满时限的失败放宽时限重跑</strong>：第一轮时模型服务不稳，Opus 每一步要等很久（DeepSWE 第一批每步中位 42 秒，后来补跑时 23.5 秒），很多题时间被等光了。<br>所以「跑满时限而失败」不算模型做错，10-25 把这些题<strong>放宽时限</strong>（Hard 50 分钟 → 100 分钟，DeepSWE 3 小时 → 6 小时）各重跑一次，旧记录保留但不计入。<br>所有做法里只有三组有这种失败：Opus 单干（Hard 18、DeepSWE 12）、DeepSeek 写 + Opus 审（Hard 4、DeepSWE 1）、GLM 写 + DeepSeek 审（DeepSWE 1），一共 36 题。另有 1 题（Hard 上的 GLM 写 + DeepSeek 审）结果在另一台机器上，后来补上，放宽后仍跑满 100 分钟失败，按失败计。<br>重跑结果：Hard 22 题过了 19 题，DeepSWE 14 题过了 8 题；重跑时最长一题只用了 84 分钟，<strong>没有一题再跑满原来的时限</strong>，说明之前是被服务拖慢，不是题做不完。</li><li><strong>Opus 用量</strong>：Claude Code 每轮结束才报用量，被时限截断的那轮报不出来；这些按会话记录逐条累加补上。会话记录看不到后台小调用，所以每题取两种算法中较大的那个。重跑过的题只算计入的那一次。</li><li><strong>顾问模式的三处处理</strong>：<br>- Sol 走另一条线路（同一模型），中途常被限流（429）。有 14 题 Sol 没有回复（方案或审查那一步拿不到），等于 DeepSeek 单干，这些<strong>作废重跑</strong>，旧记录保留但不计入。最终计入的每题 Sol 都给了方案和审查。<br>- Hard 的收卷脚本原来只取「还没提交的改动」，而顾问模式会让 DeepSeek 提交，最早 6 题收到空补丁。改成和开工时的版本比（已提交和未提交都算）后，<strong>Hard 整组重跑</strong>。<br>- 开工前残留的工作目录让一批题一开始就崩了，清掉后重跑。</li><li><strong>价格</strong>：一律按官方原价（Standard 档）记，美元/百万 token：</li></ul>
+<ul><li><strong>Opus 两次中断后从头重跑</strong>：10-24 晚模型服务把 Opus 5.5 下线约 15 小时（报 <code>model_not_found</code>），刚恢复时又满载（报 <code>Too many pending requests</code>）。这期间失败或没跑到的 145 题，等服务稳定后<strong>从头重跑一次</strong>，旧记录保留但不计入。</li><li><strong>跑满时限的失败放宽时限重跑</strong>：第一轮时模型服务不稳，Opus 每一步要等很久（DeepSWE 第一批每步中位 42 秒，后来补跑时 23.5 秒），很多题时间被等光了。<br>所以「跑满时限而失败」不算模型做错，10-25 把这些题<strong>放宽时限</strong>（Hard 50 分钟 → 100 分钟，DeepSWE 3 小时 → 6 小时）各重跑一次，旧记录保留但不计入。<br>所有做法里只有三组有这种失败：Opus 单干（Hard 18、DeepSWE 12）、DeepSeek 写 + Opus 审（Hard 4、DeepSWE 1）、GLM 写 + DeepSeek 审（DeepSWE 1），一共 36 题。另有 1 题（Hard 上的 GLM 写 + DeepSeek 审）结果在另一台机器上，后来补上，放宽后仍跑满 100 分钟失败，按失败计。<br>重跑结果：Hard 22 题过了 19 题，DeepSWE 14 题过了 8 题；重跑时最长一题只用了 84 分钟，<strong>没有一题再跑满原来的时限</strong>，说明之前是被服务拖慢，不是题做不完。</li><li><strong>Opus 用量</strong>：Claude Code 每轮结束才报用量，而且 <code>--resume</code> 之后报的也是「整段会话到此为止的累计数」。旧脚本把每轮加起来，多轮的题多算了；被时限截断的那轮又报不出来。<br>- 跑了 2 轮以上的 154 份 Opus 记录，一律改用会话记录逐条累加的值（154 份都有会话记录）。<br>- 只跑 1 轮的，取「会话记录」和「结果文件」两者较大的那个（会话记录看不到后台小调用）。<br>- 重跑过的题只算计入的那一次。</li><li><strong>顾问模式的三处处理</strong>：<br>- Sol 走另一条线路（同一模型），中途常被限流（429）。有 14 题 Sol 没有回复（方案或审查那一步拿不到），等于 DeepSeek 单干，这些<strong>作废重跑</strong>，旧记录保留但不计入。最终计入的每题 Sol 都给了方案和审查。<br>- Hard 的收卷脚本原来只取「还没提交的改动」，而顾问模式会让 DeepSeek 提交，最早 6 题收到空补丁。改成和开工时的版本比（已提交和未提交都算）后，<strong>Hard 整组重跑</strong>。<br>- 开工前残留的工作目录让一批题一开始就崩了，清掉后重跑。</li><li><strong>Codex 用量重算</strong>：Codex 每轮报的用量同样是「整段会话到此为止的累计数」，旧脚本把每轮加起来，跑了多轮的题被多算（例：某题 DeepSeek 写记了 13.5M 输入，真实 5.8M）。只跑一轮的不受影响。<br>- 1,603 份多轮记录，直接取会话记录里最后的累计数。<br>- 478 份找不到会话记录（工作目录已不在），按同做法、同角色、同轮数的「真实 / 原记录」比值中位数估算；拿有会话记录的题交叉验证，估算总数误差约 ±5%。<br>- 13 份写代码方的记录被时限截断、用量记成 0，会话记录也已不在，按同做法里跑了 40 分钟以上的题的用量中位数估算（GLM 单干那 1 份没有可参照的题，仍是 0）。</li><li><strong>之前发布的版本多算了</strong>：文中花费和 5.4 的 token 数都已重算。多数结对组的旧花费是真实值的 2–2.5 倍；Opus 单干多算约 6%，DeepSeek 写 + Opus 审多算约 60%。两个脚本都已改成只取最后一次。</li><li><strong>价格</strong>：一律按官方原价（Standard 档）记，美元/百万 token：</li></ul>
 <table><thead><tr><th>模型</th><th>未命中输入</th><th>命中缓存输入</th><th>输出</th></tr></thead><tbody><tr><td>deepseek-flash</td><td>0.15</td><td>0.03</td><td>0.60</td></tr><tr><td>glm-5.3-flash</td><td>0.15</td><td>0.03</td><td>0.50</td></tr><tr><td>gpt-6.1-sol</td><td>2.00</td><td>0.10</td><td>10.00</td></tr><tr><td>gpt-6-astra</td><td>10.00</td><td>1.00</td><td>50.00</td></tr><tr><td>claude-opus-5-5</td><td>4.00</td><td>0.20</td><td>20.00</td></tr></tbody></table>
 <p>Opus 另有写缓存，按输入价的 1.25 倍记。</p>
 <h2>5. 结果</h2>
 <h3>5.1 DeepSWE（112 题）</h3>
-<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>Sol 单干†</td><td>87</td><td>77.7%</td><td>69–84%</td><td>$83</td><td>$0.58</td><td>13.5</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>Sol 写 + Sol 审†</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$280</td><td>$1.82</td><td>21.6</td></tr><tr><td>Sol 单干（max）</td><td>84</td><td>75.0%</td><td>66–82%</td><td>$117</td><td>$0.90</td><td>21.3</td></tr><tr><td>Opus 单干</td><td>83</td><td>74.1%</td><td>65–81%</td><td>$422</td><td>$1.64</td><td>23.6</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>81</td><td>72.3%</td><td>63–80%</td><td>$703</td><td>$3.60</td><td>33.2</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$193</td><td>$1.40</td><td>15.7</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$70</td><td>$0.54</td><td>24.6</td></tr><tr><td>Sol 单干†</td><td>87</td><td>77.7%</td><td>69–84%</td><td>$83</td><td>$0.58</td><td>13.5</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$220</td><td>$1.39</td><td>15.3</td></tr><tr><td>Sol 写 + Sol 审†</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$122</td><td>$0.84</td><td>21.6</td></tr><tr><td>Sol 单干（max）</td><td>84</td><td>75.0%</td><td>66–82%</td><td>$117</td><td>$0.90</td><td>21.3</td></tr><tr><td>Opus 单干</td><td>83</td><td>74.1%</td><td>65–81%</td><td>$398</td><td>$1.62</td><td>23.6</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>81</td><td>72.3%</td><td>63–80%</td><td>$433</td><td>$2.16</td><td>33.2</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$52</td><td>$0.38</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$75</td><td>$0.56</td><td>15.7</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$46</td><td>$0.29</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$23</td><td>$0.13</td><td>22.1</td></tr></tbody></table>
 <p>† 部分题两次取好（见第 4 节），分数偏高。</p>
 <p>配对检验（McNemar 精确检验，只看两种做法在同一题上一对一错的题）：</p>
 <table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 6</td><td><strong>0.009</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干†</td><td>13 : 10</td><td>0.678</td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干（max）</td><td>16 : 10</td><td>0.327</td></tr><tr><td>DeepSeek 写 + Sol 审 vs Opus 单干</td><td>19 : 12</td><td>0.281</td></tr><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 写 + Opus 审</td><td>16 : 7</td><td>0.093</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）vs DeepSeek 写 + Sol 审</td><td>7 : 25</td><td><strong>0.002</strong></td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）vs DeepSeek 单干</td><td>13 : 17</td><td>0.585</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）vs Sol 单干†</td><td>6 : 21</td><td><strong>0.006</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>23 : 10</td><td><strong>0.035</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + Opus 审 vs DeepSeek 单干</td><td>18 : 13</td><td>0.473</td></tr><tr><td>DeepSeek 写 + Opus 审 vs Opus 单干</td><td>14 : 16</td><td>0.856</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>16 : 13</td><td>0.711</td></tr><tr><td>Sol 单干† vs DeepSeek 单干</td><td>22 : 11</td><td>0.080</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>20 : 12</td><td>0.215</td></tr><tr><td>Opus 单干 vs DeepSeek 单干</td><td>22 : 15</td><td>0.324</td></tr><tr><td>Opus 单干 vs Sol 单干†</td><td>8 : 12</td><td>0.503</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>17 : 21</td><td>0.627</td></tr><tr><td>Sol 单干（max）vs Sol 单干†（默认强度）</td><td>4 : 7</td><td>0.549</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）† vs Sol 单干†</td><td>5 : 7</td><td>0.774</td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>44 : 7</td><td>&lt;0.001</td></tr></tbody></table>
 <h3>5.2 SWE-bench Pro Hard（51 题）</h3>
-<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>Sol 写 + Sol 审†</td><td>49</td><td>96.1%</td><td>87–99%</td><td>$68.3</td><td>$0.92</td><td>11.4</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>49</td><td>96.1%</td><td>87–99%</td><td>$149.0</td><td>$2.80</td><td>36.5</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$36.8</td><td>$0.47</td><td>15.2</td></tr><tr><td>Sol 单干†</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$22.4</td><td>$0.39</td><td>7.5</td></tr><tr><td>Sol 单干（max）</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$27.4</td><td>$0.47</td><td>11.0</td></tr><tr><td>Opus 单干</td><td>46</td><td>90.2%</td><td>79–96%</td><td>$127.4</td><td>$2.05</td><td>27.4</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$6.8</td><td>$0.10</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$15.3</td><td>$0.24</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$110.5</td><td>$1.47</td><td>9.2</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$41.5</td><td>$0.82</td><td>10.7</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$20.8</td><td>$0.24</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.2</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>Sol 写 + Sol 审†</td><td>49</td><td>96.1%</td><td>87–99%</td><td>$34.1</td><td>$0.51</td><td>11.4</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>49</td><td>96.1%</td><td>87–99%</td><td>$130.7</td><td>$2.60</td><td>36.5</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$15.7</td><td>$0.27</td><td>15.2</td></tr><tr><td>Sol 单干†</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$22.4</td><td>$0.39</td><td>7.5</td></tr><tr><td>Sol 单干（max）</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$27.4</td><td>$0.47</td><td>11.0</td></tr><tr><td>Opus 单干</td><td>46</td><td>90.2%</td><td>79–96%</td><td>$124.4</td><td>$2.05</td><td>27.4</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$7.3</td><td>$0.11</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$8.6</td><td>$0.14</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$61.1</td><td>$1.07</td><td>9.2</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$17.9</td><td>$0.34</td><td>10.7</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$8.6</td><td>$0.12</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.0</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
 <p>† 同上，部分题两次取好。</p>
 <p>Hard 上显著的只有两类：GLM 相关（GLM 写 + DeepSeek 审 vs GLM 单干 15:2，p=0.002；DeepSeek 单干 vs GLM 单干 21:1，p&lt;0.001），<br>其余都不显著，例如 DeepSeek 写 + Sol 审 vs DeepSeek 单干 6:2（p=0.29）、Opus 单干 vs DeepSeek 单干 5:3（p=0.73）、<br>DeepSeek 写 + Sol 审（顾问模式）vs DeepSeek 写 + Sol 审 2:7（p=0.18）。<br>第一轮 Opus 单干在 Hard 上只有 31 题（60.8%），放宽时限重跑后是 46 题（见第 4 节）。</p>
 <h3>5.3 读法</h3>
-<ol><li><strong>结对有用，但要选对审查者。</strong> DeepSeek 写 + Sol 审显著好于 DeepSeek 单干（p=0.009），也高于 Sol 单干†（不显著，后者还两次取好）。DeepSeek 自己审自己没有显著提升；换 Opus 或 Astra 当审查者，也没有显著好于 DeepSeek 单干。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra / Opus 单干 64–78%，DeepSeek 单干 68%，差别都不显著，花费却是 2.5–13 倍。</li><li><strong>Opus 5.5 在这里不划算。</strong> 时限放宽后，Opus 单干 83 题，比 DeepSeek 单干多 7 题（不显著），花费 $422 vs $33；当审查者的那组 81 题、$703，比 DeepSeek 写 + Sol 审贵 4 倍还少 9 题。</li><li><strong>审查者要自己动手测。</strong> 顾问模式里 Sol 只出方案、看报告，不自己跑测试，结果比 Sol 自己测的那组少 18 题（p=0.002），也没赢 DeepSeek 单干。原因在 Sol 的判断上，不在轮数上（DeepSWE）：<br>- 第一轮几乎都说「要改」（107 / 112，普通结对是 75 / 112）：只读代码，总能想到一个没测到的边角，每轮还会提新的。<br>- 说「通过」的题真通过 64%（41 / 64），说「要改」的题也有 65% 真通过（31 / 48）——它的结论分不出对错。普通结对里 Sol 说「通过」的题 81% 真通过（89 / 110）。<br>- 所以 2 轮审完还在说「要改」的 48 题，多给轮数大概率只是多提意见；它说「通过」却没过的，例如 <code>prometheus-transactional-reload-status</code>，DeepSeek 报告「全部用例通过」，判分时 15 个目标测试一个没过。</li><li><strong>顾问模式反而更贵。</strong> DeepSWE $193 vs $163，Hard $41.4 vs $36.8。<br>- Sol 本来就是小头：普通结对里 Sol 只花 $52（32%），DeepSeek 花 $112。把 Sol 的活砍掉，最多也只能省这 $52，实际省了 $11（$52 → $41）。<br>- DeepSeek 多干的活按「重读」收钱：每走一步都把整段对话再发一遍。它要读长方案、把验收用例写成测试、自己跑、写报告，对话更长、步数更多，每题输入从 27M 涨到 36M、输出从 242k 涨到 339k，花费从 $112 涨到 $152。各做法每题的 token 用量见 5.4。</li><li><strong>max 思考强度不值。</strong> Sol max 和 Sol 单干† 差不多（4 : 7，p=0.55），花费 1.4 倍（$117 vs $83）。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审和 Sol 单干打平（5 : 7，p=0.77），花费 3.4 倍。</li></ol>
+<ol><li><strong>结对有用，但要选对审查者。</strong> DeepSeek 写 + Sol 审显著好于 DeepSeek 单干（p=0.009），也高于 Sol 单干†（不显著，后者还两次取好）。DeepSeek 自己审自己没有显著提升；换 Opus 或 Astra 当审查者，也没有显著好于 DeepSeek 单干。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra / Opus 单干 64–78%，DeepSeek 单干 68%，差别都不显著，花费却是 2.5–12 倍（DeepSWE）。</li><li><strong>Opus 5.5 在这里不划算。</strong> 时限放宽后，Opus 单干 83 题，比 DeepSeek 单干多 7 题（不显著），花费 $398 vs $33；当审查者的那组 81 题、$433，比 DeepSeek 写 + Sol 审贵 6 倍还少 9 题。</li><li><strong>审查者要自己动手测。</strong> 顾问模式里 Sol 只出方案、看报告，不自己跑测试，结果比 Sol 自己测的那组少 18 题（p=0.002），也没赢 DeepSeek 单干。原因在 Sol 的判断上，不在轮数上（DeepSWE）：<br>- 第一轮几乎都说「要改」（107 / 112，普通结对是 75 / 112）：只读代码，总能想到一个没测到的边角，每轮还会提新的。<br>- 说「通过」的题真通过 64%（41 / 64），说「要改」的题也有 65% 真通过（31 / 48）——它的结论分不出对错。普通结对里 Sol 说「通过」的题 81% 真通过（89 / 110）。<br>- 所以 2 轮审完还在说「要改」的 48 题，多给轮数大概率只是多提意见；它说「通过」却没过的，例如 <code>prometheus-transactional-reload-status</code>，DeepSeek 报告「全部用例通过」，判分时 15 个目标测试一个没过。</li><li><strong>顾问模式没省钱。</strong> DeepSWE $75 vs $70，Hard $17.9 vs $15.0，略贵。<br>- Sol 那边确实省了：普通结对里 Sol 花 $28（占 40%），顾问模式降到 $19。<br>- DeepSeek 那边多花得更多：$42 → $56。它多干的活按「重读」收钱：每走一步都把整段对话再发一遍。它要读长方案、把验收用例写成测试、自己跑、写报告，对话更长、步数更多，每题输入从 10.1M 涨到 13.4M、输出从 88k 涨到 118k。<br>- 一省一多，总价差不多，分数却低了 18 题。各做法每题的 token 用量见 5.4。</li><li><strong>max 思考强度不值。</strong> Sol max 和 Sol 单干† 差不多（4 : 7，p=0.55），花费 1.4 倍（$117 vs $83）。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审和 Sol 单干打平（5 : 7，p=0.77），花费 1.5 倍（$122 vs $83）。</li></ol>
 <h3>5.4 每题 token 用量</h3>
 <p>每种做法里每个模型每题用了多少 token（单位：千 token；输入含重复发送的上下文）。逐题明细在附件 <code>tokens-deepswe.csv</code> / <code>tokens-hard.csv</code>。</p>
 <p><strong>DeepSWE（112 题）</strong></p>
-<table><thead><tr><th>做法</th><th>角色</th><th>模型</th><th>输入均值</th><th>输入中位</th><th>输出均值</th><th>输出中位</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>写</td><td>deepseek-flash</td><td>8,001</td><td>6,499</td><td>73.4</td><td>66.5</td></tr><tr><td>GLM 单干</td><td>写</td><td>glm-5.3-flash</td><td>6,626</td><td>3,720</td><td>26.9</td><td>23.5</td></tr><tr><td>Sol 单干†</td><td>写</td><td>gpt-6.1-sol</td><td>1,760</td><td>1,147</td><td>18.7</td><td>17.8</td></tr><tr><td>Sol 单干（max）</td><td>写</td><td>gpt-6.1-sol</td><td>3,448</td><td>2,751</td><td>48.3</td><td>43.5</td></tr><tr><td>Astra 单干</td><td>写</td><td>gpt-6-astra</td><td>1,419</td><td>766</td><td>11.0</td><td>8.3</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>写</td><td>deepseek-flash</td><td>25,442</td><td>19,138</td><td>223.4</td><td>199.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>3,365</td><td>2,135</td><td>69.7</td><td>52.3</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>写</td><td>glm-5.3-flash</td><td>30,205</td><td>14,805</td><td>124.9</td><td>86.4</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>5,153</td><td>3,022</td><td>102.5</td><td>77.2</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>写</td><td>deepseek-flash</td><td>26,842</td><td>19,666</td><td>242.0</td><td>191.1</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>审</td><td>gpt-6.1-sol</td><td>692</td><td>472</td><td>9.3</td><td>8.6</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>写</td><td>deepseek-flash</td><td>36,055</td><td>28,405</td><td>338.8</td><td>295.3</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>审</td><td>gpt-6.1-sol</td><td>837</td><td>801</td><td>9.6</td><td>9.6</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>写</td><td>deepseek-flash</td><td>28,451</td><td>19,222</td><td>256.5</td><td>213.7</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>审</td><td>gpt-6-astra</td><td>932</td><td>678</td><td>7.3</td><td>5.0</td></tr><tr><td>Sol 写 + Sol 审†</td><td>写</td><td>gpt-6.1-sol</td><td>5,226</td><td>3,458</td><td>52.8</td><td>44.5</td></tr><tr><td>Sol 写 + Sol 审†</td><td>审</td><td>gpt-6.1-sol</td><td>542</td><td>378</td><td>9.9</td><td>7.6</td></tr><tr><td>Opus 单干</td><td>写</td><td>claude-opus-5-5</td><td>4,506</td><td>1,681</td><td>63.1</td><td>31.4</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>写</td><td>deepseek-flash</td><td>27,577</td><td>16,489</td><td>247.1</td><td>167.1</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>审</td><td>claude-opus-5-5</td><td>5,833</td><td>1,962</td><td>115.1</td><td>52.6</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>角色</th><th>模型</th><th>输入均值</th><th>输入中位</th><th>输出均值</th><th>输出中位</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>写</td><td>deepseek-flash</td><td>8,001</td><td>6,499</td><td>73.4</td><td>66.5</td></tr><tr><td>GLM 单干</td><td>写</td><td>glm-5.3-flash</td><td>5,983</td><td>3,696</td><td>25.7</td><td>23.3</td></tr><tr><td>Sol 单干†</td><td>写</td><td>gpt-6.1-sol</td><td>1,760</td><td>1,147</td><td>18.7</td><td>17.8</td></tr><tr><td>Sol 单干（max）</td><td>写</td><td>gpt-6.1-sol</td><td>3,448</td><td>2,751</td><td>48.3</td><td>43.5</td></tr><tr><td>Astra 单干</td><td>写</td><td>gpt-6-astra</td><td>1,419</td><td>766</td><td>11.0</td><td>8.3</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>写</td><td>deepseek-flash</td><td>10,048</td><td>8,042</td><td>84.6</td><td>74.5</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>2,095</td><td>1,636</td><td>40.4</td><td>36.0</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>写</td><td>glm-5.3-flash</td><td>9,411</td><td>5,765</td><td>36.1</td><td>30.2</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>2,265</td><td>1,755</td><td>40.7</td><td>37.6</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>写</td><td>deepseek-flash</td><td>10,126</td><td>8,129</td><td>87.5</td><td>74.7</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>审</td><td>gpt-6.1-sol</td><td>397</td><td>298</td><td>5.1</td><td>5.1</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>写</td><td>deepseek-flash</td><td>13,442</td><td>10,502</td><td>118.2</td><td>99.3</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>审</td><td>gpt-6.1-sol</td><td>437</td><td>420</td><td>3.8</td><td>3.8</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>写</td><td>deepseek-flash</td><td>10,061</td><td>7,928</td><td>88.7</td><td>76.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>审</td><td>gpt-6-astra</td><td>543</td><td>435</td><td>3.8</td><td>2.9</td></tr><tr><td>Sol 写 + Sol 审†</td><td>写</td><td>gpt-6.1-sol</td><td>2,225</td><td>1,539</td><td>20.8</td><td>18.3</td></tr><tr><td>Sol 写 + Sol 审†</td><td>审</td><td>gpt-6.1-sol</td><td>352</td><td>267</td><td>6.1</td><td>5.8</td></tr><tr><td>Opus 单干</td><td>写</td><td>claude-opus-5-5</td><td>4,270</td><td>1,681</td><td>58.7</td><td>30.9</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>写</td><td>deepseek-flash</td><td>11,028</td><td>7,313</td><td>97.6</td><td>75.2</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>审</td><td>claude-opus-5-5</td><td>3,959</td><td>1,239</td><td>75.9</td><td>26.7</td></tr></tbody></table>
 <p><strong>SWE-bench Pro Hard（51 题）</strong></p>
-<table><thead><tr><th>做法</th><th>角色</th><th>模型</th><th>输入均值</th><th>输入中位</th><th>输出均值</th><th>输出中位</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>写</td><td>deepseek-flash</td><td>3,379</td><td>2,316</td><td>42.3</td><td>38.8</td></tr><tr><td>GLM 单干</td><td>写</td><td>glm-5.3-flash</td><td>1,698</td><td>964</td><td>11.3</td><td>10.0</td></tr><tr><td>Sol 单干†</td><td>写</td><td>gpt-6.1-sol</td><td>931</td><td>665</td><td>9.7</td><td>8.6</td></tr><tr><td>Sol 单干（max）</td><td>写</td><td>gpt-6.1-sol</td><td>1,534</td><td>1,318</td><td>24.7</td><td>22.7</td></tr><tr><td>Astra 单干</td><td>写</td><td>gpt-6-astra</td><td>621</td><td>451</td><td>4.5</td><td>3.7</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>写</td><td>deepseek-flash</td><td>5,987</td><td>4,433</td><td>86.6</td><td>77.4</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>1,136</td><td>645</td><td>24.6</td><td>19.5</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>写</td><td>glm-5.3-flash</td><td>8,245</td><td>3,068</td><td>42.1</td><td>28.5</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>2,565</td><td>1,323</td><td>53.6</td><td>38.6</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>写</td><td>deepseek-flash</td><td>11,746</td><td>7,002</td><td>140.1</td><td>106.3</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>审</td><td>gpt-6.1-sol</td><td>433</td><td>296</td><td>5.9</td><td>4.2</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>写</td><td>deepseek-flash</td><td>14,095</td><td>11,397</td><td>164.0</td><td>139.4</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>审</td><td>gpt-6.1-sol</td><td>562</td><td>538</td><td>6.9</td><td>7.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>写</td><td>deepseek-flash</td><td>9,219</td><td>6,083</td><td>127.2</td><td>105.4</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>审</td><td>gpt-6-astra</td><td>605</td><td>400</td><td>4.7</td><td>3.8</td></tr><tr><td>Sol 写 + Sol 审†</td><td>写</td><td>gpt-6.1-sol</td><td>1,948</td><td>1,271</td><td>22.2</td><td>18.6</td></tr><tr><td>Sol 写 + Sol 审†</td><td>审</td><td>gpt-6.1-sol</td><td>507</td><td>331</td><td>7.4</td><td>5.3</td></tr><tr><td>Opus 单干</td><td>写</td><td>claude-opus-5-5</td><td>2,422</td><td>1,870</td><td>58.8</td><td>29.6</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>写</td><td>deepseek-flash</td><td>6,810</td><td>4,715</td><td>94.3</td><td>81.9</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>审</td><td>claude-opus-5-5</td><td>2,538</td><td>2,210</td><td>70.3</td><td>68.1</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>角色</th><th>模型</th><th>输入均值</th><th>输入中位</th><th>输出均值</th><th>输出中位</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>写</td><td>deepseek-flash</td><td>3,379</td><td>2,316</td><td>42.3</td><td>38.8</td></tr><tr><td>GLM 单干</td><td>写</td><td>glm-5.3-flash</td><td>1,633</td><td>896</td><td>10.8</td><td>9.2</td></tr><tr><td>Sol 单干†</td><td>写</td><td>gpt-6.1-sol</td><td>931</td><td>665</td><td>9.7</td><td>8.6</td></tr><tr><td>Sol 单干（max）</td><td>写</td><td>gpt-6.1-sol</td><td>1,534</td><td>1,318</td><td>24.7</td><td>22.7</td></tr><tr><td>Astra 单干</td><td>写</td><td>gpt-6-astra</td><td>621</td><td>451</td><td>4.5</td><td>3.7</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>写</td><td>deepseek-flash</td><td>2,822</td><td>2,329</td><td>38.8</td><td>38.8</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>923</td><td>635</td><td>20.1</td><td>19.5</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>写</td><td>glm-5.3-flash</td><td>3,132</td><td>1,369</td><td>13.5</td><td>10.2</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>审</td><td>deepseek-flash</td><td>1,292</td><td>966</td><td>24.5</td><td>22.5</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>写</td><td>deepseek-flash</td><td>3,742</td><td>2,660</td><td>43.4</td><td>40.9</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>审</td><td>gpt-6.1-sol</td><td>262</td><td>227</td><td>3.5</td><td>3.5</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>写</td><td>deepseek-flash</td><td>5,785</td><td>5,329</td><td>63.7</td><td>59.1</td></tr><tr><td>DeepSeek 写 + Sol 审（顾问模式）</td><td>审</td><td>gpt-6.1-sol</td><td>307</td><td>285</td><td>2.9</td><td>2.8</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>写</td><td>deepseek-flash</td><td>3,645</td><td>2,730</td><td>47.0</td><td>42.8</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>审</td><td>gpt-6-astra</td><td>394</td><td>333</td><td>3.0</td><td>2.9</td></tr><tr><td>Sol 写 + Sol 审†</td><td>写</td><td>gpt-6.1-sol</td><td>871</td><td>615</td><td>9.3</td><td>8.7</td></tr><tr><td>Sol 写 + Sol 审†</td><td>审</td><td>gpt-6.1-sol</td><td>349</td><td>256</td><td>5.2</td><td>4.5</td></tr><tr><td>Opus 单干</td><td>写</td><td>claude-opus-5-5</td><td>2,355</td><td>1,870</td><td>56.3</td><td>29.6</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>写</td><td>deepseek-flash</td><td>3,240</td><td>2,387</td><td>44.0</td><td>40.6</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>审</td><td>claude-opus-5-5</td><td>2,368</td><td>2,210</td><td>65.6</td><td>68.1</td></tr></tbody></table>
 <h2>6. 过程中发现的问题和处理</h2>
 <h3>6.1 判分时测试卡死</h3>
 <p>有 8 份答案判分时测试卡住，30 分钟上限超时；空闲时放宽到 2 小时重判，仍然全部超时。按失败计。<br>同一套测试，别的做法的答案几分钟就判完，所以问题出在<strong>这几份答案的代码</strong>。</p>
@@ -90,12 +90,13 @@ PB_BENCH=deepswe RES=results-deepswe python3 regrade_long.py 3 &lt;代号&gt;/&l
 python3 report.py            # 通过率 + Wilson 置信区间 + 花费 + 用时 + McNemar
 PB_ACCT_ARMS=solo_solmax PB_ACCT_PARTIAL=solo_sol,sol_t_sol python3 report.py
 # 前者整组用 collected-results-*-af/ 下的重跑数据；后者在 clean-&lt;代号&gt;.json 列出的题里只换「重跑通过、原来没过」的
+# Codex 用量：目录里有 codex-usage-&lt;机器名&gt;.json（codex_cost.py 按会话记录重算）时，多轮记录用它；没有的按比值估算
 # Opus 用量：目录里有 opus-usage-from-transcripts.json（按会话记录重算）时，每题取它和结果文件里较大的那个</code></pre>
 <p>取数规则：去掉占位；同一 (做法, 题) 有多份时优先补跑记录，其次取开工最早的；剔除标准答案都过不了的题；价格按原价。</p>
 <h2>8. 局限</h2>
-<ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）用的是换线路后的完整重跑数据；Sol 单干、Sol 写 + Sol 审部分题两次取好、分数偏高（见第 4 节）；DeepSeek 写 + Sol 审只用原线路一次。和不带 † 的做法比（DeepSeek、Astra、Opus、Sol max），差距要打折看。</li><li>Opus 用的是 Claude Code，其他模型用的是 Codex；agent 不同本身会影响分数。跑满时限的失败只给 Opus 和 GLM 那几组放宽时限重跑了一次（其他做法没有这种失败），等于这几题多给了一次机会。</li><li>顾问模式的 Sol 走另一条线路，作废了 14 题无回复的结果后重跑；它只测了 Sol 一种顾问。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
+<ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）用的是换线路后的完整重跑数据；Sol 单干、Sol 写 + Sol 审部分题两次取好、分数偏高（见第 4 节）；DeepSeek 写 + Sol 审只用原线路一次。和不带 † 的做法比（DeepSeek、Astra、Opus、Sol max），差距要打折看。</li><li>Opus 用的是 Claude Code，其他模型用的是 Codex；agent 不同本身会影响分数。跑满时限的失败只给 Opus 和 GLM 那几组放宽时限重跑了一次（其他做法没有这种失败），等于这几题多给了一次机会。</li><li>有些结对题审查者一次都没回复，实际等于单干，却按结对计分：多数是写代码方用完了时限、没轮到审查（Hard：DeepSeek 写 + Opus 审 15 题、DeepSeek 写 + Sol 审 6 题、DeepSeek 写 + DeepSeek 审 6 题、GLM 写 + DeepSeek 审 2 题；DeepSWE：DeepSeek 写 + Opus 审 1 题）；少数是审查者被模型服务 503 挡住（Hard：DeepSeek 写 + Sol 审 4 题；DeepSWE：DeepSeek 写 + Sol 审 1 题）。这些题都通过了，没有重跑。顾问模式遇到同样情况是作废重跑的，两边处理不一致。</li><li>顾问模式的 Sol 走另一条线路，作废了 14 题无回复的结果后重跑；它只测了 Sol 一种顾问。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
 <h2>附录：脚本</h2>
-<table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex 或 Claude Code（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>run_advice.py</code></td><td>顾问模式（<code>dsf_a_sol</code>，DeepSeek 写 + Sol 审）：顾问只读代码出方案和验收用例、最后看报告；DeepSeek 写测试、写代码、跑测试</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code>；设 <code>PB_BUDGET_S</code> 可放宽时限</td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 置信区间、花费、用时、McNemar 配对检验</td></tr><tr><td><code>tokens.py</code></td><td>每题每个模型的 token 用量，写 <code>tokens-&lt;题集&gt;.csv</code> 并出 5.4 的表</td></tr></tbody></table>
+<table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex 或 Claude Code（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>run_advice.py</code></td><td>顾问模式（<code>dsf_a_sol</code>，DeepSeek 写 + Sol 审）：顾问只读代码出方案和验收用例、最后看报告；DeepSeek 写测试、写代码、跑测试</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code>；设 <code>PB_BUDGET_S</code> 可放宽时限</td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 置信区间、花费、用时、McNemar 配对检验</td></tr><tr><td><code>codex_cost.py</code></td><td>按 Codex 会话记录重算每题真实用量（旧脚本把会话累计数逐轮相加，多算了），写 <code>codex-usage-&lt;机器名&gt;.json</code> 给 <code>report.py</code> 用</td></tr><tr><td><code>tokens.py</code></td><td>每题每个模型的 token 用量，写 <code>tokens-&lt;题集&gt;.csv</code> 并出 5.4 的表</td></tr></tbody></table>
 <details><summary><code>run_swepro.py</code></summary>
 <pre><code>#!/usr/bin/env python3
 &quot;&quot;&quot;SWE-bench Pro V2 上跑结对：agent 在题目自带的容器里改代码，判分在全新容器里跑官方 tests/test.sh。
@@ -329,8 +330,9 @@ class DockerCodex:
             elif t == &quot;item.completed&quot; and j[&quot;item&quot;].get(&quot;type&quot;) == &quot;agent_message&quot;: reply = j[&quot;item&quot;].get(&quot;text&quot;) or reply
             elif t == &quot;turn.completed&quot;:
                 u = j.get(&quot;usage&quot;) or {}
-                self.usage[&quot;input&quot;] += u.get(&quot;input_tokens&quot;, 0); self.usage[&quot;cached&quot;] += u.get(&quot;cached_input_tokens&quot;, 0)
-                self.usage[&quot;output&quot;] += u.get(&quot;output_tokens&quot;, 0); self.usage[&quot;turns&quot;] += 1
+                # turn.completed 报的是整个会话到此为止的累计（resume 也接着累计），取最新值，别逐轮相加（10-26 修）
+                self.usage[&quot;input&quot;] = u.get(&quot;input_tokens&quot;, 0); self.usage[&quot;cached&quot;] = u.get(&quot;cached_input_tokens&quot;, 0)
+                self.usage[&quot;output&quot;] = u.get(&quot;output_tokens&quot;, 0); self.usage[&quot;turns&quot;] += 1; self.usage[&quot;usage_cum_ok&quot;] = True
             elif t in (&quot;turn.failed&quot;, &quot;error&quot;): err = json.dumps(j)[:400]
         if not reply and re.search(r&quot;401|403|unauthorized|invalid_api_key&quot;, err, re.I): raise GatewayDown(err)
         if not reply: log(&quot;NOREPLY&quot;, self.cname, &quot; &quot;.join((err or perr[-300:]).split())[:300])   # 试水排错：别把错误吞掉
@@ -383,11 +385,14 @@ class DockerClaude:
                 self.thread = j.get(&quot;session_id&quot;) or self.thread
                 if j.get(&quot;is_error&quot;): err = json.dumps(j)[:400]
                 else: reply = j.get(&quot;result&quot;) or &quot;&quot;
+                # --resume 后 result 报的是整个会话到此为止的累计，取最新值，别逐轮相加（10-26 修）
+                tot = {&quot;input&quot;: 0, &quot;cached&quot;: 0, &quot;cache_write&quot;: 0, &quot;output&quot;: 0}
                 for u in (j.get(&quot;modelUsage&quot;) or {}).values():   # 每个模型一份：未命中输入 / 命中缓存 / 写缓存 / 输出
                     cr, cw = u.get(&quot;cacheReadInputTokens&quot;, 0), u.get(&quot;cacheCreationInputTokens&quot;, 0)
-                    self.usage[&quot;input&quot;] += u.get(&quot;inputTokens&quot;, 0) + cr + cw; self.usage[&quot;cached&quot;] += cr
-                    self.usage[&quot;cache_write&quot;] += cw; self.usage[&quot;output&quot;] += u.get(&quot;outputTokens&quot;, 0)
-                self.usage[&quot;cc_cost_usd&quot;] += float(j.get(&quot;total_cost_usd&quot;) or 0); self.usage[&quot;turns&quot;] += 1
+                    tot[&quot;input&quot;] += u.get(&quot;inputTokens&quot;, 0) + cr + cw; tot[&quot;cached&quot;] += cr
+                    tot[&quot;cache_write&quot;] += cw; tot[&quot;output&quot;] += u.get(&quot;outputTokens&quot;, 0)
+                self.usage.update(tot); self.usage[&quot;cc_cost_usd&quot;] = float(j.get(&quot;total_cost_usd&quot;) or 0)
+                self.usage[&quot;turns&quot;] += 1; self.usage[&quot;usage_cum_ok&quot;] = True
         if not reply and re.search(r&quot;401|403|unauthorized|authentication_error|invalid.api.key&quot;, err + perr, re.I): raise GatewayDown(err or perr[-300:])
         if not reply: log(&quot;NOREPLY&quot;, self.cname, &quot; &quot;.join((err or perr[-300:]).split())[:300])
         return reply or f&quot;(no reply; {err or perr[-300:]})&quot;
@@ -616,6 +621,60 @@ while True:
     c, _ = srv.accept(); threading.Thread(target=handle, args=(c,), daemon=True).start()
 </code></pre>
 </details>
+<details><summary><code>codex_cost.py</code></summary>
+<pre><code># 10-26：Codex 用量按会话记录重算。turn.completed 报的是「会话累计」，旧代码逐轮相加 → 多轮的题多算。
+# 对每个结果，找开工时间对得上的那次尝试（work*/&lt;arm&gt;/&lt;id&gt;/codex-&lt;role&gt;/sessions/**.jsonl），
+# 每个会话文件取最后一条 total_token_usage（就是这个会话的真实合计），同一角色多个会话文件相加。
+# 校验：只跑了 1 轮的角色，重算值必须等于结果文件里记的值。用法（容器里 root 跑）：python3 codex_cost.py &lt;主机名&gt;
+import json, glob, os, sys
+from datetime import datetime
+host = sys.argv[1]
+ROLE_DIRS = {&quot;dev&quot;: [&quot;dev&quot;], &quot;rev&quot;: [&quot;tester&quot;, &quot;advisor&quot;, &quot;rev&quot;]}
+def sess_info(f):
+    t0 = None; last = None
+    for line in open(f, errors=&quot;ignore&quot;):
+        try: e = json.loads(line)
+        except Exception: continue
+        if t0 is None and e.get(&quot;timestamp&quot;): t0 = datetime.fromisoformat(e[&quot;timestamp&quot;].replace(&quot;Z&quot;, &quot;+00:00&quot;)).timestamp()
+        p = e.get(&quot;payload&quot;) or {}
+        if p.get(&quot;type&quot;) == &quot;token_count&quot; and p.get(&quot;info&quot;): last = p[&quot;info&quot;][&quot;total_token_usage&quot;]
+    return t0, last
+dirs = {}   # (arm, tid) -&gt; [attempt dir]
+for d in glob.glob(&quot;work*/*/*&quot;):
+    if os.path.isdir(d): dirs.setdefault((d.split(&quot;/&quot;)[1], d.split(&quot;/&quot;)[2]), []).append(d)
+out = {}
+for b in (&quot;deepswe&quot;, &quot;hard&quot;, &quot;deepswe-af&quot;, &quot;hard-af&quot;):
+    for rf in glob.glob(f&quot;results-{b}/*/*.json&quot;):
+        arm = rf.split(&quot;/&quot;)[1]
+        if arm.startswith(&quot;_&quot;): continue
+        try: r = json.load(open(rf))
+        except Exception: continue
+        if &quot;id&quot; not in r or not r.get(&quot;usage&quot;): continue
+        st = float(r.get(&quot;started&quot;) or 0); key = f&quot;{b}/{arm}/{r[&#x27;id&#x27;]}&quot;
+        roles = {k: v for k, v in r[&quot;usage&quot;].items() if v and not str(v.get(&quot;model&quot;, &quot;&quot;)).startswith(&quot;claude&quot;)}
+        if not roles: continue
+        best = None
+        for d in dirs.get((arm, r[&quot;id&quot;]), []):
+            sess = {role: [sess_info(f) for rd in ROLE_DIRS[role] for f in glob.glob(f&quot;{d}/codex-{rd}/sessions/**/*.jsonl&quot;, recursive=True)] for role in roles}
+            ts = [t for v in sess.values() for t, _ in v if t]
+            if not ts: continue
+            gap = min(ts) - st
+            if -120 &lt; gap &lt; 3600 and (best is None or abs(gap) &lt; abs(best[1])): best = (d, gap, sess)
+        rec = {&quot;host&quot;: host, &quot;recorded&quot;: {k: {x: v.get(x, 0) for x in (&quot;input&quot;, &quot;cached&quot;, &quot;output&quot;, &quot;turns&quot;)} for k, v in roles.items()}}
+        if best:
+            rec[&quot;dir&quot;], rec[&quot;gap_s&quot;] = best[0], round(best[1])
+            for role, lst in best[2].items():
+                lst = [u for _, u in lst if u]
+                if lst: rec[role] = {&quot;input&quot;: sum(u[&quot;input_tokens&quot;] for u in lst), &quot;cached&quot;: sum(u[&quot;cached_input_tokens&quot;] for u in lst),
+                                     &quot;output&quot;: sum(u[&quot;output_tokens&quot;] for u in lst), &quot;sessions&quot;: len(lst)}
+        out[key] = rec
+json.dump(out, open(f&quot;codex-usage-{host}.json&quot;, &quot;w&quot;), indent=1)
+n = len(out); full = sum(all(k in v for k in v[&quot;recorded&quot;]) for v in out.values())
+bad1 = [k for k, v in out.items() for role, rv in v[&quot;recorded&quot;].items() if rv[&quot;turns&quot;] == 1 and role in v and v[role][&quot;input&quot;] != rv[&quot;input&quot;]]
+ok1 = sum(1 for v in out.values() for role, rv in v[&quot;recorded&quot;].items() if rv[&quot;turns&quot;] == 1 and role in v and v[role][&quot;input&quot;] == rv[&quot;input&quot;])
+print(host, &quot;results&quot;, n, &quot;fully recomputed&quot;, full, &quot;| 1-turn check ok&quot;, ok1, &quot;mismatch&quot;, len(bad1), bad1[:5])
+</code></pre>
+</details>
 <details><summary><code>regrade_long.py</code></summary>
 <pre><code># 10-22 判分超时的答案：机器空闲时把判分时限放宽到 2 小时重判一次（答案不重做）。旧判分留在 grade_before_long_regrade。
 import json, os, sys
@@ -641,7 +700,7 @@ with ThreadPoolExecutor(int(sys.argv[1])) as ex: list(ex.map(one, jobs))
 取数：collected-&lt;RES&gt;/&lt;机器&gt;/&lt;做法&gt;/&lt;题&gt;.json；去占位；同 (做法,题) 多份时 优先补跑记录(rerun_reason)，再取开工早的；
 剔除标准答案在所有机器上都判不过的题；价格一律按原价（Standard 档，不乘 fast 倍率）。
 --strict：DeepSWE 上「改了原有测试」的通过答案，按去掉那些改动后的重判结果算（strict-out-local/）。&quot;&quot;&quot;
-import json, math, statistics as st, sys
+import json, math, statistics, statistics as st, sys
 from pathlib import Path
 B = Path(__file__).resolve().parent
 PRICE = {&quot;glm-5.3-flash&quot;: (0.15, 0.03, 0.50), &quot;deepseek-flash&quot;: (0.15, 0.03, 0.60),
@@ -674,6 +733,7 @@ def load(res):
         if f.parent.name.startswith(&quot;_&quot;) or d.get(&quot;placeholder&quot;) or &quot;id&quot; not in d: continue
         k = (f.parent.name, d[&quot;id&quot;]); st0 = float(d.get(&quot;started&quot;) or 0)
         rank = (0, -st0) if d.get(&quot;rerun_reason&quot;) else (1, st0)   # 补跑优先；补跑多次（跨机器）取最新那次，没补跑的取最早那次
+        d[&quot;_src&quot;] = str(f)   # 10-26：记下出处（机器、哪条线路），给 Codex 用量重算对号用
         if k not in best or rank &lt; best[k][0]: best[k] = (rank, d, f)
     # PB_ACCT_PARTIAL：这些做法只有一部分题整组重跑干净（collected-&lt;RES&gt;-af/clean-&lt;做法&gt;.json 列出题号），
     # 这些题里，只在「重跑通过、原来没通过」时换成重跑结果（两次取好，等于这些题多给了一次机会），其余题仍用原来那份
@@ -687,6 +747,7 @@ def load(res):
             rr = [x for x in cands if x[0].get(&quot;rerun_reason&quot;)]
             for d, f in (rr or cands)[:1]:
                 old = best.get((arm, t))
+                d[&quot;_src&quot;] = str(f)
                 if not d.get(&quot;placeholder&quot;) and &quot;id&quot; in d and d.get(&quot;passed&quot;) and not (old and old[1].get(&quot;passed&quot;)):
                     best[(arm, t)] = ((-1, 0), d, f)
     bad = {t for t, v in gold.items() if not any(v)}
@@ -700,14 +761,61 @@ def strict_fail():
 # 10-25：Opus（Claude Code）用量。结果文件里只记了每轮 result 事件的用量：超时被掐的那一轮没有 result，记成 0；
 # 会话记录（opus-usage-from-transcripts.json）补得上被掐那轮，但看不到后台小调用（起标题等，也走 Opus）。两者取大。
 OPUS_FIX = json.loads((B / &quot;opus-usage-from-transcripts.json&quot;).read_text()) if (B / &quot;opus-usage-from-transcripts.json&quot;).exists() else {}
+# 10-26：Codex 的 turn.completed 报的是「会话累计」，旧代码逐轮相加，多轮的题多算了。
+# codex-usage-&lt;机器&gt;.json 是按会话记录重算的真实值（codex_cost.py）；对号时要求结果文件里记的值一致，防止对错尝试。
+# 只跑 1 轮的角色本来就对，直接用；会话记录已不在的（工作目录已清），按同做法、同角色、同轮数重算过的题的「真实/记录」中位比例估算。
+CODEX_FIX = {}
+for _f in B.glob(&quot;codex-usage-*.json&quot;):
+    _h = _f.stem.split(&quot;codex-usage-&quot;)[1]
+    for _k, _v in json.loads(_f.read_text()).items(): CODEX_FIX[(_h, _k)] = _v
+_ratio = {}
+for (_h, _k), _v in CODEX_FIX.items():
+    for _role, _rv in _v[&quot;recorded&quot;].items():
+        _t = _v.get(_role)
+        if not _t or _rv[&quot;turns&quot;] &lt;= 1 or not _rv[&quot;input&quot;] or _t[&quot;input&quot;] &gt; _rv[&quot;input&quot;]: continue
+        _arm = _k.split(&quot;/&quot;)[1]
+        for _key in ((_arm, _role, _rv[&quot;turns&quot;]), (_role, _rv[&quot;turns&quot;]), (_rv[&quot;turns&quot;],)):
+            _ratio.setdefault(_key, []).append({x: _t[x] / _rv[x] if _rv[x] else 1.0 for x in (&quot;input&quot;, &quot;cached&quot;, &quot;output&quot;)})
+CODEX_STAT = {&quot;exact&quot;: 0, &quot;est&quot;: 0, &quot;one_turn&quot;: 0, &quot;zero_est&quot;: 0}
+LONG_MED = {}   # (res, arm, role) -&gt; 跑了 40 分钟以上的题的用量中位数，给「被时限截断、记成 0」的记录估值
+def codex_fixed(res, arm, d, role, u):
+    if u.get(&quot;usage_cum_ok&quot;): return u   # 修过之后记的，本来就是真实值
+    if not u.get(&quot;input&quot;) and not u.get(&quot;turns&quot;) and (d.get(&quot;elapsed_s&quot;) or 0) &gt;= 2400 and (res, arm, role) in LONG_MED:
+        CODEX_STAT[&quot;zero_est&quot;] += 1; return {**u, **LONG_MED[(res, arm, role)], &quot;estimated&quot;: True}
+    if (u.get(&quot;turns&quot;) or 0) &lt;= 1 and u.get(&quot;input&quot;): CODEX_STAT[&quot;one_turn&quot;] += 1; return u
+    src = d.get(&quot;_src&quot;, &quot;&quot;); parts = src.split(&quot;/&quot;)
+    try:
+        ci = [i for i, x in enumerate(parts) if x.startswith(&quot;collected-results-&quot;)][-1]
+        bench = parts[ci].split(&quot;collected-results-&quot;)[1]; host = parts[ci + 1]
+    except IndexError: bench, host = res.split(&quot;-&quot;, 1)[1], &quot;&quot;
+    rec = CODEX_FIX.get((host, f&quot;{bench}/{arm}/{d[&#x27;id&#x27;]}&quot;))
+    # 记录为 0 = 那一轮被时限截断、没报用量；会话记录里有就用会话记录（10-26 审查补）
+    if rec and role in rec and rec[&quot;recorded&quot;].get(role, {}).get(&quot;input&quot;) == u.get(&quot;input&quot;) and (rec[role][&quot;input&quot;] &lt;= u[&quot;input&quot;] or not u.get(&quot;input&quot;)):
+        CODEX_STAT[&quot;exact&quot;] += 1; return {**u, &quot;input&quot;: rec[role][&quot;input&quot;], &quot;cached&quot;: rec[role][&quot;cached&quot;], &quot;output&quot;: rec[role][&quot;output&quot;]}
+    for key in ((arm, role, u[&quot;turns&quot;]), (role, u[&quot;turns&quot;]), (u[&quot;turns&quot;],)):
+        rs = _ratio.get(key)
+        if rs and len(rs) &gt;= 5:
+            CODEX_STAT[&quot;est&quot;] += 1
+            return {**u, **{x: round(u[x] * statistics.median(r[x] for r in rs)) for x in (&quot;input&quot;, &quot;cached&quot;, &quot;output&quot;)}, &quot;estimated&quot;: True}
+    return u
 def opus_fixed(res, arm, d, role):
     u = (d.get(&quot;usage&quot;) or {}).get(role)
+    if u and not str(u.get(&quot;model&quot;, &quot;&quot;)).startswith(&quot;claude&quot;): return codex_fixed(res, arm, d, role, u)
     v = (OPUS_FIX.get(f&quot;{res.split(&#x27;-&#x27;)[-1]}/{arm}/{d[&#x27;id&#x27;]}&quot;) or {}).get(role)
+    # 10-26：Claude Code --resume 后 result 报的也是会话累计，旧代码逐轮相加 → 多轮的记录多算；多轮一律用会话记录重算值
+    if v and u and u.get(&quot;model&quot;) == &quot;claude-opus-5-5&quot; and (u.get(&quot;turns&quot;) or 0) &gt;= 2: return v
     if v and (not u or u.get(&quot;model&quot;) == &quot;claude-opus-5-5&quot;) and usd(v) &gt; usd(u): return v
     return u
 strict = &quot;--strict&quot; in sys.argv; SF = strict_fail() if strict else set()
 for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
     R, bad = load(res)
+    for (_a, _t), (_d, _) in R.items():   # 先算「长题」用量中位数（只用有用量的记录）
+        for _role in (&quot;dev&quot;, &quot;rev&quot;):
+            _u = (_d.get(&quot;usage&quot;) or {}).get(_role)
+            if _u and _u.get(&quot;input&quot;) and not str(_u.get(&quot;model&quot;, &quot;&quot;)).startswith(&quot;claude&quot;) and (_d.get(&quot;elapsed_s&quot;) or 0) &gt;= 2400:
+                LONG_MED.setdefault((res, _a, _role), []).append(codex_fixed(res, _a, _d, _role, _u))
+    for _k, _v in list(LONG_MED.items()):
+        if isinstance(_v, list): LONG_MED[_k] = {x: round(statistics.median(z[x] for z in _v)) for x in (&quot;input&quot;, &quot;cached&quot;, &quot;output&quot;)}
     P = {k: bool(d.get(&quot;passed&quot;)) and not (res.endswith(&quot;deepswe&quot;) and k in SF) for k, (d, _) in R.items()}
     print(f&quot;\n=== {res}{&#x27;（严格：改测试的按重判）&#x27; if strict else &#x27;&#x27;}   剔除坏题 {len(bad)}: {sorted(bad)}&quot;)
     print(f&quot;{&#x27;做法&#x27;:12s} {&#x27;通过&#x27;:&gt;8s} {&#x27;率&#x27;:&gt;6s} {&#x27;95%区间&#x27;:&gt;15s} {&#x27;总$&#x27;:&gt;8s} {&#x27;每题$中位&#x27;:&gt;9s} {&#x27;每题分中位&#x27;:&gt;9s} {&#x27;补跑&#x27;:&gt;4s} {&#x27;账号&#x27;:&gt;4s}&quot;)
