@@ -1,6 +1,7 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-10-24T10:42:12+08:00
+pubDatetime: 2026-10-26T09:28:14+08:00
+modDatetime: 2026-10-26
 title: "小模型写、大模型审：SWE-bench Pro Hard 与 DeepSWE 上的结对实验"
 slug: small-writer-big-reviewer-deepswe
 featured: false
@@ -9,7 +10,7 @@ tags:
   - "ai-agents"
   - "pair-programming"
   - "llm-eval"
-description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于 DeepSeek 单干；附实验细节、复现方法和全部脚本。"
+description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE 上通过 80.4%，显著好于两者各自单干；附实验细节、复现方法和全部脚本。"
 ---
 
 <style>
@@ -17,9 +18,9 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 </style>
 
 <div class="html-embed" lang="zh">
-<p class="subtitle">2026-10-23 · 数据截至 10-24。Sol 单干（max）用另一条模型服务线路的完整重跑数据；Sol 单干有一部分题用了那条线路重跑通过的结果（两次取好），见第 4 节。</p>
+<p class="subtitle">2026-10-23 · 数据截至 10-26。新增 Claude Opus 5.5 两组（用 Claude Code 跑）和一种新玩法「顾问模式」；跑满时限而失败的题放宽时限重跑过一次（见第 4 节）。Sol 单干（max）用另一条模型服务线路的完整重跑数据；<br>Sol 单干、Sol 写 + Sol 审两组，有一部分题用了那条线路重跑通过的结果（两次取好，标 †），见第 4 节；DeepSeek 写 + Sol 审只用原线路那一次。</p>
 <h2>一句话结论</h2>
-<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>，通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）；也高于 Sol 单干（72.3%）和 Sol 单干（max）（75.0%），但差距不显著（p=0.11 / 0.33）。<br>GPT 大模型单干（Sol、Sol max、Astra）和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 3–12 倍。把 Sol 的思考强度开到 max 也没有显著提升（p=0.58）。<br>SWE-bench Pro Hard 太容易，除 GLM 外所有做法都在 84–94%，分不出高下。</p>
+<p>在能拉开差距的 DeepSWE 上，<strong>便宜的 DeepSeek 写代码、GPT-6.1 Sol 当审查者</strong>最好：通过 90/112（80.4%），<br>显著好于 DeepSeek 单干（67.9%，p=0.009）；也高于 Sol 单干†（77.7%，两次取好）、Sol 单干（max）（75.0%）和 Opus 单干（74.1%），但不显著。<br>GPT 大模型单干（Sol、Sol max、Astra）和 <strong>Claude Opus 5.5 单干</strong>都和 DeepSeek 单干<strong>没有显著差别</strong>，却贵 2.5–13 倍。<br>Opus 当审查者（DeepSeek 写 + Opus 审，72.3%）也没有显著好于 DeepSeek 单干。<br>让大模型只出方案、只看报告、DeepSeek 多干活的<strong>顾问模式</strong>（DeepSeek 写 + Sol 顾问，64.3%）明显不如 DeepSeek 写 + Sol 审（7 : 25，p=0.002），连 DeepSeek 单干都没赢过。<br>SWE-bench Pro Hard 太容易，大多数做法都在 84–96%，分不出高下。</p>
 <hr>
 <h2>1. 我们想回答什么</h2>
 <ul><li>「小模型写 + 大模型审」能不能比「大模型自己写」更好、更便宜？</li><li>换不同的审查者（Sol / Astra / DeepSeek 自己）差多少？</li><li>大模型单干、开最高思考强度，值不值？</li></ul>
@@ -27,23 +28,28 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <table><thead><tr><th>题集</th><th>题数</th><th>为什么选它</th></tr></thead><tbody><tr><td>SWE-bench Pro V2 <strong>Hard</strong></td><td>51</td><td>V2 全集已被做到 87–99%，分不出做法；Hard 是 V2 里最难的子集</td></tr><tr><td><strong>DeepSWE</strong> v1.1</td><td>113（剔除 1 道标准答案都过不了的坏题后 112）</td><td>从零出题防泄题，厂商现在主推；区分度高</td></tr></tbody></table>
 <h2>3. 做法</h2>
 <p>「A 写 + B 审」表示 A 写代码、B 当审查者兼测试者；「X 单干」表示只有 X 一个模型。</p>
-<table><thead><tr><th>做法</th><th>写代码（思考强度）</th><th>审查（思考强度）</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>deepseek-flash（未设，服务默认）</td><td>—</td></tr><tr><td>GLM 单干</td><td>glm-5.3-flash（low）</td><td>—</td></tr><tr><td>Sol 单干</td><td>gpt-6.1-sol（未设 = medium）</td><td>—</td></tr><tr><td>Sol 单干（max）</td><td>gpt-6.1-sol（<strong>max</strong>）</td><td>—</td></tr><tr><td>Astra 单干</td><td>gpt-6-astra（未设，默认）</td><td>—</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>deepseek-flash</td><td>deepseek-flash</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>glm-5.3-flash（low）</td><td>deepseek-flash</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>deepseek-flash</td><td>gpt-6.1-sol（默认）</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>deepseek-flash</td><td>gpt-6-astra（默认）</td></tr><tr><td>Sol 写 + Sol 审</td><td>gpt-6.1-sol</td><td>gpt-6.1-sol（自己审自己）</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>写代码（思考强度）</th><th>审查（思考强度）</th></tr></thead><tbody><tr><td>DeepSeek 单干</td><td>deepseek-flash（未设，服务默认）</td><td>—</td></tr><tr><td>GLM 单干</td><td>glm-5.3-flash（low）</td><td>—</td></tr><tr><td>Sol 单干</td><td>gpt-6.1-sol（未设 = medium）</td><td>—</td></tr><tr><td>Sol 单干（max）</td><td>gpt-6.1-sol（<strong>max</strong>）</td><td>—</td></tr><tr><td>Astra 单干</td><td>gpt-6-astra（未设，默认）</td><td>—</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>deepseek-flash</td><td>deepseek-flash</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>glm-5.3-flash（low）</td><td>deepseek-flash</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>deepseek-flash</td><td>gpt-6.1-sol（默认）</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>deepseek-flash</td><td>gpt-6-astra（默认）</td></tr><tr><td>Sol 写 + Sol 审</td><td>gpt-6.1-sol</td><td>gpt-6.1-sol（自己审自己）</td></tr><tr><td>Opus 单干</td><td>claude-opus-5-5（medium）</td><td>—</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>deepseek-flash</td><td>claude-opus-5-5（medium）</td></tr><tr><td>DeepSeek 写 + Sol 顾问（顾问模式）</td><td>deepseek-flash（自己写测试、自己跑）</td><td>gpt-6.1-sol（默认；只读不写不跑）</td></tr></tbody></table>
+<p><strong>顾问模式</strong>是 10-25 新加的玩法，想让便宜的模型多干活、贵的模型少干活：<br>Sol 先只读代码，给出方案和 8–20 条验收用例；DeepSeek 照着把用例写成测试、写代码、跑测试，写完交一份报告；<br>Sol 只看报告和代码改动、不自己跑测试，不行就把意见发回，最多 2 轮。对比 DeepSeek 写 + Sol 审（Sol 自己动手测）。</p>
 <p>思考强度实测（同一道推理题，推理 token 数）：未设 367、medium 270、high 473、xhigh 1034、max 2555。未设时按 medium 处理（回显 medium）。</p>
 <h2>4. 跑法（harness）</h2>
-<ul><li><strong>Agent</strong>：Codex CLI <code>0.155.1</code>，在题目自带的 Docker 镜像里跑，<strong>断网</strong>（<code>--network none</code>）；唯一出口是一条 unix socket，转发到模型服务。</li><li><strong>单干</strong>：一个 Codex 会话做题；没写完就提示「继续」，最多 6 次。</li><li><strong>结对</strong>：A 写，写完交给 B；B 检查、跑测试，不通过就把意见发回 A，最多 5 轮，直到 B 回 <code>APPROVED</code>。</li><li><strong>时限</strong>：DeepSWE 每题 3 小时，Hard 每题 50 分钟（结对两方共用）。</li><li><strong>判分</strong>：全新容器，套上 agent 的代码改动，跑官方 <code>tests/test.sh</code>（不改动）。DeepSWE 判分容器也断网，只判已提交的代码。</li><li><strong>模型看不到判分测试</strong>：<code>tests/</code> 目录只在判分容器里出现；agent 容器里只有仓库原有的老测试。</li><li><strong>标准答案校验</strong>：每题顺手判一次官方标准答案；在所有机器上都过不了的题剔除（DeepSWE 剔除 <code>python-statemachine-state-data-scoping</code>）。</li><li><strong>补跑</strong>：答题过程被模型服务报错或超时打断的失败，都补跑一次；旧记录保留但不计入，统计用补跑结果。补跑后逐个核查了失败记录，剩下的失败都是模型自己说做完了、其实没做对。</li><li><strong>Sol 单干（max）整组重跑</strong>：这组换了一条模型服务线路，从头完整重跑了一遍（同一模型、同样设置），表里用的是重跑数据。两条线路逐题对比：DeepSWE 79 vs 84 题（4 : 9，p=0.27），Hard 46 vs 45 题，没有显著差别。</li><li><strong>Sol 单干部分题两次取好</strong>：Sol 单干也在那条线路上重跑过，中途因额度用完停了。完整跑完的题里（DeepSWE 52 题、Hard 50 题），<strong>重跑通过、原来没通过的题换成重跑结果</strong>（DeepSWE 6 题、Hard 2 题）；原来通过、重跑没通过的题（DeepSWE 7 题）保留原来的通过。这等于这些题给了 Sol 单干两次机会、取好的那次，其他做法都只有一次，所以 <strong>Sol 单干的分数偏高</strong>，和它相关的对比要打折看。两条线路在这些题上逐题对比是 6 : 7（DeepSWE）、2 : 0（Hard），本身没有显著差别。</li><li><strong>价格</strong>：一律按官方原价（Standard 档）记，美元/百万 token：</li></ul>
-<table><thead><tr><th>模型</th><th>未命中输入</th><th>命中缓存输入</th><th>输出</th></tr></thead><tbody><tr><td>deepseek-flash</td><td>0.15</td><td>0.03</td><td>0.60</td></tr><tr><td>glm-5.3-flash</td><td>0.15</td><td>0.03</td><td>0.50</td></tr><tr><td>gpt-6.1-sol</td><td>2.00</td><td>0.10</td><td>10.00</td></tr><tr><td>gpt-6-astra</td><td>10.00</td><td>1.00</td><td>50.00</td></tr></tbody></table>
+<ul><li><strong>Agent</strong>：Codex CLI <code>0.155.1</code>，在题目自带的 Docker 镜像里跑，<strong>断网</strong>（<code>--network none</code>）；唯一出口是一条 unix socket，转发到模型服务。</li><li><strong>Opus 用 Claude Code</strong>：两组 Opus 换成 Opus 自家的 agent，Claude Code <code>2.1.309</code>（同样断网、同一条 socket 出口、同样的提示词和时限）。思考强度显式设 <code>--effort medium</code>；关掉联网工具（WebSearch / WebFetch）；后台小任务和子代理也都用 Opus（服务上没有 Haiku）。在 DeepSeek 写 + Opus 审里，DeepSeek 仍用 Codex，只有审查者用 Claude Code。</li><li><strong>单干</strong>：一个 Codex 会话做题；没写完就提示「继续」，最多 6 次。</li><li><strong>结对</strong>：A 写，写完交给 B；B 检查、跑测试，不通过就把意见发回 A，最多 5 轮，直到 B 回 <code>APPROVED</code>。</li><li><strong>时限</strong>：DeepSWE 每题 3 小时，Hard 每题 50 分钟（结对两方共用）。跑满时限而失败的题放宽时限重跑过一次（见下面）。</li><li><strong>判分</strong>：全新容器，套上 agent 的代码改动，跑官方 <code>tests/test.sh</code>（不改动）。DeepSWE 判分容器也断网，只判已提交的代码。</li><li><strong>模型看不到判分测试</strong>：<code>tests/</code> 目录只在判分容器里出现；agent 容器里只有仓库原有的老测试。</li><li><strong>标准答案校验</strong>：每题顺手判一次官方标准答案；在所有机器上都过不了的题剔除（DeepSWE 剔除 <code>python-statemachine-state-data-scoping</code>）。</li><li><strong>补跑</strong>：答题过程被模型服务报错或超时打断的失败，都补跑一次；旧记录保留但不计入，统计用补跑结果。补跑后逐个核查了失败记录，剩下的失败都是模型自己说做完了、其实没做对。</li><li><strong>Sol 单干（max）整组重跑</strong>：这组换了一条模型服务线路，从头完整重跑了一遍（同一模型、同样设置），表里用的是重跑数据。两条线路逐题对比：DeepSWE 79 vs 84 题（4 : 9，p=0.27），Hard 46 vs 45 题，没有显著差别。</li><li><strong>两组 Sol 两次取好（†）</strong>：Sol 单干、Sol 写 + Sol 审这两组，也在另一条线路上整组重跑过（中途额度用完的题后来换账号补齐）。<strong>只在「重跑通过、原来没通过」时换成重跑结果</strong>，反过来的保留原来的通过。换掉的题数：</li></ul>
+<table><thead><tr><th>做法</th><th>DeepSWE 换了</th><th>Hard 换了</th><th>DeepSWE 只用原线路时</th></tr></thead><tbody><tr><td>Sol 单干†</td><td>12</td><td>3</td><td>75（67.0%）</td></tr><tr><td>Sol 写 + Sol 审†</td><td>17</td><td>2</td><td>68（60.7%）</td></tr></tbody></table>
+<p>  这等于这些题给了 Sol 两次机会、取好的那次，其他做法都只有一次，所以 <strong>† 组的分数偏高</strong>，和不带 † 的做法比要打折看。DeepSeek 写 + Sol 审也重跑过，但<strong>不换</strong>，表里只用原线路那一次。</p>
+<ul><li><strong>Opus 两次中断后从头重跑</strong>：10-24 晚模型服务把 Opus 5.5 下线约 15 小时（报 <code>model_not_found</code>），刚恢复时又满载（报 <code>Too many pending requests</code>）。这期间失败或没跑到的 145 题，等服务稳定后<strong>从头重跑一次</strong>，旧记录保留但不计入。</li><li><strong>跑满时限的失败放宽时限重跑</strong>：第一轮时模型服务不稳，Opus 每一步要等很久（DeepSWE 第一批每步中位 42 秒，后来补跑时 23.5 秒），很多题时间被等光了。<br>所以「跑满时限而失败」不算模型做错，10-25 把这些题<strong>放宽时限</strong>（Hard 50 分钟 → 100 分钟，DeepSWE 3 小时 → 6 小时）各重跑一次，旧记录保留但不计入。<br>所有做法里只有三组有这种失败：Opus 单干（Hard 18、DeepSWE 12）、DeepSeek 写 + Opus 审（Hard 4、DeepSWE 1）、GLM 写 + DeepSeek 审（DeepSWE 1），一共 36 题。<br>重跑结果：Hard 22 题过了 19 题，DeepSWE 14 题过了 8 题；重跑时最长一题只用了 84 分钟，<strong>没有一题再跑满原来的时限</strong>，说明之前是被服务拖慢，不是题做不完。</li><li><strong>Opus 用量</strong>：Claude Code 每轮结束才报用量，被时限截断的那轮报不出来；这些按会话记录逐条累加补上。会话记录看不到后台小调用，所以每题取两种算法中较大的那个。重跑过的题只算计入的那一次。</li><li><strong>顾问模式的三处处理</strong>：<br>- Sol 走另一条线路（同一模型），中途常被限流（429）。有 14 题 Sol 没有回复（方案或审查那一步拿不到），等于 DeepSeek 单干，这些<strong>作废重跑</strong>，旧记录保留但不计入。最终计入的每题 Sol 都给了方案和审查。<br>- Hard 的收卷脚本原来只取「还没提交的改动」，而顾问模式会让 DeepSeek 提交，最早 6 题收到空补丁。改成和开工时的版本比（已提交和未提交都算）后，<strong>Hard 整组重跑</strong>。<br>- 开工前残留的工作目录让一批题一开始就崩了，清掉后重跑。</li><li><strong>价格</strong>：一律按官方原价（Standard 档）记，美元/百万 token：</li></ul>
+<table><thead><tr><th>模型</th><th>未命中输入</th><th>命中缓存输入</th><th>输出</th></tr></thead><tbody><tr><td>deepseek-flash</td><td>0.15</td><td>0.03</td><td>0.60</td></tr><tr><td>glm-5.3-flash</td><td>0.15</td><td>0.03</td><td>0.50</td></tr><tr><td>gpt-6.1-sol</td><td>2.00</td><td>0.10</td><td>10.00</td></tr><tr><td>gpt-6-astra</td><td>10.00</td><td>1.00</td><td>50.00</td></tr><tr><td>claude-opus-5-5</td><td>4.00</td><td>0.20</td><td>20.00</td></tr></tbody></table>
+<p>Opus 另有写缓存，按输入价的 1.25 倍记。</p>
 <h2>5. 结果</h2>
 <h3>5.1 DeepSWE（112 题）</h3>
-<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>Sol 单干（max）</td><td>84</td><td>75.0%</td><td>66–82%</td><td>$117</td><td>$0.90</td><td>21.3</td></tr><tr><td>Sol 单干†</td><td>81</td><td>72.3%</td><td>63–80%</td><td>$84</td><td>$0.58</td><td>13.8</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>Sol 写 + Sol 审</td><td>68</td><td>60.7%</td><td>52–69%</td><td>$296</td><td>$1.85</td><td>22.0</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td><strong>DeepSeek 写 + Sol 审</strong></td><td><strong>90</strong></td><td><strong>80.4%</strong></td><td>72–87%</td><td>$163</td><td>$1.12</td><td>24.6</td></tr><tr><td>Sol 单干†</td><td>87</td><td>77.7%</td><td>69–84%</td><td>$83</td><td>$0.58</td><td>13.5</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$456</td><td>$2.85</td><td>15.3</td></tr><tr><td>Sol 写 + Sol 审†</td><td>85</td><td>75.9%</td><td>67–83%</td><td>$280</td><td>$1.82</td><td>21.6</td></tr><tr><td>Sol 单干（max）</td><td>84</td><td>75.0%</td><td>66–82%</td><td>$117</td><td>$0.90</td><td>21.3</td></tr><tr><td>Opus 单干</td><td>83</td><td>74.1%</td><td>65–81%</td><td>$422</td><td>$1.64</td><td>23.6</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>81</td><td>72.3%</td><td>63–80%</td><td>$703</td><td>$3.60</td><td>33.2</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>79</td><td>70.5%</td><td>62–78%</td><td>$123</td><td>$0.84</td><td>21.5</td></tr><tr><td>DeepSeek 单干</td><td>76</td><td>67.9%</td><td>59–76%</td><td><strong>$33</strong></td><td>$0.24</td><td>12.7</td></tr><tr><td>Astra 单干</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$412</td><td>$2.09</td><td>8.1</td></tr><tr><td>DeepSeek 写 + Sol 顾问（顾问模式）</td><td>72</td><td>64.3%</td><td>55–73%</td><td>$193</td><td>$1.40</td><td>15.7</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>66</td><td>58.9%</td><td>50–68%</td><td>$134</td><td>$0.69</td><td>36.2</td></tr><tr><td>GLM 单干</td><td>29</td><td>25.9%</td><td>19–35%</td><td>$25</td><td>$0.14</td><td>22.1</td></tr></tbody></table>
 <p>† 部分题两次取好（见第 4 节），分数偏高。</p>
 <p>配对检验（McNemar 精确检验，只看两种做法在同一题上一对一错的题）：</p>
-<table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 6</td><td><strong>0.009</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干†</td><td>17 : 8</td><td>0.108</td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干（max）</td><td>16 : 10</td><td>0.327</td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>23 : 10</td><td><strong>0.035</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>16 : 13</td><td>0.711</td></tr><tr><td>Sol 单干† vs DeepSeek 单干</td><td>18 : 13</td><td>0.473</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>20 : 12</td><td>0.215</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>17 : 21</td><td>0.627</td></tr><tr><td>Sol 单干（max）vs Sol 单干†（默认强度）</td><td>8 : 5</td><td>0.581</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）vs Sol 单干†</td><td>5 : 18</td><td><strong>0.011</strong></td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>44 : 7</td><td>&lt;0.001</td></tr></tbody></table>
+<table><thead><tr><th>对比</th><th>前者独赢 : 后者独赢</th><th>p</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 单干</td><td>20 : 6</td><td><strong>0.009</strong></td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干†</td><td>13 : 10</td><td>0.678</td></tr><tr><td>DeepSeek 写 + Sol 审 vs Sol 单干（max）</td><td>16 : 10</td><td>0.327</td></tr><tr><td>DeepSeek 写 + Sol 审 vs Opus 单干</td><td>19 : 12</td><td>0.281</td></tr><tr><td>DeepSeek 写 + Sol 审 vs DeepSeek 写 + Opus 审</td><td>16 : 7</td><td>0.093</td></tr><tr><td>DeepSeek 写 + Sol 顾问 vs DeepSeek 写 + Sol 审</td><td>7 : 25</td><td><strong>0.002</strong></td></tr><tr><td>DeepSeek 写 + Sol 顾问 vs DeepSeek 单干</td><td>13 : 17</td><td>0.585</td></tr><tr><td>DeepSeek 写 + Sol 顾问 vs Sol 单干†</td><td>6 : 21</td><td><strong>0.006</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs Astra 单干</td><td>23 : 10</td><td><strong>0.035</strong></td></tr><tr><td>DeepSeek 写 + Astra 审 vs DeepSeek 单干</td><td>19 : 10</td><td>0.136</td></tr><tr><td>DeepSeek 写 + Opus 审 vs DeepSeek 单干</td><td>18 : 13</td><td>0.473</td></tr><tr><td>DeepSeek 写 + Opus 审 vs Opus 单干</td><td>14 : 16</td><td>0.856</td></tr><tr><td>DeepSeek 写 + DeepSeek 审 vs DeepSeek 单干</td><td>16 : 13</td><td>0.711</td></tr><tr><td>Sol 单干† vs DeepSeek 单干</td><td>22 : 11</td><td>0.080</td></tr><tr><td>Sol 单干（max）vs DeepSeek 单干</td><td>20 : 12</td><td>0.215</td></tr><tr><td>Opus 单干 vs DeepSeek 单干</td><td>22 : 15</td><td>0.324</td></tr><tr><td>Opus 单干 vs Sol 单干†</td><td>8 : 12</td><td>0.503</td></tr><tr><td>Astra 单干 vs DeepSeek 单干</td><td>17 : 21</td><td>0.627</td></tr><tr><td>Sol 单干（max）vs Sol 单干†（默认强度）</td><td>4 : 7</td><td>0.549</td></tr><tr><td>Sol 写 + Sol 审（自己审自己）† vs Sol 单干†</td><td>5 : 7</td><td>0.774</td></tr><tr><td>GLM 写 + DeepSeek 审 vs GLM 单干</td><td>44 : 7</td><td>&lt;0.001</td></tr></tbody></table>
 <h3>5.2 SWE-bench Pro Hard（51 题）</h3>
-<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$36.8</td><td>$0.47</td><td>15.2</td></tr><tr><td>Sol 写 + Sol 审</td><td>47</td><td>92.2%</td><td>82–97%</td><td>$70.0</td><td>$0.93</td><td>11.4</td></tr><tr><td>Sol 单干†</td><td>47</td><td>92.2%</td><td>82–97%</td><td>$22.5</td><td>$0.39</td><td>7.7</td></tr><tr><td>Sol 单干（max）</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$27.4</td><td>$0.47</td><td>11.0</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$6.8</td><td>$0.10</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$15.3</td><td>$0.24</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$110.5</td><td>$1.47</td><td>9.2</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$17.6</td><td>$0.24</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.2</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>通过</th><th>通过率</th><th>95% 置信区间</th><th>总花费</th><th>每题花费中位</th><th>每题分钟中位</th></tr></thead><tbody><tr><td>Sol 写 + Sol 审†</td><td>49</td><td>96.1%</td><td>87–99%</td><td>$68.3</td><td>$0.92</td><td>11.4</td></tr><tr><td>DeepSeek 写 + Opus 审</td><td>49</td><td>96.1%</td><td>87–99%</td><td>$149.0</td><td>$2.80</td><td>36.5</td></tr><tr><td>DeepSeek 写 + Sol 审</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$36.8</td><td>$0.47</td><td>15.2</td></tr><tr><td>Sol 单干†</td><td>48</td><td>94.1%</td><td>84–98%</td><td>$22.4</td><td>$0.39</td><td>7.5</td></tr><tr><td>Sol 单干（max）</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$27.4</td><td>$0.47</td><td>11.0</td></tr><tr><td>Opus 单干</td><td>46</td><td>90.2%</td><td>79–96%</td><td>$127.4</td><td>$2.05</td><td>27.4</td></tr><tr><td>Astra 单干</td><td>45</td><td>88.2%</td><td>77–95%</td><td>$78.6</td><td>$1.07</td><td>4.2</td></tr><tr><td>DeepSeek 单干</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$6.8</td><td>$0.10</td><td>10.1</td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td>44</td><td>86.3%</td><td>74–93%</td><td>$15.3</td><td>$0.24</td><td>13.1</td></tr><tr><td>DeepSeek 写 + Astra 审</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$110.5</td><td>$1.47</td><td>9.2</td></tr><tr><td>DeepSeek 写 + Sol 顾问（顾问模式）</td><td>43</td><td>84.3%</td><td>72–92%</td><td>$41.5</td><td>$0.82</td><td>10.7</td></tr><tr><td>GLM 写 + DeepSeek 审</td><td>37</td><td>72.5%</td><td>59–83%</td><td>$17.6</td><td>$0.24</td><td>17.0</td></tr><tr><td>GLM 单干</td><td>24</td><td>47.1%</td><td>34–61%</td><td>$3.2</td><td>$0.04</td><td>9.5</td></tr></tbody></table>
 <p>† 同上，部分题两次取好。</p>
-<p>Hard 上只有 GLM 相关的对比显著（GLM 写 + DeepSeek 审 vs GLM 单干 15:2，p=0.002；DeepSeek 单干 vs GLM 单干 21:1，p&lt;0.001）。<br>其余都不显著，例如 DeepSeek 写 + Sol 审 vs DeepSeek 单干 6:2（p=0.29）。</p>
+<p>Hard 上显著的只有两类：GLM 相关（GLM 写 + DeepSeek 审 vs GLM 单干 15:2，p=0.002；DeepSeek 单干 vs GLM 单干 21:1，p&lt;0.001），<br>其余都不显著，例如 DeepSeek 写 + Sol 审 vs DeepSeek 单干 6:2（p=0.29）、Opus 单干 vs DeepSeek 单干 5:3（p=0.73）、<br>DeepSeek 写 + Sol 顾问 vs DeepSeek 写 + Sol 审 2:7（p=0.18）。<br>第一轮 Opus 单干在 Hard 上只有 31 题（60.8%），放宽时限重跑后是 46 题（见第 4 节）。</p>
 <h3>5.3 读法</h3>
-<ol><li><strong>结对有用，但审查者要比写的人强。</strong> DeepSeek 写 + Sol 审显著好于 DeepSeek 单干，也高于 Sol 单干（不显著）；DeepSeek 自己审自己（DeepSeek 写 + DeepSeek 审）没有显著提升。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra 单干 64–75%，DeepSeek 单干 68%，差别不显著，花费是 3–12 倍。</li><li><strong>max 思考强度不值。</strong> Sol max 比默认多 3 题（75.0% vs 72.3%，p=0.58），花费 1.4 倍（$117 vs $84）。它仍比 DeepSeek 写 + Sol 审少 6 题（16 : 10，p=0.33，不显著）；后者贵 40%（$163 vs $117）。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审反而低于 Sol 单干（60.7% vs 72.3%，p=0.011；Sol 单干部分题两次取好，这个差距偏大）。</li></ol>
+<ol><li><strong>结对有用，但要选对审查者。</strong> DeepSeek 写 + Sol 审显著好于 DeepSeek 单干（p=0.009），也高于 Sol 单干†（不显著，后者还两次取好）。DeepSeek 自己审自己没有显著提升；换 Opus 或 Astra 当审查者，也没有显著好于 DeepSeek 单干。</li><li><strong>大模型单干不比小模型单干强。</strong> Sol / Sol max / Astra / Opus 单干 64–78%，DeepSeek 单干 68%，差别都不显著，花费却是 2.5–13 倍。</li><li><strong>Opus 5.5 在这里不划算。</strong> 时限放宽后，Opus 单干 83 题，比 DeepSeek 单干多 7 题（不显著），花费 $422 vs $33；当审查者的那组 81 题、$703，比 DeepSeek 写 + Sol 审贵 4 倍还少 9 题。</li><li><strong>审查者要自己动手测。</strong> 顾问模式里 Sol 只出方案、看报告，不自己跑测试，结果比 Sol 自己测的那组少 18 题（p=0.002），也没赢 DeepSeek 单干，花费反而更高（DeepSWE $193 vs $163）：Sol 那一侧确实省了（$41 vs $52），但 DeepSeek 自己写测试、跑测试，它那一侧从 $112 涨到 $152。Hard 上也一样（$41.4 vs $36.8）。</li><li><strong>max 思考强度不值。</strong> Sol max 和 Sol 单干† 差不多（4 : 7，p=0.55），花费 1.4 倍（$117 vs $83）。</li><li><strong>大模型自己审自己没用。</strong> Sol 写 + Sol 审和 Sol 单干打平（5 : 7，p=0.77），花费 3.4 倍。</li></ol>
 <h2>6. 过程中发现的问题和处理</h2>
 <h3>6.1 判分时测试卡死</h3>
 <p>有 8 份答案判分时测试卡住，30 分钟上限超时；空闲时放宽到 2 小时重判，仍然全部超时。按失败计。<br>同一套测试，别的做法的答案几分钟就判完，所以问题出在<strong>这几份答案的代码</strong>。</p>
@@ -54,34 +60,41 @@ description: "便宜的 DeepSeek 写代码、GPT-6.1 Sol 审查，在 DeepSWE �
 <p>全部脚本附在文末附录（5 个 Python 文件，点开看全文）。下面的命令都在放脚本和题目的目录里跑。</p>
 <h3>7.0 做法和代号对照</h3>
 <p>脚本里每种做法用一个代号：</p>
-<table><thead><tr><th>做法</th><th>代号</th></tr></thead><tbody><tr><td>Sol 单干（max）</td><td><code>solo_solmax</code></td></tr><tr><td>Astra 单干</td><td><code>solo_astra</code></td></tr><tr><td>Sol 单干</td><td><code>solo_sol</code></td></tr><tr><td>DeepSeek 单干</td><td><code>solo_dsf</code></td></tr><tr><td>GLM 单干</td><td><code>solo_glm</code></td></tr><tr><td>DeepSeek 写 + Astra 审</td><td><code>dsf_t_astra</code></td></tr><tr><td>DeepSeek 写 + Sol 审</td><td><code>dsf_t_sol</code></td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td><code>dsf_t_dsf</code></td></tr><tr><td>GLM 写 + DeepSeek 审</td><td><code>glm_t_dsf</code></td></tr><tr><td>Sol 写 + Sol 审</td><td><code>sol_t_sol</code></td></tr></tbody></table>
+<table><thead><tr><th>做法</th><th>代号</th></tr></thead><tbody><tr><td>Sol 单干（max）</td><td><code>solo_solmax</code></td></tr><tr><td>Astra 单干</td><td><code>solo_astra</code></td></tr><tr><td>Sol 单干</td><td><code>solo_sol</code></td></tr><tr><td>DeepSeek 单干</td><td><code>solo_dsf</code></td></tr><tr><td>GLM 单干</td><td><code>solo_glm</code></td></tr><tr><td>DeepSeek 写 + Astra 审</td><td><code>dsf_t_astra</code></td></tr><tr><td>DeepSeek 写 + Sol 审</td><td><code>dsf_t_sol</code></td></tr><tr><td>DeepSeek 写 + DeepSeek 审</td><td><code>dsf_t_dsf</code></td></tr><tr><td>GLM 写 + DeepSeek 审</td><td><code>glm_t_dsf</code></td></tr><tr><td>Sol 写 + Sol 审</td><td><code>sol_t_sol</code></td></tr><tr><td>Opus 单干</td><td><code>solo_opus</code></td></tr><tr><td>DeepSeek 写 + Opus 审</td><td><code>dsf_t_opus</code></td></tr><tr><td>DeepSeek 写 + Sol 顾问（顾问模式）</td><td><code>dsf_a_sol</code></td></tr></tbody></table>
 <h3>7.1 准备</h3>
-<ol><li>一台 16 核 / 60G 的 Linux 机器，装 Docker。</li><li>题目：SWE-bench Pro V2 仓库（<code>SWE-bench_Pro-os/v2/tasks</code>）和 DeepSWE v1.1（<code>deep-swe/tasks</code>），和脚本放在同一目录；题单 <code>hard51.json</code>、<code>deepswe113.json</code>（题目 id 列表）。</li><li><code>bin/</code> 里放 Codex CLI 0.155.1（官方 musl 静态版 <code>codex</code> 和 <code>codex-code-mode-host</code>）、<code>rg</code>，以及附件里的 <code>bin/inrelay.py</code>（容器里的小转发器）；整个目录只读挂进容器 <code>/opt/pbcodex</code>。</li><li>一个兼容 OpenAI Responses 接口的模型服务，地址和令牌写进 <code>~/.pairbench.env</code>：<code>PAIRBENCH_GATEWAY_URL=…</code>、<code>PAIRBENCH_GATEWAY_TOKEN=…</code>（令牌只按变量名传给容器，不打印）。路径不是 <code>/v1</code> 时设 <code>PB_GW_PATH</code>。</li></ol>
+<ol><li>一台 16 核 / 60G 的 Linux 机器，装 Docker。</li><li>题目：SWE-bench Pro V2 仓库（<code>SWE-bench_Pro-os/v2/tasks</code>）和 DeepSWE v1.1（<code>deep-swe/tasks</code>），和脚本放在同一目录；题单 <code>hard51.json</code>、<code>deepswe113.json</code>（题目 id 列表）。</li><li><code>bin/</code> 里放 Codex CLI 0.155.1（官方 musl 静态版 <code>codex</code> 和 <code>codex-code-mode-host</code>）、<code>rg</code>，以及附件里的 <code>bin/inrelay.py</code>（容器里的小转发器）；跑 Opus 还要放 Claude Code 2.1.309（<code>claude-linux-x64</code> 和 musl 版 <code>claude-linux-x64-musl</code>）。整个目录只读挂进容器 <code>/opt/pbcodex</code>。</li><li>一个兼容 OpenAI Responses 接口的模型服务，地址和令牌写进 <code>~/.pairbench.env</code>：<code>PAIRBENCH_GATEWAY_URL=…</code>、<code>PAIRBENCH_GATEWAY_TOKEN=…</code>（令牌只按变量名传给容器，不打印）。路径不是 <code>/v1</code> 时设 <code>PB_GW_PATH</code>。跑 Opus 时，同一个服务还要提供 Anthropic <code>/v1/messages</code> 接口。</li></ol>
 <h3>7.2 跑一种做法</h3>
 <pre><code>set -a &amp;&amp; . ~/.pairbench.env &amp;&amp; set +a
 PB_BENCH=deepswe RES=results-deepswe python3 run_swepro.py dsf_t_sol --tasks deepswe113.json --par 8
-PB_BENCH=hard    RES=results-hard    python3 run_swepro.py dsf_t_sol --tasks hard51.json     --par 8</code></pre>
+PB_BENCH=hard    RES=results-hard    python3 run_swepro.py dsf_t_sol --tasks hard51.json     --par 8
+# 顾问模式（顾问换 Opus：PB_ADV_MODEL=opus → dsf_a_opus）
+PB_BENCH=deepswe RES=results-deepswe PB_ADV_MODEL=sol python3 run_advice.py deepswe113.json 4</code></pre>
 <ul><li>模型和思考强度在 <code>run_swepro.py</code> 的 <code>MODELS</code> / <code>ARMS</code> 里，提示词也在里面。</li><li>每题结果写 <code>results-*/&lt;代号&gt;/&lt;题&gt;.json</code>（含用量、用时、判分细节）和 <code>.patch</code>（模型的代码改动）。</li></ul>
 <h3>7.3 补跑与重判</h3>
 <pre><code># 被服务报错/超时打断的失败：旧记录移到 _superseded/，再跑一次，记录带 rerun_reason
 # jobs.json 形如 [{&quot;arm&quot;: &quot;solo_sol&quot;, &quot;id&quot;: &quot;&lt;题&gt;&quot;, &quot;why&quot;: &quot;&lt;原因&gt;&quot;}]
 PB_BENCH=deepswe RES=results-deepswe python3 rerun_driver.py jobs.json 4
+# 跑满时限而失败的：放宽时限再跑（秒；这里 Hard 100 分钟、DeepSWE 6 小时）
+PB_BUDGET_S=6000  PB_BENCH=hard    RES=results-hard    python3 rerun_driver.py tcap-hard.json 4
+PB_BUDGET_S=21600 PB_BENCH=deepswe RES=results-deepswe python3 rerun_driver.py tcap-deepswe.json 4
 # 判分超时的放宽到 2 小时重判
 PB_BENCH=deepswe RES=results-deepswe python3 regrade_long.py 3 &lt;代号&gt;/&lt;题&gt; ...</code></pre>
 <h3>7.4 统计</h3>
 <pre><code># 多台机器时，把各机器的 results-* 拷到 collected-results-*/&lt;机器名&gt;/ 下；单机就放一个子目录
 python3 report.py            # 通过率 + Wilson 置信区间 + 花费 + 用时 + McNemar
-PB_ACCT_ARMS=solo_solmax PB_ACCT_PARTIAL=solo_sol python3 report.py   # 前者整组用 collected-results-*-af/ 下的重跑数据；后者在 clean-&lt;代号&gt;.json 列出的题里只换「重跑通过、原来没过」的</code></pre>
+PB_ACCT_ARMS=solo_solmax PB_ACCT_PARTIAL=solo_sol,sol_t_sol python3 report.py
+# 前者整组用 collected-results-*-af/ 下的重跑数据；后者在 clean-&lt;代号&gt;.json 列出的题里只换「重跑通过、原来没过」的
+# Opus 用量：目录里有 opus-usage-from-transcripts.json（按会话记录重算）时，每题取它和结果文件里较大的那个</code></pre>
 <p>取数规则：去掉占位；同一 (做法, 题) 有多份时优先补跑记录，其次取开工最早的；剔除标准答案都过不了的题；价格按原价。</p>
 <h2>8. 局限</h2>
-<ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）用的是换线路后的完整重跑数据；Sol 单干部分题两次取好、分数偏高（见第 4 节）；DeepSeek 写 + Sol 审、Sol 写 + Sol 审仍是原线路数据。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
+<ul><li>每个 (做法, 题) 只跑了一次，没有重复跑估计随机性。</li><li>Sol 单干（max）用的是换线路后的完整重跑数据；Sol 单干、Sol 写 + Sol 审部分题两次取好、分数偏高（见第 4 节）；DeepSeek 写 + Sol 审只用原线路一次。和不带 † 的做法比（DeepSeek、Astra、Opus、Sol max），差距要打折看。</li><li>Opus 用的是 Claude Code，其他模型用的是 Codex；agent 不同本身会影响分数。跑满时限的失败只给 Opus 和 GLM 那几组放宽时限重跑了一次（其他做法没有这种失败），等于这几题多给了一次机会。</li><li>顾问模式的 Sol 走另一条线路，作废了 14 题无回复的结果后重跑；它只测了 Sol 一种顾问。</li><li>Hard 已接近饱和，结论主要来自 DeepSWE。</li><li>思考强度用的是默认（medium）；榜单常用最高档，这会让 GPT 单干分数低于公开榜单。</li></ul>
 <h2>附录：脚本</h2>
-<table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code></td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 置信区间、花费、用时、McNemar 配对检验</td></tr></tbody></table>
+<table><thead><tr><th>文件</th><th>做什么</th></tr></thead><tbody><tr><td><code>run_swepro.py</code></td><td>主程序：拉镜像、起断网容器、跑 Codex 或 Claude Code（单干或结对）、判分、记用量和用时</td></tr><tr><td><code>run_advice.py</code></td><td>顾问模式（<code>dsf_a_sol</code>）：顾问只读代码出方案和验收用例、最后看报告；DeepSeek 写测试、写代码、跑测试</td></tr><tr><td><code>rerun_driver.py</code></td><td>补跑一批 (做法, 题)，旧记录挪到 <code>_superseded/</code>；设 <code>PB_BUDGET_S</code> 可放宽时限</td></tr><tr><td><code>regrade_long.py</code></td><td>答案不重做，把判分时限放宽到 2 小时重判</td></tr><tr><td><code>bin/inrelay.py</code></td><td>断网容器里的转发器：把 <code>127.0.0.1:18080</code> 上的请求经 unix socket 交给宿主，再由宿主发给模型服务</td></tr><tr><td><code>report.py</code></td><td>汇总：通过率、Wilson 置信区间、花费、用时、McNemar 配对检验</td></tr></tbody></table>
 <details><summary><code>run_swepro.py</code></summary>
 <pre><code>#!/usr/bin/env python3
 &quot;&quot;&quot;SWE-bench Pro V2 上跑结对：agent 在题目自带的容器里改代码，判分在全新容器里跑官方 tests/test.sh。
 <span></span>
-模型都经一个兼容 OpenAI Responses 接口的模型服务调用（deepseek-flash / glm-5.3-flash / gpt-6.1-sol / gpt-6-astra）。
+模型都经一个兼容 OpenAI Responses 接口的模型服务调用（deepseek-flash / glm-5.3-flash / gpt-6.1-sol / gpt-6-astra）；Opus 经同一服务的 Anthropic 接口，用 Claude Code 跑。
 - 每道题一个镜像 ghcr.io/scaleapi/swe-bench_pro-v2:&lt;id&gt;；同一道题的几个做法共用一次拉取，全部判完就删镜像。
 - codex（官方 musl 静态版 0.155.1）只读挂进容器，用 docker exec 在容器里跑，所以 agent 的命令都在题目环境里执行。
 - 结对协议：开发者写完 → 独立测试员只按题目写自己的测试去跑 → REVISE 带反例打回，最多 5 轮。
@@ -105,8 +118,11 @@ GW = os.environ.get(&quot;PAIRBENCH_GATEWAY_URL&quot;, &quot;&quot;).rstrip(&quo
 # 官方锁定协议：每题 50 分钟硬上限（结对两方共用），容器里用 timeout 掐，到点照样抓 diff 去判
 # DeepSWE 官方 agent 上限 10800s（3 小时）
 BUDGET_S, MAX_CONT, MAX_REVIEW = (10800 if BENCH == &quot;deepswe&quot; else 50 * 60) - 60, 6, 5
+BUDGET_S = int(os.environ.get(&quot;PB_BUDGET_S&quot;, BUDGET_S))   # 10-25：跑满时限的失败题放宽时限重跑时用
 AGENT_GW = &quot;http://127.0.0.1:18080&quot;   # agent 容器断网，只能经这个回环端口 -&gt; 宿主转发器 -&gt; 模型服务
 GW_PATH = os.environ.get(&quot;PB_GW_PATH&quot;, &quot;/v1&quot;)  # local-pool proxy path override
+ACCT = set(filter(None, os.environ.get(&quot;PB_ACCT_MODELS&quot;, &quot;&quot;).split(&quot;,&quot;)))
+CLAUDE_CODE = {&quot;opus&quot;}   # 10-24：这些模型改用 Claude Code 跑（容器里 /opt/pbcodex/claude-linux-x64[-musl]），其余仍用 Codex   # 10-23：这些模型走 /acct/v1（宿主上的路由转到另一条模型服务线路），其余走默认线路
 SOCK = Path(os.environ.get(&quot;PB_SOCK&quot;, T / (&quot;sock-&quot; + BENCH)))   # 每套评测一个转发口：两个进程抢同一个 gw.sock 会互相顶掉
 GRADE_CAP_S = 1800 if BENCH == &quot;deepswe&quot; else 3000
 # 每个容器的资源上限；PAR_FILE 里写同时跑几道题（跑着跑着可以改，autoscale 会改它）
@@ -119,8 +135,8 @@ ARMS = {&quot;solo_dsf&quot;: (&quot;dsf&quot;, None), &quot;solo_glm&quot;: (&q
         &quot;dsf_t_astra&quot;: (&quot;dsf&quot;, &quot;astra&quot;),
         &quot;solo_sol&quot;: (&quot;sol&quot;, None), &quot;solo_astra&quot;: (&quot;astra&quot;, None),
         &quot;sol_t_sol&quot;: (&quot;sol&quot;, &quot;sol&quot;),
-        &quot;solo_solmax&quot;: (&quot;solmax&quot;, None)}   # 10-22 加：Sol 推理开到 max 单干（榜单用 max；不设时模型服务默认 medium）   # 10-22 加：Sol 写 + Sol 审   # 10-22 加：大模型单干对照   # 10-21 加：最强的 GPT 当审查者
-MODELS = {&quot;glm&quot;: (&quot;glm-5.3-flash&quot;, &quot;low&quot;), &quot;dsf&quot;: (&quot;deepseek-flash&quot;, &quot;&quot;), &quot;sol&quot;: (&quot;gpt-6.1-sol&quot;, &quot;&quot;), &quot;astra&quot;: (&quot;gpt-6-astra&quot;, &quot;&quot;), &quot;solmax&quot;: (&quot;gpt-6.1-sol&quot;, &quot;max&quot;)}
+        &quot;solo_solmax&quot;: (&quot;solmax&quot;, None), &quot;solo_opus&quot;: (&quot;opus&quot;, None), &quot;dsf_t_opus&quot;: (&quot;dsf&quot;, &quot;opus&quot;)}   # 10-22 加：Sol 推理开到 max 单干（榜单用 max；不设时模型服务默认 medium）   # 10-22 加：Sol 写 + Sol 审   # 10-22 加：大模型单干对照   # 10-21 加：最强的 GPT 当审查者
+MODELS = {&quot;glm&quot;: (&quot;glm-5.3-flash&quot;, &quot;low&quot;), &quot;dsf&quot;: (&quot;deepseek-flash&quot;, &quot;&quot;), &quot;sol&quot;: (&quot;gpt-6.1-sol&quot;, &quot;&quot;), &quot;astra&quot;: (&quot;gpt-6-astra&quot;, &quot;&quot;), &quot;solmax&quot;: (&quot;gpt-6.1-sol&quot;, &quot;max&quot;), &quot;opus&quot;: (&quot;claude-opus-5-5&quot;, &quot;medium&quot;)}   # 10-24 加：Opus 5.5，用 Claude Code 跑
 <span></span>
 <span></span>
 def log(*a):
@@ -273,12 +289,14 @@ class DockerCodex:
 <span></span>
     def __init__(self, who, cname, root, role, deadline):
         self.model, self.effort = MODELS[who]; self.deadline = deadline
+        self.path = &quot;/acct/v1&quot; if who in ACCT else GW_PATH
         self.cname, self.root, self.home, self.thread = cname, root, f&quot;/pbhome/codex-{role}&quot;, None
         self.usage = {&quot;model&quot;: self.model, &quot;input&quot;: 0, &quot;cached&quot;: 0, &quot;output&quot;: 0, &quot;turns&quot;: 0}
+        if who in ACCT: self.usage[&quot;route&quot;] = &quot;acct&quot;
 <span></span>
     def turn(self, text):
         cfg = [&quot;-c&quot;, &quot;model_provider=pb&quot;,
-               &quot;-c&quot;, f&quot;model_providers.pb={{ name=&#x27;pb&#x27;, base_url=&#x27;{AGENT_GW}{GW_PATH}&#x27;, env_key=&#x27;PAIRBENCH_GATEWAY_TOKEN&#x27;, wire_api=&#x27;responses&#x27; }}&quot;,
+               &quot;-c&quot;, f&quot;model_providers.pb={{ name=&#x27;pb&#x27;, base_url=&#x27;{AGENT_GW}{self.path}&#x27;, env_key=&#x27;PAIRBENCH_GATEWAY_TOKEN&#x27;, wire_api=&#x27;responses&#x27; }}&quot;,
                &quot;-c&quot;, &quot;model_context_window=258400&quot;, &quot;-c&quot;, &quot;web_search=&#x27;disabled&#x27;&quot;]
         if self.effort: cfg += [&quot;-c&quot;, f&quot;model_reasoning_effort={self.effort}&quot;]
         common = [&quot;--json&quot;, &quot;--skip-git-repo-check&quot;, &quot;--ignore-user-config&quot;, &quot;--dangerously-bypass-approvals-and-sandbox&quot;,
@@ -311,6 +329,66 @@ class DockerCodex:
         if not reply and re.search(r&quot;401|403|unauthorized|invalid_api_key&quot;, err, re.I): raise GatewayDown(err)
         if not reply: log(&quot;NOREPLY&quot;, self.cname, &quot; &quot;.join((err or perr[-300:]).split())[:300])   # 试水排错：别把错误吞掉
         return reply or f&quot;(no reply; {err or perr[-300:]})&quot;
+<span></span>
+<span></span>
+<span></span>
+class DockerClaude:
+    &quot;&quot;&quot;容器里的一个 Claude Code 会话（10-24 加，Opus 用）：第一轮 claude -p，之后 --resume &lt;session&gt;。
+    提示词走 stdin；令牌只按变量名传进容器；会话记录落在 /pbhome/claude-&lt;role&gt;。断网环境里关掉联网工具。&quot;&quot;&quot;
+<span></span>
+    def __init__(self, who, cname, root, role, deadline):
+        self.model, self.effort = MODELS[who]; self.deadline = deadline
+        self.cname, self.root, self.home, self.thread = cname, root, f&quot;/pbhome/claude-{role}&quot;, None
+        self.usage = {&quot;model&quot;: self.model, &quot;input&quot;: 0, &quot;cached&quot;: 0, &quot;cache_write&quot;: 0, &quot;output&quot;: 0, &quot;turns&quot;: 0,
+                      &quot;harness&quot;: &quot;claude-code&quot;, &quot;cc_cost_usd&quot;: 0.0}
+        os.environ[&quot;ANTHROPIC_AUTH_TOKEN&quot;] = os.environ[&quot;PAIRBENCH_GATEWAY_TOKEN&quot;]
+<span></span>
+    def turn(self, text):
+        left = int(self.deadline - time.time())
+        if left &lt; 60: return &quot;(no reply; budget exhausted)&quot;
+        m = self.model
+        env = {&quot;ANTHROPIC_BASE_URL&quot;: AGENT_GW, &quot;CLAUDE_CONFIG_DIR&quot;: self.home, &quot;IS_SANDBOX&quot;: &quot;1&quot;,
+               &quot;CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC&quot;: &quot;1&quot;, &quot;DISABLE_AUTOUPDATER&quot;: &quot;1&quot;,
+               # 模型服务上没有 Haiku：后台小活和子代理也用同一个模型
+               &quot;ANTHROPIC_DEFAULT_HAIKU_MODEL&quot;: m, &quot;ANTHROPIC_DEFAULT_SONNET_MODEL&quot;: m, &quot;ANTHROPIC_DEFAULT_OPUS_MODEL&quot;: m,
+               &quot;CLAUDE_CODE_SUBAGENT_MODEL&quot;: m, &quot;BASH_DEFAULT_TIMEOUT_MS&quot;: &quot;600000&quot;, &quot;BASH_MAX_TIMEOUT_MS&quot;: &quot;1800000&quot;}
+        args = [&quot;-p&quot;, &quot;--output-format&quot;, &quot;stream-json&quot;, &quot;--verbose&quot;, &quot;--model&quot;, m,
+                &quot;--dangerously-skip-permissions&quot;, &quot;--disallowedTools&quot;, &quot;WebSearch,WebFetch&quot;]
+        if self.effort: args += [&quot;--effort&quot;, self.effort]
+        if self.thread: args += [&quot;--resume&quot;, self.thread]
+        pick = (&#x27;B=/opt/pbcodex/claude-linux-x64; ls /lib/ld-musl* &gt;/dev/null 2&gt;&amp;1 &amp;&amp; B=/opt/pbcodex/claude-linux-x64-musl; &#x27;
+                f&#x27;mkdir -p {self.home} &amp;&amp; exec timeout -k 20 {left} &quot;$B&quot; &quot;$@&quot;&#x27;)
+        cmd = [&quot;docker&quot;, &quot;exec&quot;, &quot;-i&quot;, &quot;-w&quot;, self.root, &quot;-e&quot;, &quot;ANTHROPIC_AUTH_TOKEN&quot;]
+        for k, v in env.items(): cmd += [&quot;-e&quot;, f&quot;{k}={v}&quot;]
+        cmd += [self.cname, &quot;bash&quot;, &quot;-c&quot;, f&quot;export PATH=$PATH:/opt/pbcodex; {pick}&quot;, &quot;_&quot;] + args
+        try:
+            p = subprocess.run(cmd, input=text, capture_output=True, text=True, timeout=left + 60)
+            out, perr = p.stdout, p.stderr
+        except subprocess.TimeoutExpired as e:
+            out, perr = (e.stdout or b&quot;&quot;).decode() if isinstance(e.stdout, bytes) else (e.stdout or &quot;&quot;), &quot;turn timeout&quot;
+            dexec(self.cname, &quot;pkill -f /opt/pbcodex/claude-linux || true&quot;)
+        reply, err = &quot;&quot;, &quot;&quot;
+        for line in out.splitlines():
+            try: j = json.loads(line)
+            except Exception: continue
+            t = j.get(&quot;type&quot;)
+            if t == &quot;system&quot; and j.get(&quot;subtype&quot;) == &quot;init&quot; and not self.thread: self.thread = j.get(&quot;session_id&quot;)
+            elif t == &quot;result&quot;:
+                self.thread = j.get(&quot;session_id&quot;) or self.thread
+                if j.get(&quot;is_error&quot;): err = json.dumps(j)[:400]
+                else: reply = j.get(&quot;result&quot;) or &quot;&quot;
+                for u in (j.get(&quot;modelUsage&quot;) or {}).values():   # 每个模型一份：未命中输入 / 命中缓存 / 写缓存 / 输出
+                    cr, cw = u.get(&quot;cacheReadInputTokens&quot;, 0), u.get(&quot;cacheCreationInputTokens&quot;, 0)
+                    self.usage[&quot;input&quot;] += u.get(&quot;inputTokens&quot;, 0) + cr + cw; self.usage[&quot;cached&quot;] += cr
+                    self.usage[&quot;cache_write&quot;] += cw; self.usage[&quot;output&quot;] += u.get(&quot;outputTokens&quot;, 0)
+                self.usage[&quot;cc_cost_usd&quot;] += float(j.get(&quot;total_cost_usd&quot;) or 0); self.usage[&quot;turns&quot;] += 1
+        if not reply and re.search(r&quot;401|403|unauthorized|authentication_error|invalid.api.key&quot;, err + perr, re.I): raise GatewayDown(err or perr[-300:])
+        if not reply: log(&quot;NOREPLY&quot;, self.cname, &quot; &quot;.join((err or perr[-300:]).split())[:300])
+        return reply or f&quot;(no reply; {err or perr[-300:]})&quot;
+<span></span>
+<span></span>
+def agent(who, *a):
+    return (DockerClaude if who in CLAUDE_CODE else DockerCodex)(who, *a)
 <span></span>
 <span></span>
 GOAL = &quot;&quot;&quot;You are resolving an issue in the repository at {root}. This is a normal engineering task.
@@ -402,10 +480,10 @@ def run_job(arm, tid, img):
         instr = (TASKS / tid / &quot;instruction.md&quot;).read_text()
         who, tester = ARMS[arm]
         deadline = t0 + BUDGET_S
-        dev = DockerCodex(who, cname, root, &quot;dev&quot;, deadline)
+        dev = agent(who, cname, root, &quot;dev&quot;, deadline)
         if tester:
             card = TESTER_CARD.format(root=root, instruction=instr)
-            rev = DockerCodex(tester, cname, root, &quot;tester&quot;, deadline)
+            rev = agent(tester, cname, root, &quot;tester&quot;, deadline)
             rev.turn(card + &quot;\n\nFor now reply with just OK; the developer&#x27;s first message will follow.&quot;)
         reply = dev.turn(GOAL.format(root=root, instruction=instr)); rec[&quot;turns&quot;] += 1
         for _ in range(MAX_CONT):
@@ -555,18 +633,20 @@ with ThreadPoolExecutor(int(sys.argv[1])) as ex: list(ex.map(one, jobs))
 <pre><code>#!/usr/bin/env python3
 &quot;&quot;&quot;10-23 汇总：每套题每种做法的 通过率(95% Wilson) / 总花费 / 每题花费中位 / 每题分钟中位，外加配对 McNemar。
 取数：collected-&lt;RES&gt;/&lt;机器&gt;/&lt;做法&gt;/&lt;题&gt;.json；去占位；同 (做法,题) 多份时 优先补跑记录(rerun_reason)，再取开工早的；
-剔除标准答案在所有机器上都判不过的题；价格一律按原价（Standard 档，不乘 fast 倍率）。&quot;&quot;&quot;
+剔除标准答案在所有机器上都判不过的题；价格一律按原价（Standard 档，不乘 fast 倍率）。
+--strict：DeepSWE 上「改了原有测试」的通过答案，按去掉那些改动后的重判结果算（strict-out-local/）。&quot;&quot;&quot;
 import json, math, statistics as st, sys
 from pathlib import Path
 B = Path(__file__).resolve().parent
 PRICE = {&quot;glm-5.3-flash&quot;: (0.15, 0.03, 0.50), &quot;deepseek-flash&quot;: (0.15, 0.03, 0.60),
          &quot;gpt-6.1-sol&quot;: (2.00, 0.10, 10.00), &quot;gpt-6-astra&quot;: (10.00, 1.00, 50.00),
          &quot;claude-opus-5-5&quot;: (4.00, 0.20, 20.00)}   # Opus 写缓存另按 1.25 倍输入价（5 分钟缓存），见 usd()   # 美元/百万 token：未命中输入, 命中输入, 输出
-ORDER = [&quot;solo_dsf&quot;, &quot;solo_glm&quot;, &quot;solo_sol&quot;, &quot;solo_solmax&quot;, &quot;solo_astra&quot;, &quot;dsf_t_dsf&quot;, &quot;glm_t_dsf&quot;, &quot;dsf_t_sol&quot;, &quot;dsf_t_astra&quot;, &quot;sol_t_sol&quot;, &quot;solo_opus&quot;, &quot;dsf_t_opus&quot;]
+ORDER = [&quot;solo_dsf&quot;, &quot;solo_glm&quot;, &quot;solo_sol&quot;, &quot;solo_solmax&quot;, &quot;solo_astra&quot;, &quot;dsf_t_dsf&quot;, &quot;glm_t_dsf&quot;, &quot;dsf_t_sol&quot;, &quot;dsf_a_sol&quot;, &quot;dsf_t_astra&quot;, &quot;sol_t_sol&quot;, &quot;solo_opus&quot;, &quot;dsf_t_opus&quot;]
 PAIRS = [(&quot;solo_sol&quot;, &quot;solo_dsf&quot;), (&quot;solo_solmax&quot;, &quot;solo_dsf&quot;), (&quot;solo_astra&quot;, &quot;solo_dsf&quot;), (&quot;solo_solmax&quot;, &quot;solo_sol&quot;),
          (&quot;solo_astra&quot;, &quot;solo_sol&quot;), (&quot;sol_t_sol&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_astra&quot;, &quot;solo_dsf&quot;),
          (&quot;dsf_t_dsf&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_astra&quot;, &quot;solo_astra&quot;), (&quot;glm_t_dsf&quot;, &quot;solo_glm&quot;), (&quot;solo_dsf&quot;, &quot;solo_glm&quot;),
-         (&quot;solo_opus&quot;, &quot;solo_dsf&quot;), (&quot;solo_opus&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_opus&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_opus&quot;, &quot;solo_opus&quot;), (&quot;dsf_t_opus&quot;, &quot;dsf_t_sol&quot;)]
+         (&quot;solo_opus&quot;, &quot;solo_dsf&quot;), (&quot;solo_opus&quot;, &quot;solo_sol&quot;), (&quot;dsf_t_opus&quot;, &quot;solo_dsf&quot;), (&quot;dsf_t_opus&quot;, &quot;solo_opus&quot;), (&quot;dsf_t_opus&quot;, &quot;dsf_t_sol&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_solmax&quot;), (&quot;dsf_t_sol&quot;, &quot;solo_opus&quot;), (&quot;sol_t_sol&quot;, &quot;solo_dsf&quot;),
+         (&quot;dsf_a_sol&quot;, &quot;dsf_t_sol&quot;), (&quot;dsf_a_sol&quot;, &quot;solo_dsf&quot;), (&quot;dsf_a_sol&quot;, &quot;solo_sol&quot;)]   # 10-26 顾问模式
 def usd(u):
     if not u: return 0.0
     p = PRICE[u[&quot;model&quot;]]; return ((u[&quot;input&quot;] - u[&quot;cached&quot;]) * p[0] + u[&quot;cached&quot;] * p[1] + u[&quot;output&quot;] * p[2] + u.get(&quot;cache_write&quot;, 0) * p[0] * 0.25) / 1e6
@@ -576,7 +656,7 @@ def mcnemar(b, c):
     n = b + c
     return 1.0 if n == 0 else min(1.0, 2 * sum(math.comb(n, i) for i in range(min(b, c) + 1)) / 2 ** n)
 import os
-ACCT_ARMS = set(filter(None, os.environ.get(&quot;PB_ACCT_ARMS&quot;, &quot;&quot;).split(&quot;,&quot;)))   # 这些做法改用整组重跑的那份（collected-&lt;RES&gt;-af），原来那份不用
+ACCT_ARMS = set(filter(None, os.environ.get(&quot;PB_ACCT_ARMS&quot;, &quot;&quot;).split(&quot;,&quot;)))   # 10-23：这些做法改用另一条线路重跑的那份（collected-&lt;RES&gt;-af），原线路那份不用
 def load(res):
     best, gold = {}, {}
     files = [f for f in (B / f&quot;collected-{res}&quot;).glob(&quot;*/*/*.json&quot;) if f.parent.name not in ACCT_ARMS]
@@ -594,22 +674,40 @@ def load(res):
         cf = B / f&quot;collected-{res}-af&quot; / f&quot;clean-{arm}.json&quot;
         if not cf.exists(): continue
         for t in json.loads(cf.read_text())[&quot;clean&quot;]:
-            for f in (B / f&quot;collected-{res}-af&quot;).glob(f&quot;*/{arm}/{t}.json&quot;):
-                d = json.loads(f.read_text())
+            # 10-25：同一题在两台机器上可能各有一份（被打断的旧份 + 重跑份），有重跑份就只看重跑份
+            cands = [(json.loads(f.read_text()), f) for f in (B / f&quot;collected-{res}-af&quot;).glob(f&quot;*/{arm}/{t}.json&quot;)]
+            cands = [x for x in cands if not x[0].get(&quot;placeholder&quot;) and &quot;id&quot; in x[0]]
+            rr = [x for x in cands if x[0].get(&quot;rerun_reason&quot;)]
+            for d, f in (rr or cands)[:1]:
                 old = best.get((arm, t))
                 if not d.get(&quot;placeholder&quot;) and &quot;id&quot; in d and d.get(&quot;passed&quot;) and not (old and old[1].get(&quot;passed&quot;)):
                     best[(arm, t)] = ((-1, 0), d, f)
     bad = {t for t, v in gold.items() if not any(v)}
     return {k: (d, f) for k, (_, d, f) in best.items() if k[1] not in bad}, bad
+def strict_fail():
+    out = set()
+    for f in (B / &quot;strict-out-local&quot;).glob(&quot;*.json&quot;):
+        j = json.loads(f.read_text())
+        if not j[&quot;grade&quot;].get(&quot;reward&quot;): out.add((j[&quot;arm&quot;], j[&quot;id&quot;]))
+    return out
+# 10-25：Opus（Claude Code）用量。结果文件里只记了每轮 result 事件的用量：超时被掐的那一轮没有 result，记成 0；
+# 会话记录（opus-usage-from-transcripts.json）补得上被掐那轮，但看不到后台小调用（起标题等，也走 Opus）。两者取大。
+OPUS_FIX = json.loads((B / &quot;opus-usage-from-transcripts.json&quot;).read_text()) if (B / &quot;opus-usage-from-transcripts.json&quot;).exists() else {}
+def opus_fixed(res, arm, d, role):
+    u = (d.get(&quot;usage&quot;) or {}).get(role)
+    v = (OPUS_FIX.get(f&quot;{res.split(&#x27;-&#x27;)[-1]}/{arm}/{d[&#x27;id&#x27;]}&quot;) or {}).get(role)
+    if v and (not u or u.get(&quot;model&quot;) == &quot;claude-opus-5-5&quot;) and usd(v) &gt; usd(u): return v
+    return u
+strict = &quot;--strict&quot; in sys.argv; SF = strict_fail() if strict else set()
 for res in (&quot;results-hard&quot;, &quot;results-deepswe&quot;):
     R, bad = load(res)
-    P = {k: bool(d.get(&quot;passed&quot;)) for k, (d, _) in R.items()}
-    print(f&quot;\n=== {res}   剔除坏题 {len(bad)}: {sorted(bad)}&quot;)
-    print(f&quot;{&#x27;做法&#x27;:12s} {&#x27;通过&#x27;:&gt;8s} {&#x27;率&#x27;:&gt;6s} {&#x27;95%置信区间&#x27;:&gt;15s} {&#x27;总$&#x27;:&gt;8s} {&#x27;每题$中位&#x27;:&gt;9s} {&#x27;每题分中位&#x27;:&gt;9s} {&#x27;补跑&#x27;:&gt;4s} {&#x27;换线路&#x27;:&gt;4s}&quot;)
+    P = {k: bool(d.get(&quot;passed&quot;)) and not (res.endswith(&quot;deepswe&quot;) and k in SF) for k, (d, _) in R.items()}
+    print(f&quot;\n=== {res}{&#x27;（严格：改测试的按重判）&#x27; if strict else &#x27;&#x27;}   剔除坏题 {len(bad)}: {sorted(bad)}&quot;)
+    print(f&quot;{&#x27;做法&#x27;:12s} {&#x27;通过&#x27;:&gt;8s} {&#x27;率&#x27;:&gt;6s} {&#x27;95%区间&#x27;:&gt;15s} {&#x27;总$&#x27;:&gt;8s} {&#x27;每题$中位&#x27;:&gt;9s} {&#x27;每题分中位&#x27;:&gt;9s} {&#x27;补跑&#x27;:&gt;4s} {&#x27;账号&#x27;:&gt;4s}&quot;)
     arms = [a for a in ORDER if any(x == a for x, _ in R)] + sorted({x for x, _ in R} - set(ORDER))
     for a in arms:
         rs = [(k, d) for k, (d, _) in R.items() if k[0] == a]; n = len(rs); x = sum(P[k] for k, _ in rs)
-        cost = [usd((d.get(&quot;usage&quot;) or {}).get(&quot;dev&quot;)) + usd((d.get(&quot;usage&quot;) or {}).get(&quot;rev&quot;)) for _, d in rs if (d.get(&quot;usage&quot;) or {}).get(&quot;dev&quot;)]
+        cost = [usd(opus_fixed(res, a, d, &quot;dev&quot;)) + usd(opus_fixed(res, a, d, &quot;rev&quot;)) for _, d in rs if (d.get(&quot;usage&quot;) or {}).get(&quot;dev&quot;)]
         mins = [d[&quot;elapsed_s&quot;] / 60 for _, d in rs if d.get(&quot;elapsed_s&quot;)]
         lo, hi = wilson(x, n)
         print(f&quot;{a:12s} {x:&gt;3d}/{n:&lt;4d} {x/n:6.1%} [{lo:5.1%},{hi:5.1%}] {sum(cost):8.2f} {st.median(cost) if cost else 0:9.3f} {st.median(mins) if mins else 0:9.1f} &quot;
@@ -645,6 +743,132 @@ def one(j):
         d = json.load(open(f)); d[&quot;rerun_reason&quot;] = j[&quot;why&quot;]; f.write_text(json.dumps(d, ensure_ascii=False, indent=1))
 with ThreadPoolExecutor(par) as ex: list(ex.map(one, jobs))
 r.log(&quot;RERUN DONE&quot;, len(jobs))
+</code></pre>
+</details>
+<details><summary><code>run_advice.py</code></summary>
+<pre><code>#!/usr/bin/env python3
+&quot;&quot;&quot;10-25 新做法 dsf_a_opus：Opus 只动嘴（读题读代码 → 方案提示 + 文字验收用例），不写文件、不跑东西；
+dsf 把用例写成测试、自己跑、自己修；最后 Opus 只看 dsf 的报告和 diff 再给意见（最多补 2 轮）。
+不改 run_swepro.py（别的进程还在用它），只在本进程里把 run_job 换掉。
+用法：source ~/.pairbench.env &amp;&amp; PB_BENCH=deepswe RES=results-deepswe PB_WORK=work-adv PB_SOCK=$HOME/pb-swepro/sock-adv \
+      PB_KEEP_IMAGE=1 python3 run_advice.py &lt;题目清单.json&gt; &lt;并发&gt;
+&quot;&quot;&quot;
+import json, os, sys, time, shutil, hashlib, subprocess, traceback
+from concurrent.futures import ThreadPoolExecutor
+os.environ[&quot;PB_NO_CLAIM&quot;] = &quot;1&quot;
+import run_swepro as r
+<span></span>
+# 10-25 加：顾问模式可换顾问模型（PB_ADV_MODEL=sol → 做法 dsf_a_sol）
+ADV_MODEL = os.environ.get(&quot;PB_ADV_MODEL&quot;, &quot;opus&quot;)
+ARM = f&quot;dsf_a_{ADV_MODEL}&quot;
+r.ARMS[ARM] = (&quot;dsf&quot;, ADV_MODEL)
+MAX_ADV_REVIEW = 2
+<span></span>
+ADVISOR = &quot;&quot;&quot;You are the ADVISOR in a pair-programming session. Another agent (the developer) will implement the change in the repository at {root}; you only give advice.
+STRICT RULES: do NOT create, edit or delete any file; do NOT build, install, run tests or run programs. Only READ: ls, cat, grep, find, sed -n, head, tail. Do not use the internet or git history.
+Read the issue below and the relevant code, then reply with exactly two sections:
+<span></span>
+PLAN: the approach in a few bullets: which files/functions to change, the order of work, and the pitfalls or edge cases that are easy to get wrong.
+<span></span>
+ACCEPTANCE CASES: a numbered list of 8-20 concrete cases derived from the issue. Each case = setup/input -&gt; exact expected result (return value, output, error type/message). Cover the main behaviour, every option the issue mentions, and edge cases (empty, nil/None, boundaries, invalid input, ordering). No test code, plain text only.
+<span></span>
+End with the line: ADVICE DONE
+<span></span>
+The issue:
+{instruction}&quot;&quot;&quot;
+<span></span>
+DEV_ADVICE = &quot;&quot;&quot;
+<span></span>
+An advisor (a stronger model) read the issue and the code and gave the advice below. Use the plan where it helps.
+Turn EVERY acceptance case into a real test you write and run yourself. Put these tests under /tmp/pairtest/ (outside the repository) so they are not part of your change; you may also add normal tests to the repository&#x27;s own test suite. Make all cases pass. If you think a case is wrong per the issue, say why instead of forcing it.
+Remember to commit your work in the repository when you are done.
+<span></span>
+--- ADVICE ---
+{advice}
+--- END ADVICE ---&quot;&quot;&quot;
+<span></span>
+TO_A = &quot;&quot;&quot;
+Now write a report for the advisor: for EACH acceptance case number: the test you wrote (file and name), the command you ran, and PASS/FAIL. Then a short summary of what you changed. Paste the real test output tail as evidence. End with the line: TO ADVISOR&quot;&quot;&quot;
+<span></span>
+ADV_REVIEW = &quot;&quot;&quot;Report from the developer:
+<span></span>
+{msg}
+<span></span>
+Still do NOT edit or run anything; you may read files (including /tmp/pairtest/ and `git diff`) to check the report.
+Check: is every acceptance case covered by a real test that ran and passed? Does the change match the issue (read the diff)?
+If good, reply with a one-line reason and VERDICT: APPROVED.
+If not, list the concrete problems: missed or wrong cases, or up to 5 NEW concrete cases (input -&gt; exact expected result) the change likely gets wrong. Then VERDICT: REVISE.
+End with exactly one line: VERDICT: APPROVED  or  VERDICT: REVISE&quot;&quot;&quot;
+<span></span>
+def dirty(cname, root):
+    return r.dexec(cname, f&#x27;cd &quot;{root}&quot; &amp;&amp; git status --porcelain | head -20&#x27;).stdout.strip()
+<span></span>
+def run_job(arm, tid, img):
+    if arm != ARM: raise RuntimeError(&quot;run_advice only runs &quot; + ARM)
+    out = r.RES / arm / f&quot;{tid}.json&quot;
+    tag = hashlib.md5((f&quot;{arm}/{tid}&quot; + os.environ.get(&quot;PB_REP&quot;, &quot;&quot;)).encode()).hexdigest()[:10]
+    home = r.WORK / arm / tid; shutil.rmtree(home, ignore_errors=True); home.mkdir(parents=True)
+    os.chmod(home, 0o777)
+    cname = r.start(f&quot;pba-{tag}&quot;, img, home)
+    rec = {&quot;arm&quot;: arm, &quot;id&quot;: tid, &quot;started&quot;: time.time(), &quot;reviews&quot;: [], &quot;turns&quot;: 0, &quot;advisor_violations&quot;: []}
+    t0 = time.time(); dev = adv = None
+    try:
+        root = r.repo_root(cname)
+        base0 = r.dexec(cname, f&#x27;cd &quot;{root}&quot; &amp;&amp; git rev-parse HEAD&#x27;).stdout.strip()   # 开局 HEAD，Hard 收卷以它为起点
+        instr = (r.TASKS / tid / &quot;instruction.md&quot;).read_text()
+        deadline = t0 + r.BUDGET_S
+        dev = r.agent(&quot;dsf&quot;, cname, root, &quot;dev&quot;, deadline)
+        adv = r.agent(ADV_MODEL, cname, root, &quot;advisor&quot;, deadline)
+        before = dirty(cname, root)
+        advice = adv.turn(ADVISOR.format(root=root, instruction=instr))
+        rec[&quot;advice&quot;] = advice[:12000]; rec[&quot;advice_t&quot;] = round(time.time() - t0)
+        if dirty(cname, root) != before: rec[&quot;advisor_violations&quot;].append(&quot;advice&quot;)   # 只记录，不回滚（回滚可能误伤）
+        reply = dev.turn(r.GOAL.format(root=root, instruction=instr) + DEV_ADVICE.format(advice=advice)); rec[&quot;turns&quot;] += 1
+        for _ in range(r.MAX_CONT):
+            if r.has_marker(reply, &quot;FINISHED&quot;) or time.time() &gt; deadline - 60: break
+            reply = dev.turn(r.CONTINUE); rec[&quot;turns&quot;] += 1
+        msg = dev.turn(TO_A)
+        for rnd in range(MAX_ADV_REVIEW):
+            snap = dirty(cname, root)
+            a = adv.turn(ADV_REVIEW.format(msg=msg))
+            if dirty(cname, root) != snap: rec[&quot;advisor_violations&quot;].append(f&quot;review{rnd}&quot;)
+            v = r.verdict(a)
+            rec[&quot;reviews&quot;].append({&quot;t&quot;: round(time.time() - t0), &quot;round&quot;: rnd, &quot;verdict&quot;: v, &quot;text&quot;: a[:3000]})
+            if v == &quot;APPROVED&quot; or time.time() &gt; deadline - 60: break
+            msg = dev.turn(f&quot;Advisor&#x27;s reply:\n\n{a}\n\nTurn any new cases into tests under /tmp/pairtest/, fix what is wrong, re-run all your tests, commit.&quot; + TO_A)
+        rec[&quot;elapsed_s&quot;] = time.time() - t0
+        cap = r.CAPTURE_DEEPSWE.format(root=root, base=r.base_commit(tid)) if r.BENCH == &quot;deepswe&quot; else r.CAPTURE.format(root=root).replace(&quot;git diff --cached --binary&quot;, f&quot;git diff --cached --binary {base0}&quot;)
+        rec[&quot;patch_bytes&quot;] = int((r.dexec(cname, cap, timeout=300).stdout.strip() or &quot;0&quot;).split()[-1])
+    except r.GatewayDown as e:
+        rec[&quot;error&quot;] = &quot;gateway_down &quot; + str(e)[:200]
+    except Exception as e:
+        rec[&quot;error&quot;] = repr(e)[:300]; traceback.print_exc()
+    finally:
+        rec[&quot;usage&quot;] = {&quot;dev&quot;: dev.usage if dev else None, &quot;rev&quot;: adv.usage if adv else None}
+        try: r.dexec(cname, &quot;chmod -R a+rwX /pbhome&quot;, timeout=1800)
+        except Exception as e: r.log(&quot;CHMOD SKIP&quot;, arm, tid[:60], repr(e)[:80])
+        r.sh([&quot;docker&quot;, &quot;rm&quot;, &quot;-f&quot;, cname])
+    if rec.get(&quot;error&quot;):
+        r.log(&quot;NOT RECORDED&quot;, arm, tid[:60], rec[&quot;error&quot;][:120]); return rec
+    (r.RES / arm).mkdir(parents=True, exist_ok=True)
+    shutil.copy(home / &quot;model.patch&quot;, r.RES / arm / f&quot;{tid}.patch&quot;)
+    try: rec[&quot;grade&quot;] = g = r.grade(tid, img, home / &quot;model.patch&quot;, tag)
+    except subprocess.TimeoutExpired:
+        rec[&quot;grade&quot;] = g = {&quot;reward&quot;: 0, &quot;timeout&quot;: True}; rec[&quot;grade_timeout&quot;] = True
+    rec[&quot;passed&quot;] = g[&quot;reward&quot;] == 1
+    out.write_text(json.dumps(rec, ensure_ascii=False, indent=1))
+    r.log(arm, tid[:70], &quot;PASS&quot; if rec[&quot;passed&quot;] else &quot;fail&quot;,
+          f&quot;{rec[&#x27;elapsed_s&#x27;]/60:.0f}min reviews={len(rec[&#x27;reviews&#x27;])} viol={rec[&#x27;advisor_violations&#x27;]} patch={rec[&#x27;patch_bytes&#x27;]}B&quot;)
+    return rec
+<span></span>
+r.run_job = run_job   # run_task 按模块全局名调用 run_job
+<span></span>
+if __name__ == &quot;__main__&quot;:
+    if not r.GW or not os.environ.get(&quot;PAIRBENCH_GATEWAY_TOKEN&quot;): sys.exit(&quot;source ~/.pairbench.env first&quot;)
+    ids = json.load(open(sys.argv[1])); par = int(sys.argv[2]) if len(sys.argv) &gt; 2 else 4
+    r.start_gw_relay()
+    with ThreadPoolExecutor(par) as ex: list(ex.map(lambda t: r.run_task(t, [ARM]), ids))
+    r.log(&quot;ADVICE DONE ALL&quot;, len(ids))
 </code></pre>
 </details>
 </div>
