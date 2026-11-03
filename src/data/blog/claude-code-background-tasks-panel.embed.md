@@ -1,6 +1,7 @@
 ---
 author: "Shumin Fu"
 pubDatetime: 2026-11-03T15:37:55+08:00
+modDatetime: 2026-11-03T15:50:22+08:00
 title: "Claude Code 桌面端的「后台任务」面板背后是怎么记录的"
 slug: claude-code-background-tasks-panel
 featured: false
@@ -31,6 +32,7 @@ description: "用一次多代理 workflow 的真实记录，讲清 fork 会复�
 .html-embed .tag.ok{color:var(--accent)}
 .html-embed .tag.guess{color:#b7791f}
 .html-embed .tag.unk{opacity:.7}
+.html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums}
 </style>
 
 <div class="html-embed" lang="zh">
@@ -44,7 +46,7 @@ description: "用一次多代理 workflow 的真实记录，讲清 fork 会复�
 <p>我查了本机的文件和会话记录。文中标 <span class="tag ok">核实</span> 的是我在本机文件里亲眼看到的；标 <span class="tag guess">推断</span> 的是看现象猜的，程序源码我看不到。</p>
 <h2>先说结论</h2>
 <ul>
-<li><strong>fork 只复制对话。</strong>正在跑的 workflow 不会跟过来，它留在原来那个会话里。代码目录也不复制，两个会话改的是同一份文件。</li>
+<li><strong>fork 只复制对话。</strong>正在跑的 workflow 不会跟过来，它留在原来那个会话里。代码目录也不复制，两个会话改的是同一份文件。side chat（<code>btw:</code>）在磁盘上和 fork 一样，也是一个抄了对话的新会话。</li>
 <li><strong>名字不是小模型起的。</strong>workflow 卡片上的名字，是写脚本的模型写进脚本的。Finished 列表里的每一条，是跑命令的模型自己填的一句说明。</li>
 <li><strong>输出靠一个编号挂上去。</strong>每次调用工具都有一个 id，结果带着同一个 id 回来。后台命令还会多一个输出文件，所以面板能点开看；前台命令没有这个文件，面板就显示 "No output captured"。</li>
 </ul>
@@ -123,6 +125,28 @@ description: "用一次多代理 workflow 的真实记录，讲清 fork 会复�
 <pre><code>journal … is not on disk</code></pre>
 <p>可就在那时，原会话里的 <code>fix:09</code> 代理还在往自己的记录里写东西，30 秒前刚写过一行。也就是说，活没停，只是新会话找不到它的账本。</p>
 <p class="note">这时如果两边都去动同一个 worktree，就是两个人在同一张桌子上改同一张纸。</p>
+<h3>side chat 也是同一回事</h3>
+<p>桌面端还有一种「side chat」，标题以 <code>btw:</code> 开头。它和 fork 在磁盘上没有区别：都没有单独的接口，都只是一个新的会话 id，配一个新的 <code>.jsonl</code> 和同名文件夹。</p>
+<ul>
+<li><span class="tag ok">核实</span> side chat 的标题记在 <code>&lt;会话id&gt;/custom-title.json</code> 的 <code>customTitle</code> 里，例如 <code>{"customTitle":"btw: side chat 在文件路径里是什么接口"}</code>。fork 的标题也记在这里，例如 <code>"Open IM 分析 (fork)"</code>。</li>
+<li><span class="tag ok">核实</span> 行和行之间照样用 <code>parentUuid</code> 串成链。行的 <code>type</code> 有 <code>user</code>、<code>assistant</code>、<code>attachment</code>、<code>api-request</code> 等。</li>
+</ul>
+<p>比喻：<strong>把整本笔记从第一页起原样复印，再在复印本后面接着写。</strong>真名可以叫「全量复印 + 在分叉点之后续写」。我把三份文件逐行对了一遍：</p>
+<table>
+<thead><tr><th>会话</th><th>标题</th><th class="num">和原会话逐行相同</th><th class="num">第一条自己的行</th></tr></thead>
+<tbody>
+<tr><td>原会话 <code>f1b44925-…</code></td><td></td><td class="num">共 3,646 行</td><td class="num">—</td></tr>
+<tr><td>fork <code>86ce7ad8-…</code></td><td>Open IM 分析 (fork)</td><td class="num">第 1–3,536 行</td><td class="num">第 3,538 行</td></tr>
+<tr><td>side chat <code>74f37069-…</code></td><td>btw: side chat 在文件路径里是什么接口</td><td class="num">第 1–3,646 行</td><td class="num">第 3,650 行</td></tr>
+</tbody>
+</table>
+<ul>
+<li><span class="tag ok">核实</span> <strong>从第 1 行开始抄，一字不差。</strong>抄来的行还带着原会话的 <code>sessionId</code>。side chat 一直抄到原会话的最后一行；fork 开得更早，抄到第 3,536 行。</li>
+<li><span class="tag ok">核实</span> <strong>两者的第一条自己的行，都是 <code>type=custom-title</code></strong>，也就是先记下自己的标题。中间夹着一两行没有 <code>sessionId</code> 的记录（例如 <code>bridge-session</code>）。</li>
+<li><span class="tag ok">核实</span> <strong>抄的是全量，不是从摘要开始。</strong>原会话中间压缩过 3 次（第 1,227、1,960、3,179 行是 <code>compact_boundary</code>），压缩之前的旧行也一起抄了。</li>
+<li><span class="tag guess">推断</span> <strong>但模型看到的不是全量。</strong>恢复会话时，只加载最近一次压缩摘要之后的内容。所以 side chat 用起来像一个「新上下文」：它记得最近的工作，更早的只剩摘要。这一点从磁盘上看不出来，是根据压缩的设计推的。</li>
+</ul>
+<p>所以 side chat 和 fork 的机制相同，区别只有两处：从哪一行分叉，标题前面有没有 <code>btw:</code>。它们都只抄对话，不抄原会话正在跑的 workflow、后台任务和它们的 journal，也就接不上原会话的 workflow。行号是我写这篇时数的，各个会话后来还在继续写。</p>
 <h2>发现二：面板上的名字是谁写的</h2>
 <h3>看到什么</h3>
 <p>比喻：<strong>每个干活的人进门前，自己在登记本上写一句「我要去做什么」。</strong>没有专门的秘书替他们写。</p>
