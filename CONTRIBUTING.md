@@ -68,7 +68,7 @@ Open `src/content/` in Obsidian to test the full writing experience.
 - Use Tailwind utility classes; avoid custom CSS when possible
 - Remark plugins should be self-contained in `src/utils/`
 - Test with both light and dark mode
-- Test with multiple themes (at minimum: sage, ocean, minimal)
+- Test with multiple themes (at minimum: sage, classic, minimal)
 
 ## Adding a Color Theme
 

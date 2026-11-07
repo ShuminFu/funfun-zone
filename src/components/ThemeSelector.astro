@@ -60,7 +60,14 @@ import { themes, themeNames } from '../themes';
 
     if (!toggle || !menu || !applyColorTheme) return;
 
-    const currentTheme = localStorage.getItem('colorTheme') || defaultTheme;
+    // Same rule as the blocking script: unknown saved names are the default.
+    let storedTheme = null;
+    try {
+      storedTheme = localStorage.getItem('colorTheme');
+    } catch (e) {
+      storedTheme = null;
+    }
+    const currentTheme = storedTheme && themes[storedTheme] ? storedTheme : defaultTheme;
     applyTheme(currentTheme);
     updateLabel(currentTheme);
 
