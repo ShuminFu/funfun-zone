@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜04 多 Agent 协作：拆分、交接与核验"
 description: "spawn 新线程、fork_context 默认不带全文、文件未必隔离、wait/close/深度名额，以及主 Agent 如何对照工作区验收。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:17:31+08:00
 series: "codex-agent-engineering"
 seriesOrder: 4
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 

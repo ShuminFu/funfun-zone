@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜02 长任务架构：Codex 如何持续工作"
 description: "会话、轮次、慢命令进程、上下文窗口与 goal 模式如何叠在一起，让 Codex 在长任务里持续推进而不把「还在忙」当成一种状态。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:14:43+08:00
 series: "codex-agent-engineering"
 seriesOrder: 2
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 

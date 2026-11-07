@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜06 权限与沙箱：审批、文件范围与网络"
 description: "把审批、文件系统与网络拆成三个控制维度，讲清允许/询问/禁止、沙箱升级门槛，以及失败分类后再决定下一步。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:20:10+08:00
 series: "codex-agent-engineering"
 seriesOrder: 6
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 

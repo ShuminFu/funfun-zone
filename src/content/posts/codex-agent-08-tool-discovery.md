@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜08 工具按需发现：BM25、定义与后续调用"
 description: "延迟展示与工具搜索入口、BM25 匹配元数据而非业务正文、搜索成功≠业务成功，以及和 Code Mode 目录发现的区分。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:22:30+08:00
 series: "codex-agent-engineering"
 seriesOrder: 8
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 

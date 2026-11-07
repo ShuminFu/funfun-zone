@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜01 Agent 循环：请求、工具调用与结束条件"
 description: "用修空字符串测试的小例子，讲清 Codex 一轮 turn 里模型请求、工具调用、call id 对账与结束判断如何串起来。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:12:56+08:00
 series: "codex-agent-engineering"
 seriesOrder: 1
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 

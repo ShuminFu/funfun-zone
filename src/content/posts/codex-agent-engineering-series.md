@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程：系列导读"
 description: "11 篇根据 B 站合集字幕改写的 Codex / Agent 工程笔记目录，按主题跳转各篇与源视频。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:11:46+08:00
 series: "codex-agent-engineering"
 seriesOrder: 0
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 

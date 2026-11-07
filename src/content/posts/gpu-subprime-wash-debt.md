@@ -2,6 +2,7 @@
 title: "把显卡包装成“次级车贷”：起底华尔街与硅谷的万亿破产洗债局"
 description: "谁借的钱、租金怎么被压下去、破产桌上谁收场——以及这跟暗光纤、2008 次贷、车贷叙事到底哪里不一样"
 growth: seedling
+growthLocked: true
 planted: 2026-11-07T14:57:07+08:00
 lastTended: 2026-11-07T16:50:00+08:00
 draft: false
@@ -9,6 +10,7 @@ tags:
   - "ai-agents"
   - "finance"
   - "gpu"
+  - "notes"
 ---
 
 <style>
