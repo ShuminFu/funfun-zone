@@ -11,5 +11,5 @@
 
 - [ ] `npm run build` passes
 - [ ] Tested in light and dark mode
-- [ ] Tested with at least two themes (e.g. sage, ocean)
+- [ ] Tested with at least two themes (e.g. sage, classic)
 - [ ] No new warnings in the console

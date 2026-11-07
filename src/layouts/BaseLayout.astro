@@ -120,14 +120,23 @@ const ogImage = image
         function applyColorTheme(themeName, root) {
           var el = root || document.documentElement;
           var name = themeName;
+          var stored = null;
           if (!name) {
             try {
-              name = localStorage.getItem('colorTheme');
+              stored = localStorage.getItem('colorTheme');
             } catch (e) {
-              name = null;
+              stored = null;
             }
+            name = stored;
           }
-          if (!themes[name]) name = defaultTheme;
+          // A removed palette has no CSS variables. Fall back before paint and
+          // replace the saved name so the picker and the next load agree.
+          if (!themes[name]) {
+            name = defaultTheme;
+            try {
+              if (stored && !themes[stored]) localStorage.setItem('colorTheme', defaultTheme);
+            } catch (e) {}
+          }
           var theme = themes[name];
           if (!theme || !el) return;
 

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Changed
+
+- Color themes are sage, classic, nord, and minimal. A saved ocean, sunset,
+  rose, or forest theme falls back to the default (sage).
+- Garden growth filters use the active theme's accent for the selected tab
+  and count, instead of fixed green, amber, and emerald fills.
+
 ### Fixed
 
 - **Ctrl+K search never opened.** `CommandPalette.astro` used a `define:vars`

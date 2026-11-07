@@ -82,41 +82,49 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
     <div class="mb-4">
       <div class="flex flex-wrap gap-2">
         <button
+          type="button"
           data-growth="all"
-          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-accent-500 text-white"
+          aria-pressed="true"
+          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-accent-700 text-white dark:bg-accent-400 dark:text-accent-950"
         >
           All
-          <span class="text-xs bg-white/20 px-1.5 py-0.5 rounded-sm">{allPostsSorted.length}</span>
+          <span class="growth-count text-xs px-1.5 py-0.5 rounded-sm bg-white/25 dark:bg-accent-950/20">{allPostsSorted.length}</span>
         </button>
         <button
+          type="button"
           data-growth="seedling"
-          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300"
+          aria-pressed="false"
+          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-primary-100 text-primary-700 hover:bg-primary-200 dark:bg-primary-800 dark:text-primary-300 dark:hover:bg-primary-700"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="growth-seedling w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M7 20h10"/><path d="M12 20v-6"/><path d="M9 10a3 3 0 0 1 6 0"/><path d="M12 10V7"/><path d="M9 7a3 3 0 0 1 6 0"/>
           </svg>
           Seedling
-          <span class="text-xs bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-200 px-1.5 py-0.5 rounded-sm">{seedlings.length}</span>
+          <span class="growth-count text-xs px-1.5 py-0.5 rounded-sm bg-primary-200 text-primary-800 dark:bg-primary-700 dark:text-primary-100">{seedlings.length}</span>
         </button>
         <button
+          type="button"
           data-growth="budding"
-          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300"
+          aria-pressed="false"
+          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-primary-100 text-primary-700 hover:bg-primary-200 dark:bg-primary-800 dark:text-primary-300 dark:hover:bg-primary-700"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="growth-budding w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M7 20h10"/><path d="M12 20v-8"/><path d="M12 12c-2-2-4-2.5-4-5a4 4 0 0 1 8 0c0 2.5-2 3-4 5"/>
           </svg>
           Budding
-          <span class="text-xs bg-amber-200 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-1.5 py-0.5 rounded-sm">{budding.length}</span>
+          <span class="growth-count text-xs px-1.5 py-0.5 rounded-sm bg-primary-200 text-primary-800 dark:bg-primary-700 dark:text-primary-100">{budding.length}</span>
         </button>
         <button
+          type="button"
           data-growth="evergreen"
-          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300"
+          aria-pressed="false"
+          class="growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors bg-primary-100 text-primary-700 hover:bg-primary-200 dark:bg-primary-800 dark:text-primary-300 dark:hover:bg-primary-700"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="growth-evergreen w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22v-7"/><path d="M9 22h6"/><path d="M12 15l-4-4 2-1-3-3 3-1-2-3h8l-2 3 3 1-3 3 2 1z"/>
           </svg>
           Evergreen
-          <span class="text-xs bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 px-1.5 py-0.5 rounded-sm">{evergreen.length}</span>
+          <span class="growth-count text-xs px-1.5 py-0.5 rounded-sm bg-primary-200 text-primary-800 dark:bg-primary-700 dark:text-primary-100">{evergreen.length}</span>
         </button>
       </div>
     </div>
@@ -226,25 +234,29 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
       selectedTags = tagsParam.split(',').filter(t => t);
     }
 
+    // One accent fill for every stage, so the selected pill follows the theme.
+    // Stage color stays on the idle icon; a selected icon inherits the pill text.
+    const tabBase = 'growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors';
+    const tabOn = 'bg-accent-700 text-white dark:bg-accent-400 dark:text-accent-950';
+    const tabOff = 'bg-primary-100 text-primary-700 hover:bg-primary-200 dark:bg-primary-800 dark:text-primary-300 dark:hover:bg-primary-700';
+    const badgeOn = 'growth-count text-xs px-1.5 py-0.5 rounded-sm bg-white/25 dark:bg-accent-950/20';
+    const badgeOff = 'growth-count text-xs px-1.5 py-0.5 rounded-sm bg-primary-200 text-primary-800 dark:bg-primary-700 dark:text-primary-100';
+
     function updateTabStyles() {
       tabs.forEach((tab) => {
         const growth = tab.getAttribute('data-growth');
         const isActive = growth === activeGrowth;
 
-        tab.className = 'growth-tab inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors';
+        tab.className = `${tabBase} ${isActive ? tabOn : tabOff}`;
+        tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 
-        if (isActive) {
-          if (growth === 'all') {
-            tab.classList.add('bg-accent-500', 'text-white');
-          } else if (growth === 'seedling') {
-            tab.classList.add('bg-green-500', 'text-white');
-          } else if (growth === 'budding') {
-            tab.classList.add('bg-amber-500', 'text-white');
-          } else if (growth === 'evergreen') {
-            tab.classList.add('bg-emerald-500', 'text-white');
-          }
-        } else {
-          tab.classList.add('bg-primary-100', 'dark:bg-primary-800', 'text-primary-700', 'dark:text-primary-300');
+        const badge = tab.querySelector('.growth-count');
+        if (badge) badge.className = isActive ? badgeOn : badgeOff;
+
+        const icon = tab.querySelector('svg');
+        if (icon && growth && growth !== 'all') {
+          icon.classList.remove('growth-seedling', 'growth-budding', 'growth-evergreen');
+          if (!isActive) icon.classList.add(`growth-${growth}`);
         }
       });
     }
