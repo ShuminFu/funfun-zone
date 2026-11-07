@@ -87,6 +87,7 @@ export type ThemeName =
   | 'minimal'     // Grayscale
   | 'nord'        // Nord color palette
   | 'rose'        // Pink/rose tones
+  | 'classic'     // Pre-Mycelium AstroPaper (blue light, teal dark)
   ;
 
 export type GrowthStatus = 'seedling' | 'budding' | 'evergreen';
