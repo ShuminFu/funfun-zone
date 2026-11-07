@@ -28,6 +28,13 @@ export interface GrowthResult {
   reasons: string[];
 }
 
+const NOTES_TAG = 'notes';
+
+/** Notes stay in the garden index but never receive a growth stage. */
+export function participatesInGrowth(tags?: readonly string[]): boolean {
+  return !tags?.includes(NOTES_TAG);
+}
+
 // Thresholds for growth calculation
 const THRESHOLDS = {
   // Backlinks needed to suggest budding/evergreen
@@ -178,6 +185,22 @@ export function calculateGrowth(
   backlinksMap: Map<string, string[]>,
   seriesMap: Map<string, Post[]>
 ): GrowthResult {
+  // Connections must not promote a notes post into budding or evergreen.
+  if (!participatesInGrowth(post.data.tags)) {
+    return {
+      suggested: post.data.growth,
+      current: post.data.growth,
+      locked: post.data.growthLocked ?? false,
+      metrics: {
+        backlinksCount: 0,
+        seriesFollowers: 0,
+        seriesTotal: 0,
+        seriesPosition: 0,
+      },
+      reasons: [],
+    };
+  }
+
   const metrics = calculateMetrics(post, backlinksMap, seriesMap);
   const { status: suggested, reasons } = suggestGrowth(metrics);
 
