@@ -1,57 +1,54 @@
-# Shumin's Fun Fun Zone
+# FunFun Zone
 
-Welcome to my digital playground! I'm a software engineer passionate about building intelligent agentic AI applications that push the boundaries of what's possible.
+Shumin Fu's digital garden. [funfun.zone](https://funfun.zone).
 
-## 🔥 What's Inside?
+The site is the [Mycelium](https://github.com/0bserver07/mycelium-theme) theme (MIT, Astro 7) with the existing notes moved into `src/content/`. Open `src/content/` as an Obsidian vault, not the repo root.
 
-Dive into a collection of insights, experiments, and stories from my journey in AI engineering:
+## Run locally
 
-- **CrewAI Adventures** – Real-world implementations and patterns for multi-agent orchestration
-- **Python Chronicles** – Tales of elegant solutions, lessons learned, and code craftsmanship
-- **AI Reflections** – Thoughts on LLM capabilities, limitations, and the evolving landscape of artificial intelligence
-
-## 🚀 Project Structure
-
-Inside of AstroPaper, you'll see the following folders and files:
+Requires Node **22.12+**.
 
 ```bash
-/
-├── public/
-│   ├── assets/
-|   ├── pagefind/ # auto-generated when build
-│   └── favicon.svg
-│   └── astropaper-og.jpg
-│   └── favicon.svg
-│   └── toggle-theme.js
-├── src/
-│   ├── assets/
-│   │   └── icons/
-│   │   └── images/
-│   ├── components/
-│   ├── data/
-│   │   └── blog/
-│   │       └── some-blog-posts.md
-│   ├── layouts/
-│   └── pages/
-│   └── styles/
-│   └── utils/
-│   └── config.ts
-│   └── constants.ts
-│   └── content.config.ts
-└── astro.config.ts
+npm install
+npm run dev    # http://localhost:4321
+npm run build  # static site in dist/
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+`npm run setup` is Mycelium's interactive wizard (site name, URL, git remote). This repo is already set to FunFun Zone / https://funfun.zone. Skip setup unless you mean to reconfigure it. It can replace the `origin` remote.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Content
 
-All blog posts are stored in `src/data/blog` directory.
+| Path | What |
+| --- | --- |
+| `src/content/posts/` | Notes. The URL is `/posts/<file-path>/`. |
+| `src/content/pages/about.md` | About page |
+| `src/config.ts` | Name, URL, author, `timezone` |
 
+Dates display in **Asia/Bangkok**, the zone AstroPaper already used. Timestamps in the files are the original instants (mostly `+08:00`).
 
-## 📜 License
+Garden features that are on: wikilinks, backlinks, growth (seedling / budding / evergreen, including the Codex series), local and global graph, RSS at `/feed.xml`, sitemap, OG meta tags.
 
-Licensed under the MIT License, Copyright © 2025
+`/rss.xml` redirects to `/feed.xml`.
 
----
+## HTML embeds
 
-Made with 🤍 by [Sat Naing](https://satnaing.dev) 👨🏻‍💻 and [contributors](https://github.com/satnaing/astro-paper/graphs/contributors).
+Posts that used to be `src/data/blog/<slug>.embed.md` are now `src/content/posts/<slug>.md`. The HTML body is unchanged. Markdown still allows raw HTML, so the `blog-html-post` skill can keep emitting a `<style>` block plus `<div class="html-embed">`.
+
+What changed for that skill:
+
+- Write Mycelium frontmatter (`title`, `description`, `planted`, `tags`, `draft`). `pubDatetime` is now `planted`. `modDatetime` is `lastTended`.
+- Drop the `.embed.md` suffix. The filename (or `slug` in frontmatter, which Astro's loader prefers) is the URL.
+- Do not wrap the file as MDX. Raw HTML in `.md` is the path that already builds.
+- `author` is site-wide (`src/config.ts`). Per-post `featured: true` is kept on Claude Island and ignored by the index.
+
+`npm run generate-og` can paint OG cards, but it loads a Latin Inter font and will not draw Chinese titles. It is not part of `npm run build`. AstroPaper's per-build dynamic OG images are gone.
+
+## Deploy
+
+Cloudflare Pages, static output. See [docs/cloudflare-pages.md](docs/cloudflare-pages.md). Node 22, build `npm run build`, publish `dist`.
+
+## Theme
+
+Upstream: https://github.com/0bserver07/mycelium-theme
+
+`npm run update-theme` merges that repo. It will conflict if theme files here have local edits (date timezone, HTML-link backlinks, embed CSS aliases, footer link).
