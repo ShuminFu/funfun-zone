@@ -1,6 +1,6 @@
 ---
 author: "Shumin Fu"
-pubDatetime: 2026-11-07T14:51:34+08:00
+pubDatetime: 2026-11-07T14:57:07+08:00
 title: "把显卡包装成“次级车贷”：万亿破产洗债局整理"
 slug: gpu-subprime-wash-debt
 featured: false
@@ -13,6 +13,77 @@ description: "故事主线、四级实物链与配图：三大时钟、破产洗
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
+/* --native companion: badges, figures, callouts (under .html-embed). */
+.html-embed .callout {
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: 0.85rem 1rem;
+  margin: 1.25rem 0;
+}
+.html-embed .callout p { margin: 0; }
+.html-embed .callout p + p { margin-top: 0.6rem; }
+
+.html-embed .fig { margin: 1.35rem 0 1.5rem; }
+.html-embed .fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+.html-embed .fig figcaption {
+  margin-top: 0.45rem;
+  font-size: 0.88rem;
+  opacity: 0.72;
+  line-height: 1.45;
+}
+
+.html-embed .tier {
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  border-radius: 8px;
+  padding: 1.05rem 1.15rem 1.1rem;
+  margin: 0 0 0.95rem;
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+.html-embed .tier .label {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  color: #ffffff;
+  background: #1a1a1a;
+  border-radius: 999px;
+  padding: 0.32rem 0.85rem;
+  margin: 0 0 0.7rem;
+}
+html[data-theme="dark"] .html-embed .tier .label {
+  color: #111111;
+  background: #f2ebe3;
+}
+.html-embed .tier h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.12rem;
+  color: var(--foreground);
+}
+.html-embed .tier p:last-child { margin-bottom: 0; }
+
+.html-embed .diff {
+  border-left: 3px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  padding: 0.1rem 0 0.1rem 1rem;
+  margin: 0 0 1.25rem;
+}
+.html-embed .diff h3 { margin-top: 0; }
+
+.html-embed .source {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+.html-embed .source a { color: var(--accent); }
 </style>
 
 <div class="html-embed" lang="zh-CN">
