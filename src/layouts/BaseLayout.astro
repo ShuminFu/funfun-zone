@@ -6,11 +6,13 @@
  * - HTML document structure
  * - SEO meta tags
  * - Dark mode initialization
+ * - Color theme initialization before first paint
  * - Global styles
  * - Command palette
  */
 
 import { siteConfig } from '../config';
+import { defaultTheme, themes } from '../themes';
 import CommandPalette from '../components/CommandPalette.astro';
 import GlobalGraph from '../components/GlobalGraph.astro';
 import '../styles/global.css';
@@ -86,14 +88,68 @@ const ogImage = image
     <!-- Dark mode initialization (prevent flash) -->
     <script is:inline>
       (function() {
-        const theme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (theme === 'dark' || (!theme && prefersDark)) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
+        // Saved preference has to be on <html> before CSS, and again on the
+        // incoming document because view transitions replace root attributes.
+        function applyDark(root) {
+          var theme;
+          try {
+            theme = localStorage.getItem('theme');
+          } catch (e) {
+            theme = null;
+          }
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (theme === 'dark' || (!theme && prefersDark)) {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+          }
         }
+
+        applyDark(document.documentElement);
+        document.addEventListener('astro:before-swap', function (event) {
+          var next = event.newDocument && event.newDocument.documentElement;
+          if (next) applyDark(next);
+        });
+      })();
+    </script>
+
+    <!-- Color theme initialization. Runs before the stylesheet so the saved
+         palette, not the build-time default, is what first paint uses. -->
+    <script is:inline define:vars={{ themes, defaultTheme }}>
+      (function () {
+        function applyColorTheme(themeName, root) {
+          var el = root || document.documentElement;
+          var name = themeName;
+          if (!name) {
+            try {
+              name = localStorage.getItem('colorTheme');
+            } catch (e) {
+              name = null;
+            }
+          }
+          if (!themes[name]) name = defaultTheme;
+          var theme = themes[name];
+          if (!theme || !el) return;
+
+          Object.entries(theme.colors.primary).forEach(function (entry) {
+            el.style.setProperty('--color-primary-' + entry[0], entry[1]);
+          });
+          Object.entries(theme.colors.accent).forEach(function (entry) {
+            el.style.setProperty('--color-accent-' + entry[0], entry[1]);
+          });
+          el.style.setProperty('--bg-primary', theme.colors.bg.light);
+          el.style.setProperty('--bg-secondary', theme.colors.bg.light);
+        }
+
+        applyColorTheme.themes = themes;
+        applyColorTheme.defaultName = defaultTheme;
+        window.applyColorTheme = applyColorTheme;
+        applyColorTheme();
+
+        document.addEventListener('astro:before-swap', function (event) {
+          var next = event.newDocument && event.newDocument.documentElement;
+          if (next) applyColorTheme(null, next);
+        });
       })();
     </script>
 
