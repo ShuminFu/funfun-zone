@@ -16,6 +16,7 @@ import { getCollection } from 'astro:content';
 import fs from 'node:fs';
 import path from 'node:path';
 import { siteConfig } from '../config';
+import Logo from '../components/Logo.astro';
 
 // Get all posts, filter drafts in production
 const allPosts = await getCollection('posts', ({ data }) => {
@@ -44,13 +45,7 @@ const featuredProjects = allProjects
     <!-- Hero Section -->
     <section class="text-center mb-16">
       <div class="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-accent-100 dark:bg-accent-900/30">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 3v6m0 6v6"/>
-          <path d="M3 12h6m6 0h6"/>
-          <path d="M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24"/>
-          <path d="M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24"/>
-        </svg>
+        <Logo class="w-8 h-8 text-accent-600 dark:text-accent-400" />
       </div>
 
       <h1 class="text-4xl sm:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4">
