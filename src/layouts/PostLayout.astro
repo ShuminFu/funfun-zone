@@ -102,7 +102,7 @@ const jsonLd = {
   <Header slot="header" />
 
   <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
-    <div class="lg:grid lg:grid-cols-[1fr_280px] lg:gap-8">
+    <div class="lg:grid lg:grid-cols-1 lg:gap-8 lg:has-[#local-graph-container]:grid-cols-[1fr_280px] lg:has-[nav.toc]:grid-cols-[1fr_280px]">
       <!-- Main Content -->
       <article>
         <!-- Post Header -->
@@ -195,7 +195,7 @@ const jsonLd = {
       </article>
 
       <!-- Sidebar -->
-      <aside class="hidden lg:block">
+      <aside class="hidden lg:has-[#local-graph-container]:block lg:has-[nav.toc]:block">
         <div class="sticky top-24 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto">
           <!-- Table of Contents -->
           {siteConfig.features.tableOfContents && headings.length > 0 && (
@@ -204,12 +204,7 @@ const jsonLd = {
 
           <!-- Local Graph -->
           {siteConfig.features.localGraph && (
-            <div>
-              <h3 class="text-sm font-medium text-primary-600 dark:text-primary-400 mb-3">
-                Connections
-              </h3>
-              <LocalGraph currentSlug={post.id} />
-            </div>
+            <LocalGraph currentSlug={post.id} />
           )}
         </div>
       </aside>
