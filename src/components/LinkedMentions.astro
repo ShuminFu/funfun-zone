@@ -25,7 +25,7 @@ const allPosts = await getCollection('posts', ({ data }) => {
 const backlinks = findBacklinks(allPosts, currentSlug);
 ---
 
-{siteConfig.features.backlinks && (
+{siteConfig.features.backlinks && backlinks.length > 0 && (
   <aside class="mt-12 pt-8 border-t border-primary-200 dark:border-primary-800">
     <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-4 flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -33,31 +33,23 @@ const backlinks = findBacklinks(allPosts, currentSlug);
         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
       </svg>
       Linked Mentions
-      {backlinks.length > 0 && (
-        <span class="text-sm font-normal text-primary-500">({backlinks.length})</span>
-      )}
+      <span class="text-sm font-normal text-primary-500">({backlinks.length})</span>
     </h2>
 
-    {backlinks.length > 0 ? (
-      <div class="space-y-4">
-        {backlinks.map((mention) => (
-          <a
-            href={`/posts/${mention.slug}/`}
-            class="block p-4 rounded-lg bg-primary-100/50 dark:bg-primary-800/50 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors group"
-          >
-            <div class="font-medium text-primary-900 dark:text-primary-100 group-hover:text-accent-600 dark:group-hover:text-accent-400 mb-1">
-              {mention.title}
-            </div>
-            <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2">
-              {mention.excerpt}
-            </p>
-          </a>
-        ))}
-      </div>
-    ) : (
-      <p class="text-primary-500 text-sm">
-        No other notes link to this one yet. Connect your thoughts by linking from other notes using <code class="text-xs bg-primary-100 dark:bg-primary-800 px-1 py-0.5 rounded-sm">[[{currentSlug}]]</code>
-      </p>
-    )}
+    <div class="space-y-4">
+      {backlinks.map((mention) => (
+        <a
+          href={`/posts/${mention.slug}/`}
+          class="block p-4 rounded-lg bg-primary-100/50 dark:bg-primary-800/50 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors group"
+        >
+          <div class="font-medium text-primary-900 dark:text-primary-100 group-hover:text-accent-600 dark:group-hover:text-accent-400 mb-1">
+            {mention.title}
+          </div>
+          <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2">
+            {mention.excerpt}
+          </p>
+        </a>
+      ))}
+    </div>
   </aside>
 )}
