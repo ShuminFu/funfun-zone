@@ -10,7 +10,7 @@ tags:
   - "open-source"
 featured: true
 draft: false
-icon: /icons/notch.svg
+icon: /icons/notch.webp
 iconAlt: 带刘海的笔记本屏幕
 ---
 
