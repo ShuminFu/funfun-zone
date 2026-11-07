@@ -10,6 +10,7 @@
  */
 
 import { siteConfig } from '../config';
+import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import ThemeSelector from './ThemeSelector.astro';
 
@@ -28,16 +29,10 @@ function isActive(url: string): boolean {
     <!-- Logo / Site Name -->
     <a
       href="/"
+      aria-label={siteConfig.name}
       class="flex items-center gap-2 text-lg font-semibold text-primary-900 dark:text-primary-100 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
     >
-      <!-- Mycelium icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 3v6m0 6v6"/>
-        <path d="M3 12h6m6 0h6"/>
-        <path d="M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24"/>
-        <path d="M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24"/>
-      </svg>
+      <Logo class="w-6 h-6" />
       <span class="hidden sm:inline">{siteConfig.name}</span>
     </a>
 
