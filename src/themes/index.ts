@@ -277,6 +277,45 @@ export const themes: Record<string, Theme> = {
       },
     },
   },
+
+  // AstroPaper palette from before the Mycelium rewrite.
+  // Light links/buttons use accent-600 (#006cac); dark links use accent-400 (#03CE91).
+  classic: {
+    name: 'classic',
+    label: 'Classic',
+    colors: {
+      primary: {
+        '50': '253 253 253',
+        '100': '234 237 243',
+        '200': '205 210 221',
+        '300': '177 184 199',
+        '400': '150 158 178',
+        '500': '124 134 157',
+        '600': '99 109 136',
+        '700': '75 86 116',
+        '800': '52 63 96',
+        '900': '40 39 40',
+        '950': '29 42 53',
+      },
+      accent: {
+        '50': '239 246 253',
+        '100': '222 237 251',
+        '200': '192 219 244',
+        '300': '134 229 185',
+        '400': '3 206 145',
+        '500': '30 122 188',
+        '600': '0 108 172',
+        '700': '0 84 138',
+        '800': '0 64 107',
+        '900': '7 54 86',
+        '950': '3 28 48',
+      },
+      bg: {
+        light: '253 253 253',
+        dark: '29 42 53',
+      },
+    },
+  },
 };
 
 export const themeNames = Object.keys(themes);
