@@ -9,6 +9,7 @@ tags:
   - "ai-agents"
   - "finance"
   - "gpu"
+  - "notes"
 ---
 
 <style>

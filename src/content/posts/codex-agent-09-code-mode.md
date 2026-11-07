@@ -9,6 +9,7 @@ tags:
   - "ai-agents"
   - "codex"
   - "workflow"
+  - "notes"
 draft: false
 ---
 
