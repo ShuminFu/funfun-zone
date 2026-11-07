@@ -41,7 +41,7 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
           </p>
         )}
 
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-4xl font-semibold text-primary-900 dark:text-primary-100">
           {doc.data.title}
         </h1>
 
@@ -54,7 +54,7 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
 
       {headings.length > 0 && (
         <nav class="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">On this page</h2>
+          <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-2">On this page</h2>
           <ul class="space-y-1">
             {headings.filter(h => h.depth <= 3).map(heading => (
               <li style={`padding-left: ${(heading.depth - 2) * 12}px`}>
@@ -79,7 +79,7 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
           {prevDoc ? (
             <a href={`/docs/${prevDoc.id}`} class="group">
               <span class="text-sm text-gray-500 dark:text-gray-400">Previous</span>
-              <p class="font-medium text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
+              <p class="font-medium text-primary-900 dark:text-primary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
                 ← {prevDoc.data.title}
               </p>
             </a>
@@ -87,7 +87,7 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
           {nextDoc ? (
             <a href={`/docs/${nextDoc.id}`} class="group text-right">
               <span class="text-sm text-gray-500 dark:text-gray-400">Next</span>
-              <p class="font-medium text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
+              <p class="font-medium text-primary-900 dark:text-primary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
                 {nextDoc.data.title} →
               </p>
             </a>

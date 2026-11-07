@@ -24,7 +24,7 @@ Object.keys(categories).forEach(cat => {
   <Header slot="header" />
   <div class="container mx-auto px-4 py-12 max-w-4xl">
     <header class="mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Documentation</h1>
+      <h1 class="text-4xl font-semibold text-primary-900 dark:text-primary-100 mb-4">Documentation</h1>
       <p class="text-xl text-gray-600 dark:text-gray-400">
         Guides, tutorials, and reference documentation
       </p>
@@ -34,7 +34,7 @@ Object.keys(categories).forEach(cat => {
       <div class="space-y-12">
         {Object.entries(categories).map(([category, categoryDocs]) => (
           <section>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 capitalize">
+            <h2 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-4 capitalize">
               {category}
             </h2>
             <div class="space-y-2">
@@ -47,7 +47,7 @@ Object.keys(categories).forEach(cat => {
                     {index + 1}
                   </span>
                   <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
+                    <h3 class="font-semibold text-primary-900 dark:text-primary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
                       {doc.data.title}
                     </h3>
                     {doc.data.description && (

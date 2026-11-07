@@ -12,6 +12,7 @@
 
 import type { Post, GrowthStatus } from '../types';
 import GrowthIndicator from './GrowthIndicator.astro';
+import MemoryPoint from './MemoryPoint.astro';
 import Tags from './Tags.astro';
 import { siteConfig } from '../config';
 import { participatesInGrowth } from '../utils/growth';
@@ -22,7 +23,7 @@ export interface Props {
 }
 
 const { post, effectiveGrowth } = Astro.props;
-const { title, description, growth, planted, tags } = post.data;
+const { title, description, growth, planted, tags, icon } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
 const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
@@ -33,37 +34,61 @@ const plantedDate = planted.toLocaleDateString('en-US', {
   day: 'numeric',
   timeZone: siteConfig.timezone,
 });
+
+const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
 ---
 
-<article class="card p-5 h-full min-w-0 hover:shadow-lg transition-all duration-200 group flex flex-col">
-  <a href={`/posts/${post.id}/`} class="block grow min-w-0">
-    <!-- Header with growth indicator and date -->
-    <div class="flex items-center justify-between mb-3">
-      {showGrowth && (
-        <GrowthIndicator status={displayGrowth} size="sm" />
+<article
+  class:list={[
+    "card h-full min-w-0 group flex",
+    icon ? "flex-row overflow-hidden" : "flex-col p-6",
+  ]}
+>
+  <div class:list={[icon ? "flex min-w-0 grow flex-col" : "contents"]}>
+    <a
+      href={`/posts/${post.id}/`}
+      class:list={["block min-w-0 grow", icon && "px-6 pt-6", icon && !hasTags && "pb-6"]}
+    >
+      <div class="mb-3 flex items-center justify-between text-sm text-primary-500">
+        {showGrowth && (
+          <GrowthIndicator status={displayGrowth} size="sm" />
+        )}
+        <time class="ml-auto">
+          {plantedDate}
+        </time>
+      </div>
+
+      <h3 class="mb-2 text-xl leading-snug text-primary-900 dark:text-primary-100">
+        {title}
+      </h3>
+
+      {description && (
+        <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2 mb-3">
+          {description}
+        </p>
       )}
-      <time class="text-xs text-primary-500 dark:text-primary-500 ml-auto">
-        {plantedDate}
-      </time>
-    </div>
+    </a>
 
-    <!-- Title -->
-    <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors mb-2">
-      {title}
-    </h3>
-
-    <!-- Description -->
-    {description && (
-      <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2 mb-3">
-        {description}
-      </p>
+    {hasTags && (
+      <div
+        class:list={[
+          "mt-auto min-w-0 pt-3 border-t border-primary-100 dark:border-primary-800",
+          icon ? "mx-6 mb-6" : "w-full",
+        ]}
+      >
+        <Tags tags={(tags ?? []).slice(0, 4)} />
+      </div>
     )}
-  </a>
+  </div>
 
-  <!-- Tags -->
-  {siteConfig.posts.showTags && tags && tags.length > 0 && (
-    <div class="mt-auto min-w-0 w-full pt-3 border-t border-primary-100 dark:border-primary-800">
-      <Tags tags={tags.slice(0, 4)} />
-    </div>
+  {icon && (
+    <a
+      href={`/posts/${post.id}/`}
+      tabindex="-1"
+      aria-hidden="true"
+      class="flex w-[36%] max-w-40 shrink-0 self-stretch"
+    >
+      <MemoryPoint src={icon} alt="" variant="card" />
+    </a>
   )}
 </article>

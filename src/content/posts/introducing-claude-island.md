@@ -10,6 +10,8 @@ tags:
   - "open-source"
 featured: true
 draft: false
+icon: /icons/notch.svg
+iconAlt: 带刘海的笔记本屏幕
 ---
 
 最近我业余时间基本都砸在这个小玩具上了：[ShuminFu/claude-island](https://github.com/ShuminFu/claude-island)。

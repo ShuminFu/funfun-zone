@@ -13,6 +13,7 @@
 
 import type { Post, GrowthStatus } from '../types';
 import GrowthIndicator from './GrowthIndicator.astro';
+import MemoryPoint from './MemoryPoint.astro';
 import Tags from './Tags.astro';
 import { siteConfig } from '../config';
 import { participatesInGrowth } from '../utils/growth';
@@ -23,7 +24,7 @@ export interface Props {
 }
 
 const { post, effectiveGrowth } = Astro.props;
-const { title, description, growth, planted, tags } = post.data;
+const { title, description, growth, planted, tags, icon, iconAlt } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
 const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
@@ -42,7 +43,8 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 ---
 
 <article class="min-w-0 py-8 border-b border-primary-100 dark:border-primary-800 last:border-b-0 group">
-  <a href={`/posts/${post.id}/`} class="block">
+  <a href={`/posts/${post.id}/`} class:list={["block", icon && "flex items-start gap-5"]}>
+    <div class:list={[icon ? "min-w-0 grow" : "contents"]}>
     <!-- Meta line: date, growth, reading time -->
     <div class="flex items-center gap-4 mb-3 text-sm text-primary-500 dark:text-primary-500">
       <time>{plantedDate}</time>
@@ -61,7 +63,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
     </div>
 
     <!-- Title -->
-    <h2 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors mb-3">
+    <h2 class="mb-3 text-2xl leading-snug text-primary-900 dark:text-primary-100">
       {title}
     </h2>
 
@@ -70,6 +72,10 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
       <p class="text-primary-600 dark:text-primary-400 leading-relaxed mb-4">
         {description}
       </p>
+    )}
+    </div>
+    {icon && (
+      <MemoryPoint src={icon} alt={iconAlt ?? ''} variant="list" />
     )}
   </a>
 
