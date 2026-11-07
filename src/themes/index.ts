@@ -279,7 +279,7 @@ export const themes: Record<string, Theme> = {
   },
 
   // AstroPaper palette from before the Mycelium rewrite.
-  // Light links/buttons use accent-600 (#006cac); dark links use accent-400 (#03CE91).
+  // Light links use accent-600 (#006cac); dark links use accent-400 (#03CE91).
   classic: {
     name: 'classic',
     label: 'Classic',
