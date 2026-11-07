@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜09 Code Mode：用代码编排工具"
 description: "V8 隔离单元里用 JS await 工具、显式输出与 cell_id 续跑、store 跨 exec 传数据，以及不会绕过审批与沙箱。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:23:52+08:00
 series: "codex-agent-engineering"
 seriesOrder: 9

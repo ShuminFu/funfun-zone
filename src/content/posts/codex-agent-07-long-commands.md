@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜07 长命令管理：等待、输出、超时与收尾"
 description: "观察窗口先返回与进程继续跑的两条时间线、write_stdin 续读、有界输出缓存，以及两类超时语义为何不能混用。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:21:20+08:00
 series: "codex-agent-engineering"
 seriesOrder: 7

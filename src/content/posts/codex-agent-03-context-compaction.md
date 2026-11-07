@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜03 上下文压缩：满了之后怎么办"
 description: "分清项目文件、会话记录与发给模型的窗口；讲清单次输出截断、压缩触发、本地/远端路径与压缩后如何核对原要求。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:15:51+08:00
 series: "codex-agent-engineering"
 seriesOrder: 3

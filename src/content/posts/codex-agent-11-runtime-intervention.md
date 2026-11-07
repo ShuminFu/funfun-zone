@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜11 运行中干预：临时改需求怎么办"
 description: "追加输入进队列、带预期轮次编号防串线、取消收尾与工具竞态，以及中断后如何用文件/进程/远端三类证据核对。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:25:12+08:00
 series: "codex-agent-engineering"
 seriesOrder: 11

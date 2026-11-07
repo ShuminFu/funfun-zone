@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜13 测试与可观测性：如何验证 Agent 行为"
 description: "局部规则、宿主流程与真实任务三层验证，模拟响应流固定回归，以及用 call id 串起遥测时间线。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:27:20+08:00
 series: "codex-agent-engineering"
 seriesOrder: 13

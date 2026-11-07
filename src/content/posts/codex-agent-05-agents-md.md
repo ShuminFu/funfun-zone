@@ -2,6 +2,7 @@
 title: "从 Codex 源码学 Agent 工程｜05 项目规则：AGENTS.md 的加载、缓存与排错"
 description: "用户级与项目级两条来源、向上发现与 override 优先级、32KB 预算、缓存刷新，以及规则为何不能代替沙箱权限。"
 growth: seedling
+growthLocked: true
 planted: 2026-11-04T21:18:40+08:00
 series: "codex-agent-engineering"
 seriesOrder: 5
