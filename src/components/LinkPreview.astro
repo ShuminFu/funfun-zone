@@ -9,6 +9,7 @@
 import { getCollection } from 'astro:content';
 import fs from 'node:fs';
 import path from 'node:path';
+import { participatesInGrowth } from '../utils/growth';
 
 // Build a map of all posts for preview data
 const posts = await getCollection('posts');
@@ -26,7 +27,7 @@ posts.forEach(post => {
     title: post.data.title,
     description: post.data.description,
     type: 'post',
-    growth: post.data.growth,
+    growth: participatesInGrowth(post.data.tags) ? post.data.growth : undefined,
   };
   // Also add without trailing slash
   previewData[`/posts/${post.id}`] = previewData[`/posts/${post.id}/`];

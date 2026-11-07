@@ -16,7 +16,7 @@ import Pagination from '../../components/Pagination.astro';
 import InfiniteScroll from '../../components/InfiniteScroll.astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '../../config';
-import { calculateAllGrowth, getEffectiveGrowth } from '../../utils/growth';
+import { calculateAllGrowth, getEffectiveGrowth, participatesInGrowth } from '../../utils/growth';
 
 // Get all posts, filter drafts in production
 const allPosts = await getCollection('posts', ({ data }) => {
@@ -42,10 +42,12 @@ for (const [postId, result] of growthResults) {
 const getPostGrowth = (post: typeof allPostsSorted[0]) =>
   effectiveGrowthMap.get(post.id) || post.data.growth;
 
-// Group by effective growth status for tabs
-const seedlings = allPostsSorted.filter(p => getPostGrowth(p) === 'seedling');
-const budding = allPostsSorted.filter(p => getPostGrowth(p) === 'budding');
-const evergreen = allPostsSorted.filter(p => getPostGrowth(p) === 'evergreen');
+// Notes stay under All only; stage tabs count posts that can grow.
+const seedlings = allPostsSorted.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'seedling');
+const budding = allPostsSorted.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'budding');
+const evergreen = allPostsSorted.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'evergreen');
+const cardGrowth = (post: typeof allPostsSorted[0]) =>
+  participatesInGrowth(post.data.tags) ? getPostGrowth(post) : undefined;
 
 // Config
 const { postsPerPage, layout, pagination } = siteConfig.posts;
@@ -162,14 +164,14 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
       <>
         <div id="posts-grid" data-view="grid" class:list={["grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12", layout === 'list' && "hidden"]}>
           {allPostsSorted.map((post) => (
-            <div class="post-card h-full" data-growth={getPostGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
+            <div class="post-card h-full min-w-0" data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
               <PostCard post={post} effectiveGrowth={getPostGrowth(post)} />
             </div>
           ))}
         </div>
         <div id="posts-list" data-view="list" class:list={["divide-y divide-primary-100 dark:divide-primary-800 mb-12", layout === 'grid' && "hidden"]}>
           {allPostsSorted.map((post) => (
-            <div class="post-card" data-growth={getPostGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
+            <div class="post-card min-w-0" data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
               <PostListItem post={post} effectiveGrowth={getPostGrowth(post)} />
             </div>
           ))}

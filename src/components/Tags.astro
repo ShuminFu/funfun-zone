@@ -13,17 +13,17 @@ export interface Props {
 const { tags, linked = true } = Astro.props;
 ---
 
-<div class="flex flex-wrap gap-2">
+<div class="flex max-w-full flex-wrap gap-2">
   {tags.map((tag) => (
     linked ? (
       <a
         href={`/posts/tag/${tag}/`}
-        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300 hover:bg-accent-200 dark:hover:bg-accent-900/50 transition-colors"
+        class="inline-flex max-w-full items-center px-2.5 py-0.5 rounded-full text-xs font-medium wrap-break-word bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300 hover:bg-accent-200 dark:hover:bg-accent-900/50 transition-colors"
       >
         #{tag}
       </a>
     ) : (
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300">
+      <span class="inline-flex max-w-full items-center px-2.5 py-0.5 rounded-full text-xs font-medium wrap-break-word bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300">
         #{tag}
       </span>
     )

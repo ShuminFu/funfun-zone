@@ -28,7 +28,7 @@ import ConfidenceRating from '../components/ConfidenceRating.astro';
 import ImportanceRating from '../components/ImportanceRating.astro';
 import { siteConfig } from '../config';
 import type { Post, GrowthStatus } from '../types';
-import type { GrowthMetrics } from '../utils/growth';
+import { participatesInGrowth, type GrowthMetrics } from '../utils/growth';
 
 export interface Props {
   post: Post;
@@ -41,6 +41,7 @@ const { post, headings = [], effectiveGrowth, growthMetrics } = Astro.props;
 const { title, description, growth, planted, lastTended, tags, image, imageAlt, confidence, importance } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
+const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
 
 // Format dates
 const plantedDate = planted.toLocaleDateString('en-US', {
@@ -109,7 +110,7 @@ const jsonLd = {
         <header class="mb-8">
           <!-- Growth indicator and dates -->
           <div class="flex flex-wrap items-center gap-4 text-sm text-primary-600 dark:text-primary-400 mb-4">
-            {siteConfig.garden.showGrowthStatus && (
+            {showGrowth && (
               <GrowthIndicator status={displayGrowth} showLabel />
             )}
 
