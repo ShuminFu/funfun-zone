@@ -170,9 +170,10 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
     <!-- Posts -->
     {allPostsSorted.length > 0 ? (
       <>
+        <!-- Grid items stay height:auto. h-full on the item would size each card to its content. -->
         <div id="posts-grid" data-view="grid" class:list={["mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3", layout === 'list' && "hidden"]}>
           {allPostsSorted.map((post) => (
-            <div class="post-card h-full min-w-0" data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
+            <div class="post-card flex min-w-0 flex-col" data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
               <PostCard post={post} effectiveGrowth={getPostGrowth(post)} />
             </div>
           ))}

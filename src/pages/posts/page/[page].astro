@@ -82,7 +82,9 @@ const allTags = [...new Set(page.data.flatMap((post) => post.data.tags || []))].
     ) : (
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {page.data.map((post) => (
-          <PostCard post={post} />
+          <div class="flex min-w-0 flex-col">
+            <PostCard post={post} />
+          </div>
         ))}
       </div>
     )}

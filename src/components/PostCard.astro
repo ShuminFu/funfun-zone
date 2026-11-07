@@ -1,13 +1,7 @@
 ---
 /**
- * PostCard Component
- *
- * Card display for post previews with:
- * - Title
- * - Description
- * - Growth status
- * - Dates
- * - Tags
+ * One row for every note. The icon panel is optional;
+ * the card still fills its grid cell so a row stays one height.
  */
 
 import type { Post, GrowthStatus } from '../types';
@@ -38,17 +32,9 @@ const plantedDate = planted.toLocaleDateString('en-US', {
 const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
 ---
 
-<article
-  class:list={[
-    "card h-full min-w-0 group flex",
-    icon ? "flex-row overflow-hidden" : "flex-col p-6",
-  ]}
->
-  <div class:list={[icon ? "flex min-w-0 grow flex-col" : "contents"]}>
-    <a
-      href={`/posts/${post.id}/`}
-      class:list={["block min-w-0 grow", icon && "px-6 pt-6", icon && !hasTags && "pb-6"]}
-    >
+<article class="card group flex h-full min-w-0 flex-1 flex-row overflow-hidden">
+  <div class="flex min-w-0 grow flex-col p-6">
+    <a href={`/posts/${post.id}/`} class="block min-w-0 grow">
       <div class="mb-3 flex items-center justify-between text-sm text-primary-500">
         {showGrowth && (
           <GrowthIndicator status={displayGrowth} size="sm" />
@@ -70,12 +56,7 @@ const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
     </a>
 
     {hasTags && (
-      <div
-        class:list={[
-          "mt-auto min-w-0 pt-3 border-t border-primary-100 dark:border-primary-800",
-          icon ? "mx-6 mb-6" : "w-full",
-        ]}
-      >
+      <div class="mt-auto min-w-0 w-full border-t border-primary-100 pt-3 dark:border-primary-800">
         <Tags tags={(tags ?? []).slice(0, 4)} />
       </div>
     )}
@@ -86,7 +67,7 @@ const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
       href={`/posts/${post.id}/`}
       tabindex="-1"
       aria-hidden="true"
-      class="flex w-[36%] max-w-40 shrink-0 self-stretch"
+      class="flex w-[36%] max-w-40 shrink-0"
     >
       <MemoryPoint src={icon} alt="" variant="card" />
     </a>

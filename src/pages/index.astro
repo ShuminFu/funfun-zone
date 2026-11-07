@@ -90,9 +90,12 @@ const featuredProjects = allProjects
           </a>
         </div>
 
+        <!-- Grid items stay height:auto. h-full on the item would size each card to its content. -->
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {recentPosts.map((post) => (
-            <PostCard post={post} />
+            <div class="flex min-w-0 flex-col">
+              <PostCard post={post} />
+            </div>
           ))}
         </div>
       </section>
