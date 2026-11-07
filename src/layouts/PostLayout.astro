@@ -26,6 +26,7 @@ import ImageLightbox from '../components/ImageLightbox.astro';
 import CodeCopyButton from '../components/CodeCopyButton.astro';
 import ConfidenceRating from '../components/ConfidenceRating.astro';
 import ImportanceRating from '../components/ImportanceRating.astro';
+import MemoryPoint from '../components/MemoryPoint.astro';
 import { siteConfig } from '../config';
 import type { Post, GrowthStatus } from '../types';
 import { participatesInGrowth, type GrowthMetrics } from '../utils/growth';
@@ -38,7 +39,7 @@ export interface Props {
 }
 
 const { post, headings = [], effectiveGrowth, growthMetrics } = Astro.props;
-const { title, description, growth, planted, lastTended, tags, image, imageAlt, confidence, importance } = post.data;
+const { title, description, growth, planted, lastTended, tags, image, imageAlt, icon, iconAlt, confidence, importance } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
 const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
@@ -116,7 +117,7 @@ const jsonLd = {
 
             {siteConfig.garden.showPlantedDate && (
               <span class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M12 2v6m0 0a4 4 0 100 8 4 4 0 000-8z"/>
                   <path d="M12 22v-6"/>
                 </svg>
@@ -126,7 +127,7 @@ const jsonLd = {
 
             {siteConfig.garden.showLastTended && tendedDate && (
               <span class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M12 8v4l3 3"/>
                   <circle cx="12" cy="12" r="10"/>
                 </svg>
@@ -136,7 +137,7 @@ const jsonLd = {
 
             {siteConfig.posts.showReadingTime && (
               <span class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
                   <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
                 </svg>
@@ -153,8 +154,12 @@ const jsonLd = {
             )}
           </div>
 
+          {icon && (
+            <MemoryPoint src={icon} alt={iconAlt ?? ''} variant="article" />
+          )}
+
           <!-- Title -->
-          <h1 class="text-3xl sm:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-4">
+          <h1 class="mb-4 text-3xl leading-snug text-primary-900 dark:text-primary-100 sm:text-4xl">
             {title}
           </h1>
 

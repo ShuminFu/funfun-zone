@@ -40,9 +40,11 @@ const postsCollection = defineCollection({
     draft: z.boolean().optional().default(false),
     // Carried over from AstroPaper. The garden index does not sort on it.
     featured: z.boolean().optional().default(false),
-    // Media
+    // Media. `image` is the cover / social card. `icon` is the small memory-point.
     image: z.string().optional(),
     imageAlt: z.string().optional(),
+    icon: z.string().optional(),
+    iconAlt: z.string().optional(),
     // SEO
     noIndex: z.boolean().optional(),
     // Gwern-style metadata
@@ -131,6 +133,8 @@ const draftsCollection = defineCollection({
     draft: z.boolean().optional().default(true),
     image: z.string().optional(),
     imageAlt: z.string().optional(),
+    icon: z.string().optional(),
+    iconAlt: z.string().optional(),
     noIndex: z.boolean().optional(),
     confidence: confidenceEnum,
     importance: importanceLevel,

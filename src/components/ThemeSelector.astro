@@ -12,24 +12,21 @@ import { themes, themeNames } from '../themes';
 <div class="theme-selector relative">
   <button
     id="theme-selector-toggle"
-    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors"
+    class="flex items-center gap-2 rounded-xl border border-primary-200 px-3 py-1.5 font-sans text-sm text-primary-700 transition-colors hover:border-primary-400 dark:border-primary-700 dark:text-primary-200"
     aria-label="Select color theme"
     aria-haspopup="true"
     aria-expanded="false"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M12 2a10 10 0 0 1 0 20"/>
-    </svg>
+    <span class="h-1.5 w-1.5 rounded-full bg-accent-500" aria-hidden="true"></span>
     <span id="current-theme-label">Theme</span>
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
       <path d="M6 9l6 6 6-6"/>
     </svg>
   </button>
 
   <div
     id="theme-selector-menu"
-    class="hidden absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-primary-800 rounded-lg shadow-lg border border-primary-200 dark:border-primary-700 z-50"
+    class="absolute right-0 z-50 mt-2 hidden w-48 rounded-xl border border-primary-200 bg-white py-2 dark:border-primary-700 dark:bg-primary-900"
     role="menu"
   >
     {themeNames.map((name) => (
@@ -39,8 +36,8 @@ import { themes, themeNames } from '../themes';
         role="menuitem"
       >
         <span
-          class="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-          style={`background: rgb(${themes[name].colors.primary['500']})`}
+          class="h-1.5 w-1.5 rounded-full"
+          style={`background: rgb(${themes[name].colors.accent['500']})`}
         ></span>
         <span>{themes[name].label}</span>
       </button>

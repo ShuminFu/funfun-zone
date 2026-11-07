@@ -119,7 +119,7 @@ export const siteConfig: MyceliumConfig = {
   theme: 'sage',
   fonts: {
     body: 'Inter',
-    heading: 'Inter',
+    heading: 'Source Serif 4',
     mono: 'JetBrains Mono',
   },
 

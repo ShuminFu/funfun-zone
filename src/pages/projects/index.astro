@@ -36,7 +36,7 @@ const defaultLayout = 'grid';
     <!-- Header with Layout Toggle -->
     <div class="flex items-start justify-between mb-12">
       <div class="text-center flex-1">
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Projects</h1>
+        <h1 class="text-4xl font-semibold text-primary-900 dark:text-primary-100 mb-4">Projects</h1>
         <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           A collection of things I've built and contributed to
         </p>
@@ -49,7 +49,7 @@ const defaultLayout = 'grid';
         <div data-view="grid" class={defaultLayout === 'list' ? 'hidden' : ''}>
           {featuredProjects.length > 0 && (
             <section class="mb-12">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Featured</h2>
+              <h2 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Featured</h2>
               <div class="grid md:grid-cols-2 gap-6">
                 {featuredProjects.map(project => (
                   <ProjectCard project={project} featured={true} />
@@ -60,7 +60,7 @@ const defaultLayout = 'grid';
 
           {otherProjects.length > 0 && (
             <section>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">All Projects</h2>
+              <h2 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-6">All Projects</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {otherProjects.map(project => (
                   <ProjectCard project={project} />
@@ -73,7 +73,7 @@ const defaultLayout = 'grid';
         <div data-view="list" class={defaultLayout === 'grid' ? 'hidden' : ''}>
           {featuredProjects.length > 0 && (
             <section class="mb-8">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Featured</h2>
+              <h2 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-4">Featured</h2>
               <div class="divide-y divide-gray-100 dark:divide-gray-800">
                 {featuredProjects.map(project => (
                   <ProjectListItem project={project} featured={true} />
@@ -84,7 +84,7 @@ const defaultLayout = 'grid';
 
           {otherProjects.length > 0 && (
             <section>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">All Projects</h2>
+              <h2 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-4">All Projects</h2>
               <div class="divide-y divide-gray-100 dark:divide-gray-800">
                 {otherProjects.map(project => (
                   <ProjectListItem project={project} />

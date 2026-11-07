@@ -28,6 +28,8 @@ Dates display in **Asia/Bangkok**, the zone AstroPaper already used. Timestamps 
 
 Garden features that are on: wikilinks, backlinks, growth (seedling / budding / evergreen, including the Codex series), local and global graph, RSS at `/feed.xml`, sitemap, OG meta tags.
 
+Optional post frontmatter `icon` is a memory-point: a public path such as `/icons/notch.svg` (SVG or WebP, dark line art on a transparent background). The same file shows as a side panel on the garden card and as a rounded badge above the title. Leave it unset for a text-only note. `image` is still the cover / social image, separate from `icon`.
+
 `/rss.xml` redirects to `/feed.xml`.
 
 ## HTML embeds
@@ -48,6 +50,8 @@ What changed for that skill:
 Cloudflare Pages, static output. See [docs/cloudflare-pages.md](docs/cloudflare-pages.md). Node 22, build `npm run build`, publish `dist`.
 
 ## Theme
+
+Titles use Source Serif 4 with Noto Serif SC for Chinese. Navigation, buttons, and meta stay in Inter. The page ground is warm paper (near-black in dark mode); sage, classic, nord, and minimal differ by accent, which is reserved for links and small marks.
 
 Upstream: https://github.com/0bserver07/mycelium-theme
 

@@ -6,6 +6,8 @@ growthLocked: true
 planted: 2026-11-07T14:57:07+08:00
 lastTended: 2026-11-07T16:50:00+08:00
 draft: false
+icon: /icons/gpu-card.svg
+iconAlt: 一张线描显卡
 tags:
   - "ai-agents"
   - "finance"
