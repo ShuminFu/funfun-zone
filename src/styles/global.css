@@ -215,41 +215,41 @@
 
 @layer utilities {
   /* ============================================================================
-   THEME: Sage (Default)
-   Therapeutic, calming sage greens - gentle on the eyes
-   Based on color therapy principles for relaxation and focus
+   THEME: Classic (Default)
+   AstroPaper grey-blue. Light links are accent-600 (#006cac);
+   dark links are accent-400 (#03CE91).
    ============================================================================ */
 
   :root {
-    /* Primary - Sage greens (muted, therapeutic tones). Default theme fallback. */
-    --color-primary-50: 247 250 247; /* #f7faf7 */
-    --color-primary-100: 236 243 236; /* #ecf3ec */
-    --color-primary-200: 214 228 214; /* #d6e4d6 */
-    --color-primary-300: 181 204 181; /* #b5ccb5 */
-    --color-primary-400: 143 176 143; /* #8fb08f */
-    --color-primary-500: 111 148 111; /* #6f946f */
-    --color-primary-600: 88 124 88; /* #587c58 */
-    --color-primary-700: 71 100 71; /* #476447 */
-    --color-primary-800: 56 79 56; /* #384f38 */
-    --color-primary-900: 44 62 44; /* #2c3e2c */
-    --color-primary-950: 26 38 26; /* #1a261a */
+    /* Primary — same stops as the classic theme. Unloaded fallback. */
+    --color-primary-50: 253 253 253;
+    --color-primary-100: 234 237 243;
+    --color-primary-200: 205 210 221;
+    --color-primary-300: 177 184 199;
+    --color-primary-400: 150 158 178;
+    --color-primary-500: 124 134 157;
+    --color-primary-600: 99 109 136;
+    --color-primary-700: 75 86 116;
+    --color-primary-800: 52 63 96;
+    --color-primary-900: 40 39 40;
+    --color-primary-950: 29 42 53;
 
-    /* Accent - Warm terracotta (grounding, earthy) */
-    --color-accent-50: 253 250 247; /* #fdfaf7 */
-    --color-accent-100: 250 241 235; /* #faf1eb */
-    --color-accent-200: 245 224 209; /* #f5e0d1 */
-    --color-accent-300: 235 198 171; /* #ebc6ab */
-    --color-accent-400: 217 166 130; /* #d9a682 */
-    --color-accent-500: 194 139 97; /* #c28b61 */
-    --color-accent-600: 166 112 74; /* #a6704a */
-    --color-accent-700: 138 90 60; /* #8a5a3c */
-    --color-accent-800: 112 74 51; /* #704a33 */
-    --color-accent-900: 92 62 44; /* #5c3e2c */
-    --color-accent-950: 51 33 23; /* #332117 */
+    /* Accent — blue in the light, teal at 400 for dark links. */
+    --color-accent-50: 239 246 253;
+    --color-accent-100: 222 237 251;
+    --color-accent-200: 192 219 244;
+    --color-accent-300: 134 229 185;
+    --color-accent-400: 3 206 145; /* #03CE91 */
+    --color-accent-500: 30 122 188;
+    --color-accent-600: 0 108 172; /* #006cac */
+    --color-accent-700: 0 84 138;
+    --color-accent-800: 0 64 107;
+    --color-accent-900: 7 54 86;
+    --color-accent-950: 3 28 48;
 
-    /* Background for light mode — sage page ground */
-    --bg-primary: 252 251 249; /* #fcfbf9 */
-    --bg-secondary: 247 246 243; /* #f7f6f3 */
+    /* Background for light mode — classic page ground */
+    --bg-primary: 253 253 253;
+    --bg-secondary: 234 237 243;
     --text-primary: var(--color-primary-900);
     --text-secondary: var(--color-primary-700);
     /* Aliases used by historical HTML-embed posts. */
@@ -261,10 +261,10 @@
 
   /* Dark mode colors - cozy, low contrast for night reading */
   .dark {
-    --bg-primary: 24 28 24; /* #181c18 */
-    --bg-secondary: 32 38 32; /* #202620 */
-    --text-primary: 226 232 226; /* #e2e8e2 */
-    --text-secondary: 176 192 176; /* #b0c0b0 */
+    --bg-primary: 29 42 53;
+    --bg-secondary: 40 39 40;
+    --text-primary: 234 237 243;
+    --text-secondary: 177 184 199;
     --foreground: rgb(var(--color-primary-100));
     --background: rgb(var(--bg-primary));
     --accent: rgb(var(--color-accent-400));

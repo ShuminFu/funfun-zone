@@ -209,4 +209,4 @@ export const themes: Record<ThemeName, Theme> = {
 };
 
 export const themeNames = Object.keys(themes);
-export const defaultTheme = 'sage';
+export const defaultTheme = 'classic';
