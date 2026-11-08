@@ -51,7 +51,7 @@ Cloudflare Pages, static output. See [docs/cloudflare-pages.md](docs/cloudflare-
 
 ## Theme
 
-Titles use Source Serif 4 with Noto Serif SC for Chinese. Navigation, buttons, and meta stay in Inter. The page ground is warm paper (near-black in dark mode); sage, classic, nord, and minimal differ by accent, which is reserved for links and small marks.
+Titles use Source Serif 4 with Noto Serif SC for Chinese. Navigation, buttons, and meta stay in Inter. Five color themes: sage (default, green), anthropic (warm cream paper), classic (AstroPaper grey-blue), nord (cool grey-blue), and minimal (near-white / grey). Accent stays on links and small marks.
 
 Upstream: https://github.com/0bserver07/mycelium-theme
 

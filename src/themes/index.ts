@@ -1,8 +1,8 @@
 /**
  * Mycelium Color Themes
  *
- * Paper and ink are shared. A theme's identity is its accent, used for links
- * and small marks rather than page fills.
+ * Each theme defines primary and accent color palettes.
+ * Colors use RGB values for Tailwind CSS compatibility.
  */
 
 import type { ThemeName } from '../config';
@@ -20,32 +20,24 @@ export interface Theme {
   };
 }
 
-// Warm paper in the light stops, charcoal ink in the dark stops.
-const paper = {
-  '50': '246 243 237',
-  '100': '237 232 223',
-  '200': '226 219 208',
-  '300': '206 197 184',
-  '400': '168 158 145',
-  '500': '132 122 110',
-  '600': '107 98 88',
-  '700': '84 76 68',
-  '800': '62 56 50',
-  '900': '42 38 34',
-  '950': '28 25 22',
-};
-
-const paperGround = {
-  light: paper['50'],
-  dark: paper['950'],
-};
-
 export const themes: Record<ThemeName, Theme> = {
   sage: {
     name: 'sage',
     label: 'Sage',
     colors: {
-      primary: paper,
+      primary: {
+        '50': '247 250 247',
+        '100': '236 243 236',
+        '200': '214 228 214',
+        '300': '181 204 181',
+        '400': '143 176 143',
+        '500': '111 148 111',
+        '600': '88 124 88',
+        '700': '71 100 71',
+        '800': '56 79 56',
+        '900': '44 62 44',
+        '950': '26 38 26',
+      },
       accent: {
         '50': '253 250 247',
         '100': '250 241 235',
@@ -59,7 +51,48 @@ export const themes: Record<ThemeName, Theme> = {
         '900': '92 62 44',
         '950': '51 33 23',
       },
-      bg: paperGround,
+      bg: {
+        light: '252 251 249',
+        dark: '24 28 24',
+      },
+    },
+  },
+
+  // Editorial cream paper. Warm paper primary, terracotta accent.
+  anthropic: {
+    name: 'anthropic',
+    label: 'Anthropic',
+    colors: {
+      primary: {
+        '50': '246 243 237',
+        '100': '237 232 223',
+        '200': '226 219 208',
+        '300': '206 197 184',
+        '400': '168 158 145',
+        '500': '132 122 110',
+        '600': '107 98 88',
+        '700': '84 76 68',
+        '800': '62 56 50',
+        '900': '42 38 34',
+        '950': '28 25 22',
+      },
+      accent: {
+        '50': '253 250 247',
+        '100': '250 241 235',
+        '200': '245 224 209',
+        '300': '235 198 171',
+        '400': '217 166 130',
+        '500': '194 139 97',
+        '600': '166 112 74',
+        '700': '138 90 60',
+        '800': '112 74 51',
+        '900': '92 62 44',
+        '950': '51 33 23',
+      },
+      bg: {
+        light: '246 243 237',
+        dark: '28 25 22',
+      },
     },
   },
 
@@ -69,7 +102,19 @@ export const themes: Record<ThemeName, Theme> = {
     name: 'classic',
     label: 'Classic',
     colors: {
-      primary: paper,
+      primary: {
+        '50': '253 253 253',
+        '100': '234 237 243',
+        '200': '205 210 221',
+        '300': '177 184 199',
+        '400': '150 158 178',
+        '500': '124 134 157',
+        '600': '99 109 136',
+        '700': '75 86 116',
+        '800': '52 63 96',
+        '900': '40 39 40',
+        '950': '29 42 53',
+      },
       accent: {
         '50': '239 246 253',
         '100': '222 237 251',
@@ -83,14 +128,29 @@ export const themes: Record<ThemeName, Theme> = {
         '900': '7 54 86',
         '950': '3 28 48',
       },
-      bg: paperGround,
+      bg: {
+        light: '253 253 253',
+        dark: '29 42 53',
+      },
     },
   },
   nord: {
     name: 'nord',
     label: 'Nord',
     colors: {
-      primary: paper,
+      primary: {
+        '50': '236 239 244',
+        '100': '229 233 240',
+        '200': '216 222 233',
+        '300': '208 214 226',
+        '400': '169 177 191',
+        '500': '129 140 160',
+        '600': '94 105 126',
+        '700': '76 86 106',
+        '800': '67 76 94',
+        '900': '59 66 82',
+        '950': '46 52 64',
+      },
       accent: {
         '50': '236 254 255',
         '100': '225 251 255',
@@ -104,14 +164,29 @@ export const themes: Record<ThemeName, Theme> = {
         '900': '59 82 115',
         '950': '46 66 92',
       },
-      bg: paperGround,
+      bg: {
+        light: '236 239 244',
+        dark: '46 52 64',
+      },
     },
   },
   minimal: {
     name: 'minimal',
     label: 'Minimal',
     colors: {
-      primary: paper,
+      primary: {
+        '50': '250 250 250',
+        '100': '244 244 245',
+        '200': '228 228 231',
+        '300': '212 212 216',
+        '400': '161 161 170',
+        '500': '113 113 122',
+        '600': '82 82 91',
+        '700': '63 63 70',
+        '800': '39 39 42',
+        '900': '24 24 27',
+        '950': '9 9 11',
+      },
       accent: {
         '50': '250 250 250',
         '100': '244 244 245',
@@ -125,7 +200,10 @@ export const themes: Record<ThemeName, Theme> = {
         '900': '24 24 27',
         '950': '9 9 11',
       },
-      bg: paperGround,
+      bg: {
+        light: '255 255 255',
+        dark: '18 18 18',
+      },
     },
   },
 };

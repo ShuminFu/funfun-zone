@@ -81,6 +81,7 @@ export interface MyceliumConfig {
 
 export type ThemeName =
   | 'sage'        // Therapeutic sage greens (default)
+  | 'anthropic'   // Warm cream paper, terracotta accent
   | 'classic'     // Pre-Mycelium AstroPaper (blue light, teal dark)
   | 'nord'        // Nord color palette
   | 'minimal'     // Grayscale

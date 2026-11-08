@@ -221,18 +221,18 @@
    ============================================================================ */
 
   :root {
-    /* Primary — warm paper to charcoal. Same stops as themes/index.ts paper. */
-    --color-primary-50: 246 243 237;
-    --color-primary-100: 237 232 223;
-    --color-primary-200: 226 219 208;
-    --color-primary-300: 206 197 184;
-    --color-primary-400: 168 158 145;
-    --color-primary-500: 132 122 110;
-    --color-primary-600: 107 98 88;
-    --color-primary-700: 84 76 68;
-    --color-primary-800: 62 56 50;
-    --color-primary-900: 42 38 34;
-    --color-primary-950: 28 25 22;
+    /* Primary - Sage greens (muted, therapeutic tones). Default theme fallback. */
+    --color-primary-50: 247 250 247; /* #f7faf7 */
+    --color-primary-100: 236 243 236; /* #ecf3ec */
+    --color-primary-200: 214 228 214; /* #d6e4d6 */
+    --color-primary-300: 181 204 181; /* #b5ccb5 */
+    --color-primary-400: 143 176 143; /* #8fb08f */
+    --color-primary-500: 111 148 111; /* #6f946f */
+    --color-primary-600: 88 124 88; /* #587c58 */
+    --color-primary-700: 71 100 71; /* #476447 */
+    --color-primary-800: 56 79 56; /* #384f38 */
+    --color-primary-900: 44 62 44; /* #2c3e2c */
+    --color-primary-950: 26 38 26; /* #1a261a */
 
     /* Accent - Warm terracotta (grounding, earthy) */
     --color-accent-50: 253 250 247; /* #fdfaf7 */
@@ -247,9 +247,9 @@
     --color-accent-900: 92 62 44; /* #5c3e2c */
     --color-accent-950: 51 33 23; /* #332117 */
 
-    /* Background for light mode — cream paper */
-    --bg-primary: 246 243 237;
-    --bg-secondary: 237 232 223;
+    /* Background for light mode — sage page ground */
+    --bg-primary: 252 251 249; /* #fcfbf9 */
+    --bg-secondary: 247 246 243; /* #f7f6f3 */
     --text-primary: var(--color-primary-900);
     --text-secondary: var(--color-primary-700);
     /* Aliases used by historical HTML-embed posts. */
@@ -261,10 +261,10 @@
 
   /* Dark mode colors - cozy, low contrast for night reading */
   .dark {
-    --bg-primary: 28 25 22;
-    --bg-secondary: 42 38 34;
-    --text-primary: 237 232 223;
-    --text-secondary: 206 197 184;
+    --bg-primary: 24 28 24; /* #181c18 */
+    --bg-secondary: 32 38 32; /* #202620 */
+    --text-primary: 226 232 226; /* #e2e8e2 */
+    --text-secondary: 176 192 176; /* #b0c0b0 */
     --foreground: rgb(var(--color-primary-100));
     --background: rgb(var(--bg-primary));
     --accent: rgb(var(--color-accent-400));

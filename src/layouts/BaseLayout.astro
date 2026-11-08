@@ -146,14 +146,22 @@ const ogImage = image
           Object.entries(theme.colors.accent).forEach(function (entry) {
             el.style.setProperty('--color-accent-' + entry[0], entry[1]);
           });
-          el.style.setProperty('--bg-primary', theme.colors.bg.light);
-          el.style.setProperty('--bg-secondary', theme.colors.bg.light);
+          // Page ground follows the active palette in both modes. An inline value
+          // beats the stylesheet, so the dark stop has to be set here too.
+          var dark = el.classList.contains('dark');
+          var ground = dark ? theme.colors.bg.dark : theme.colors.bg.light;
+          el.style.setProperty('--bg-primary', ground);
+          el.style.setProperty('--bg-secondary', ground);
         }
 
         applyColorTheme.themes = themes;
         applyColorTheme.defaultName = defaultTheme;
         window.applyColorTheme = applyColorTheme;
         applyColorTheme();
+
+        window.addEventListener('themechange', function () {
+          applyColorTheme();
+        });
 
         document.addEventListener('astro:before-swap', function (event) {
           var next = event.newDocument && event.newDocument.documentElement;
