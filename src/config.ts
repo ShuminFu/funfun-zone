@@ -80,8 +80,9 @@ export interface MyceliumConfig {
 }
 
 export type ThemeName =
-  | 'sage'        // Therapeutic sage greens (default)
-  | 'classic'     // Pre-Mycelium AstroPaper (blue light, teal dark)
+  | 'sage'        // Therapeutic sage greens
+  | 'anthropic'   // Warm cream paper, terracotta accent
+  | 'classic'     // Pre-Mycelium AstroPaper (default; blue light, teal dark)
   | 'nord'        // Nord color palette
   | 'minimal'     // Grayscale
   ;
@@ -116,7 +117,7 @@ export const siteConfig: MyceliumConfig = {
   timezone: 'Asia/Bangkok',
 
   // Appearance
-  theme: 'sage',
+  theme: 'classic',
   fonts: {
     body: 'Inter',
     heading: 'Source Serif 4',

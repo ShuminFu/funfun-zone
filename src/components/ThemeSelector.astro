@@ -12,31 +12,35 @@ import { themes, themeNames } from '../themes';
 <div class="theme-selector relative">
   <button
     id="theme-selector-toggle"
-    class="flex items-center gap-2 rounded-xl border border-primary-200 px-3 py-1.5 font-sans text-sm text-primary-700 transition-colors hover:border-primary-400 dark:border-primary-700 dark:text-primary-200"
+    type="button"
+    class="inline-flex h-11 items-center gap-1.5 rounded-md px-2 font-sans text-sm text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:text-primary-400 dark:hover:bg-primary-800 dark:hover:text-primary-100"
     aria-label="Select color theme"
     aria-haspopup="true"
     aria-expanded="false"
+    aria-controls="theme-selector-menu"
   >
     <span class="h-1.5 w-1.5 rounded-full bg-accent-500" aria-hidden="true"></span>
     <span id="current-theme-label">Theme</span>
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
       <path d="M6 9l6 6 6-6"/>
     </svg>
   </button>
 
+  <!-- Grows left from the control. On a phone it is pinned to the viewport so it cannot clip. -->
   <div
     id="theme-selector-menu"
-    class="absolute right-0 z-50 mt-2 hidden w-48 rounded-xl border border-primary-200 bg-white py-2 dark:border-primary-700 dark:bg-primary-900"
+    class="absolute right-0 z-50 mt-1 hidden w-56 max-w-[calc(100vw-1.5rem)] rounded-lg border border-primary-200/60 bg-primary-50 py-1 shadow-sm dark:border-primary-800 dark:bg-primary-900"
     role="menu"
   >
     {themeNames.map((name) => (
       <button
-        class="theme-option w-full px-4 py-2 text-left text-sm hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors flex items-center gap-3"
+        type="button"
+        class="theme-option flex min-h-11 w-full items-center gap-3 px-4 text-left font-sans text-sm text-primary-700 transition-colors hover:bg-primary-100 dark:text-primary-200 dark:hover:bg-primary-800"
         data-theme={name}
         role="menuitem"
       >
         <span
-          class="h-1.5 w-1.5 rounded-full"
+          class="h-1.5 w-1.5 shrink-0 rounded-full"
           style={`background: rgb(${themes[name].colors.accent['500']})`}
         ></span>
         <span>{themes[name].label}</span>
@@ -56,6 +60,28 @@ import { themes, themeNames } from '../themes';
     const defaultTheme = applyColorTheme && applyColorTheme.defaultName;
 
     if (!toggle || !menu || !applyColorTheme) return;
+    // Both load events call this. A second bind would open and close on one tap.
+    if (toggle.dataset.bound) return;
+    toggle.dataset.bound = '1';
+
+    const openClasses = ['bg-primary-100', 'text-primary-900', 'dark:bg-primary-800', 'dark:text-primary-100'];
+
+    function setOpen(open) {
+      if (open && window.matchMedia('(max-width: 767px)').matches) {
+        menu.style.position = 'fixed';
+        menu.style.top = '4.25rem';
+        menu.style.right = '0.75rem';
+        menu.style.marginTop = '0';
+      } else {
+        menu.style.position = '';
+        menu.style.top = '';
+        menu.style.right = '';
+        menu.style.marginTop = '';
+      }
+      menu.classList.toggle('hidden', !open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      openClasses.forEach((cls) => toggle.classList.toggle(cls, open));
+    }
 
     // Same rule as the blocking script: unknown saved names are the default.
     let storedTheme = null;
@@ -68,30 +94,28 @@ import { themes, themeNames } from '../themes';
     applyTheme(currentTheme);
     updateLabel(currentTheme);
 
-    // Toggle menu
     toggle.addEventListener('click', () => {
-      const isOpen = menu.classList.contains('hidden');
-      menu.classList.toggle('hidden');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      setOpen(menu.classList.contains('hidden'));
     });
 
-    // Close on outside click
     document.addEventListener('click', (e) => {
-      if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-        menu.classList.add('hidden');
-        toggle.setAttribute('aria-expanded', 'false');
+      if (!toggle.contains(e.target) && !menu.contains(e.target)) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+        setOpen(false);
+        toggle.focus();
       }
     });
 
-    // Theme selection
     options.forEach((option) => {
       option.addEventListener('click', () => {
         const themeName = option.dataset.theme;
         applyTheme(themeName);
         updateLabel(themeName);
         localStorage.setItem('colorTheme', themeName);
-        menu.classList.add('hidden');
-        toggle.setAttribute('aria-expanded', 'false');
+        setOpen(false);
       });
     });
 
@@ -104,11 +128,7 @@ import { themes, themeNames } from '../themes';
     function applyTheme(themeName) {
       applyColorTheme(themeName);
       options.forEach((opt) => {
-        if (opt.dataset.theme === themeName) {
-          opt.classList.add('bg-primary-100', 'dark:bg-primary-700');
-        } else {
-          opt.classList.remove('bg-primary-100', 'dark:bg-primary-700');
-        }
+        openClasses.forEach((cls) => opt.classList.toggle(cls, opt.dataset.theme === themeName));
       });
     }
   }

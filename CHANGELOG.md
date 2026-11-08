@@ -4,8 +4,10 @@
 
 ### Changed
 
-- Color themes are sage, classic, nord, and minimal. A saved ocean, sunset,
-  rose, or forest theme falls back to the default (sage).
+- Anthropic is a fifth theme and keeps the warm cream paper palette. Sage,
+  classic, nord, and minimal each have their own primary, accent, and background
+  again. The default theme is classic. A saved ocean, sunset, rose, or forest
+  theme falls back to classic.
 - Garden growth filters use the active theme's accent for the selected tab
   and count, instead of fixed green, amber, and emerald fills.
 
