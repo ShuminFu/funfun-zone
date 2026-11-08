@@ -1,7 +1,7 @@
 ---
 /**
- * One row for every note. The icon panel is optional;
- * the card still fills its grid cell so a row stays one height.
+ * One row for every note. An icon card is wider only because its grid
+ * item spans two columns; this component just fills that cell.
  */
 
 import type { Post, GrowthStatus } from '../types';
@@ -67,7 +67,7 @@ const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
       href={`/posts/${post.id}/`}
       tabindex="-1"
       aria-hidden="true"
-      class="flex w-[36%] max-w-40 shrink-0"
+      class="flex w-[40%] shrink-0"
     >
       <MemoryPoint src={icon} alt="" variant="card" />
     </a>

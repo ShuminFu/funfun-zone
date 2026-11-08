@@ -117,15 +117,6 @@
   @apply rounded-xl;
 }
 
-/* Charcoal line art sits on near-black paper in dark mode.
-   Flip the ink to light, then put the hue back so a small accent
-   (the notch camera) stays orange instead of turning white.
-   A mask that touched only near-black pixels also lifted the WebP's
-   faint light-gray alpha fringe into a checkerboard. */
-.dark .memory-point {
-  filter: invert(1) hue-rotate(180deg);
-}
-
 /* ============================================================================
    PROSE OVERRIDES (for content)
    ============================================================================ */

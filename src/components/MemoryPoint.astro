@@ -13,21 +13,21 @@ const { src, alt = '', variant } = Astro.props;
 ---
 
 {variant === 'card' && (
-  <span class="flex h-full w-full items-center justify-center border-l border-primary-200 px-3 py-6 dark:border-primary-800">
-    <img src={src} alt={alt} class="memory-point max-h-36 w-full object-contain" />
+  <span class="flex h-full w-full items-center justify-center border-l border-primary-200 bg-primary-50/60 px-4 py-6 dark:border-primary-800 dark:bg-transparent">
+    <img src={src} alt={alt} class="max-h-64 w-full object-contain dark:rounded-2xl dark:bg-primary-50 dark:p-4" />
   </span>
 )}
 
 {variant === 'article' && (
   <div class="mb-6 flex justify-center">
-    <div class="flex h-24 w-24 items-center justify-center rounded-xl border border-primary-200 bg-primary-50 p-3 dark:border-primary-800 dark:bg-primary-900 sm:h-28 sm:w-28">
-      <img src={src} alt={alt} class="memory-point h-full w-full object-contain" />
+    <div class="flex h-28 w-28 items-center justify-center rounded-xl border border-primary-200 bg-primary-50 p-3 sm:h-32 sm:w-32">
+      <img src={src} alt={alt} class="h-full w-full object-contain" />
     </div>
   </div>
 )}
 
 {variant === 'list' && (
-  <span class="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border border-primary-200 bg-primary-50 p-2.5 dark:border-primary-800 dark:bg-primary-900">
-    <img src={src} alt={alt} class="memory-point h-full w-full object-contain" />
+  <span class="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl border border-primary-200 bg-primary-50 p-2.5">
+    <img src={src} alt={alt} class="h-full w-full object-contain" />
   </span>
 )}
