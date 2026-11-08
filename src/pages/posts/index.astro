@@ -10,6 +10,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PostCard from '../../components/PostCard.astro';
+import GrowthIndicator from '../../components/GrowthIndicator.astro';
 import PostListItem from '../../components/PostListItem.astro';
 import LayoutToggle from '../../components/LayoutToggle.astro';
 import Pagination from '../../components/Pagination.astro';
@@ -96,9 +97,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
           aria-pressed="false"
           class="growth-tab inline-flex items-center gap-2 rounded-xl px-4 py-2 font-sans font-medium text-primary-600 transition-colors hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-100"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="growth-seedling w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M7 20h10"/><path d="M12 20v-6"/><path d="M9 10a3 3 0 0 1 6 0"/><path d="M12 10V7"/><path d="M9 7a3 3 0 0 1 6 0"/>
-          </svg>
+          <GrowthIndicator status="seedling" size="sm" tint={false} />
           Seedling
           <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500">{seedlings.length}</span>
         </button>
@@ -108,9 +107,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
           aria-pressed="false"
           class="growth-tab inline-flex items-center gap-2 rounded-xl px-4 py-2 font-sans font-medium text-primary-600 transition-colors hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-100"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="growth-budding w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M7 20h10"/><path d="M12 20v-8"/><path d="M12 12c-2-2-4-2.5-4-5a4 4 0 0 1 8 0c0 2.5-2 3-4 5"/>
-          </svg>
+          <GrowthIndicator status="budding" size="sm" tint={false} />
           Budding
           <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500">{budding.length}</span>
         </button>
@@ -120,9 +117,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
           aria-pressed="false"
           class="growth-tab inline-flex items-center gap-2 rounded-xl px-4 py-2 font-sans font-medium text-primary-600 transition-colors hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-100"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="growth-evergreen w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M12 22v-7"/><path d="M9 22h6"/><path d="M12 15l-4-4 2-1-3-3 3-1-2-3h8l-2 3 3 1-3 3 2 1z"/>
-          </svg>
+          <GrowthIndicator status="evergreen" size="sm" tint={false} />
           Evergreen
           <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500">{evergreen.length}</span>
         </button>
