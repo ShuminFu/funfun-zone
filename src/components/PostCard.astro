@@ -1,7 +1,7 @@
 ---
 /**
- * One row for every note. An icon card is wider only because its grid
- * item spans two columns; this component just fills that cell.
+ * Garden card. An icon note is wider only because its grid item spans
+ * two columns; the drawing sits on the card surface, not in a side panel.
  */
 
 import type { Post, GrowthStatus } from '../types';
@@ -21,6 +21,7 @@ const { title, description, growth, planted, tags, icon } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
 const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
+const kind = tags?.includes('notes') ? 'Note' : 'Post';
 
 const plantedDate = planted.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -32,44 +33,50 @@ const plantedDate = planted.toLocaleDateString('en-US', {
 const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
 ---
 
-<article class="card group flex h-full min-w-0 flex-1 flex-row overflow-hidden">
-  <div class="flex min-w-0 grow flex-col p-6">
-    <a href={`/posts/${post.id}/`} class="block min-w-0 grow">
-      <div class="mb-3 flex items-center justify-between text-sm text-primary-500">
+<article class="card group flex h-full min-w-0 flex-1 flex-col overflow-hidden">
+  <a href={`/posts/${post.id}/`} class="flex min-h-0 min-w-0 grow flex-col">
+    <div class="flex items-center justify-between gap-3 border-b border-primary-200 px-6 py-3 text-xs text-primary-500 dark:border-primary-800">
+      <span class="inline-flex min-w-0 items-center gap-2">
+        <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 3v5h5"/>
+        </svg>
+        <span>{kind}</span>
         {showGrowth && (
           <GrowthIndicator status={displayGrowth} size="sm" />
         )}
-        <time class="ml-auto">
-          {plantedDate}
-        </time>
+      </span>
+      <time class="shrink-0">{plantedDate}</time>
+    </div>
+
+    <div class="flex min-h-0 grow">
+      <div class="flex min-w-0 grow flex-col px-6 pt-5 pb-5">
+        <h3
+          class:list={[
+            "mb-2 leading-snug text-primary-900 dark:text-primary-100",
+            icon ? "text-2xl" : "text-xl",
+          ]}
+        >
+          {title}
+        </h3>
+        {description && (
+          <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2">
+            {description}
+          </p>
+        )}
       </div>
 
-      <h3 class="mb-2 text-xl leading-snug text-primary-900 dark:text-primary-100">
-        {title}
-      </h3>
-
-      {description && (
-        <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2 mb-3">
-          {description}
-        </p>
+      {icon && (
+        <span class="flex w-[40%] shrink-0 items-center justify-center px-6 py-4">
+          <MemoryPoint src={icon} alt="" variant="card" />
+        </span>
       )}
-    </a>
+    </div>
+  </a>
 
-    {hasTags && (
-      <div class="mt-auto min-w-0 w-full border-t border-primary-100 pt-3 dark:border-primary-800">
-        <Tags tags={(tags ?? []).slice(0, 4)} />
-      </div>
-    )}
-  </div>
-
-  {icon && (
-    <a
-      href={`/posts/${post.id}/`}
-      tabindex="-1"
-      aria-hidden="true"
-      class="flex w-[40%] shrink-0"
-    >
-      <MemoryPoint src={icon} alt="" variant="card" />
-    </a>
+  {hasTags && (
+    <div class="mt-auto min-w-0 border-t border-primary-100 px-6 pt-3 pb-5 dark:border-primary-800">
+      <Tags tags={(tags ?? []).slice(0, 4)} />
+    </div>
   )}
 </article>
