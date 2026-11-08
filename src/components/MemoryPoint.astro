@@ -13,9 +13,7 @@ const { src, alt = '', variant } = Astro.props;
 ---
 
 {variant === 'card' && (
-  <span class="flex h-full w-full items-center justify-center border-l border-primary-200 bg-primary-50/60 px-4 py-6 dark:border-primary-800 dark:bg-transparent">
-    <img src={src} alt={alt} class="max-h-64 w-full object-contain dark:rounded-2xl dark:bg-primary-50 dark:p-4" />
-  </span>
+  <img src={src} alt={alt} class="max-h-44 w-full object-contain" />
 )}
 
 {variant === 'article' && (
