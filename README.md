@@ -28,7 +28,7 @@ Dates display in **Asia/Bangkok**, the zone AstroPaper already used. Timestamps 
 
 Garden features that are on: wikilinks, backlinks, growth (seedling / budding / evergreen, including the Codex series), local and global graph, RSS at `/feed.xml`, sitemap, OG meta tags.
 
-Optional post frontmatter `icon` is a memory-point: a public path such as `/icons/notch.svg` (SVG or WebP, dark line art on a transparent background). The same file shows as a side panel on the garden card and as a rounded badge above the title. Leave it unset for a text-only note. `image` is still the cover / social image, separate from `icon`.
+Optional post frontmatter `icon` is a memory-point: a public path such as `/icons/notch.webp` (WebP on a transparent background). On the multi-column garden that card spans two columns, drawing on the right at about 40%. The same file is the badge above the title. Leave it unset for a one-column text note. Dark mode sets the drawing on a paper panel so the painted colors stay true. `image` is still the cover / social image, separate from `icon`.
 
 `/rss.xml` redirects to `/feed.xml`.
 

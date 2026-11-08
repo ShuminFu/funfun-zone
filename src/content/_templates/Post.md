@@ -9,9 +9,9 @@ draft: true
 # Cover image for social cards (optional). Not the small article icon.
 # image: /images/your-image.jpg
 # imageAlt: Descriptive alt text for accessibility
-# Memory-point (optional). One small SVG or WebP in public/, reused on the
-# garden card and as the badge above the title. Dark line art on transparent.
-# icon: /icons/your-icon.svg
+# Memory-point (optional). One small WebP in public/icons/. The garden card
+# spans two columns. Transparent background; colors stay as painted.
+# icon: /icons/your-icon.webp
 # iconAlt: Short description, or leave unset if the drawing is decorative
 ---
 
