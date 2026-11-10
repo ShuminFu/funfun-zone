@@ -3,7 +3,7 @@ title: "Code review 流水线：一次改动从作者机器走到用户手里"
 description: "这篇按 Claude Code 团队的文章，把一次改动从作者机器走到用户手里要过的九道关画成一张流水线图，其中只有按风险审批这一步由人决定。"
 growth: seedling
 planted: 2026-11-09T18:34:04+08:00
-lastTended: 2026-11-10T07:38:48Z
+lastTended: 2026-11-10T07:41:06Z
 draft: false
 tags:
   - "code-review"
@@ -162,6 +162,19 @@ html[data-theme="dark"] .html-embed{background:#121417}
 .html-embed .crp .always{grid-template-columns:1fr}}
 .html-embed{background:transparent!important}  /* the blog owns the page background */
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
+/* Blog dark mode is html.dark (data-theme holds the palette name), so map the page's dark palette onto it. */
+html.dark .html-embed .crp{
+  --bg:#121417; --panel:#181b1f; --card:#1d2126; --ink:#e6e9ed; --sub:#a7b0ba; --line:#30363d; --dash:#545d68;
+  --b-fill:#15263d; --b-line:#6ea3f0; --b-ink:#a9c8f5;
+  --y-fill:#33270f; --y-line:#d9a24f; --y-ink:#f0d2a0;
+  --g-fill:#23272c; --g-line:#77818c; --g-ink:#cfd5dc;
+  --pill:#e6e9ed; --pill-ink:#121417;
+}
+/* Keep the page's sans headings; the blog's heading font and h2 rule otherwise win. */
+.html-embed .crp h2,.html-embed .crp h3{font-family:var(--sans)!important;border:0!important;padding-bottom:0!important;color:var(--ink)!important}
+.html-embed .crp h2{font-size:22px!important;line-height:1.4!important;margin:52px 0 8px!important}
+.html-embed .crp h3{font-size:17px!important;line-height:1.5!important;margin:28px 0 6px!important}
+@media (max-width:640px){.html-embed .crp h2{font-size:20px!important;margin-top:40px!important}}
 </style>
 
 <div class="html-embed not-prose" lang="zh-CN">
