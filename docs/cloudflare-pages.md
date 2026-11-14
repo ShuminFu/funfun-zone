@@ -1,6 +1,6 @@
 # Cloudflare Pages
 
-FunFun Zone is a static Mycelium site. Pages serves `dist/`. There is no Wrangler adapter and no `wrangler.json`.
+FunFun Zone is a static Astro site. Pages serves `dist/`. There is no Wrangler adapter and no `wrangler.json`.
 
 In the Pages project (funfun.zone):
 
