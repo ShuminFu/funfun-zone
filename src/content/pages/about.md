@@ -3,8 +3,6 @@ title: About
 description: FunFun Zone is Shumin Fu's garden of notes on software engineering and the tools he builds.
 ---
 
-# About
-
 I'm Shumin Fu. FunFun Zone is where I keep notes on software engineering, agentic AI, and the small tools I build along the way.
 
 - GitHub: [ShuminFu](https://github.com/ShuminFu)

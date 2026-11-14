@@ -179,80 +179,98 @@
 @utility prose-mycelium {
   @apply prose dark:prose-invert;
   @apply max-w-none;
+  /* Most posts are Chinese long-form; CJK needs more leading than Latin. */
+  line-height: 1.85;
 
-  /* Code blocks */
+  /* Code blocks follow the page theme. Shiki ships both palettes as
+     --shiki-light / --shiki-dark on every token (see astro.config.mjs). */
   & pre {
-    @apply bg-primary-900 dark:bg-primary-950;
-    @apply border border-primary-800 dark:border-primary-700;
+    @apply bg-primary-100 dark:bg-primary-900;
+    @apply border border-primary-200 dark:border-primary-800;
     @apply rounded-lg;
+    color: var(--shiki-light, rgb(var(--color-primary-800)));
   }
 
+  .dark & pre {
+    color: var(--shiki-dark, rgb(var(--color-primary-200)));
+  }
+
+  & pre span {
+    color: var(--shiki-light);
+  }
+
+  .dark & pre span {
+    color: var(--shiki-dark);
+  }
+
+  /* Inline code is neutral ink on a chip, so it cannot be mistaken for a link. */
   & code {
-    @apply text-accent-600 dark:text-accent-400;
+    @apply text-primary-800 dark:text-primary-200;
     @apply bg-primary-100 dark:bg-primary-800;
     @apply px-1.5 py-0.5 rounded-sm;
-    @apply text-sm font-mono;
+    @apply font-mono font-medium;
+    font-size: 0.875em;
+  }
+
+  /* The typography plugin prints literal backticks around inline code. */
+  & code::before,
+  & code::after {
+    content: none;
   }
 
   & pre code {
-    @apply bg-transparent dark:bg-transparent p-0;
-    @apply text-primary-100;
+    @apply bg-transparent dark:bg-transparent p-0 font-normal;
+    color: inherit;
   }
 
-  /* Prevent any background colors on code block content - let Shiki handle it */
-  & pre code * {
-    background: none !important;
-    background-color: transparent !important;
-  }
-  & pre code span {
-    background: none !important;
-    background-color: transparent !important;
-  }
-  & pre .line {
-    background: none !important;
-    background-color: transparent !important;
-  }
+  /* Shiki sets per-token backgrounds for some themes; the block owns the background. */
+  & pre code *,
+  & pre .line,
   & pre .line * {
     background: none !important;
-    background-color: transparent !important;
   }
 
-  /* Links in prose */
+  /* Links: always underlined, quietly; the underline firms up on hover. */
   & a {
     @apply text-accent-600 dark:text-accent-400;
-    @apply no-underline hover:underline;
+    @apply underline decoration-accent-600/30 underline-offset-[3px] dark:decoration-accent-400/35;
+    @apply hover:decoration-accent-600 dark:hover:decoration-accent-400;
+    @apply transition-colors;
   }
 
   /* Headings */
   & :is(h1, h2, h3, h4) {
+    @apply font-semibold text-primary-900 dark:text-primary-100;
     font-family: "Source Serif 4", "Noto Serif SC", "Songti SC", Georgia, serif;
   }
 
-  & h1 {
-    @apply text-primary-900 dark:text-primary-100;
-    @apply font-semibold;
+  /* rehype-autolink-headings wraps each heading in an anchor. It is a
+     heading first: ink colour, no underline, accent only on hover. */
+  & :is(h1, h2, h3, h4) a,
+  .dark & :is(h1, h2, h3, h4) a {
+    @apply no-underline;
+    color: inherit;
+    font-weight: inherit;
   }
-  & h2 {
-    @apply text-primary-900 dark:text-primary-100;
-    @apply font-semibold;
-  }
-  & h3 {
-    @apply text-primary-900 dark:text-primary-100;
-    @apply font-semibold;
-  }
-  & h4 {
-    @apply text-primary-900 dark:text-primary-100;
-    @apply font-semibold;
+
+  & :is(h1, h2, h3, h4) a:hover {
+    @apply text-accent-700 dark:text-accent-300;
   }
 
   & h2 {
     @apply border-b border-primary-200 dark:border-primary-800 pb-2;
   }
 
-  /* Blockquotes */
+  /* Blockquotes: upright (CJK has no italic) with a thin accent bar. */
   & blockquote {
-    @apply border-l-4 border-accent-400 dark:border-accent-600;
-    @apply italic text-primary-700 dark:text-primary-300;
+    @apply border-l-2 border-accent-300 dark:border-accent-600;
+    @apply not-italic font-normal text-primary-700 dark:text-primary-300;
+  }
+
+  /* No auto-inserted Latin quote marks around quoted paragraphs. */
+  & blockquote p::before,
+  & blockquote p::after {
+    content: none;
   }
 }
 
@@ -389,6 +407,7 @@
   h1, h2, h3, h4 {
     font-family: "Source Serif 4", "Noto Serif SC", "Songti SC", Georgia, serif;
     font-weight: 600;
+    text-wrap: balance;
   }
 
   /* Focus styles for accessibility */
@@ -398,7 +417,7 @@
 
   /* Selection highlight */
   ::selection {
-    @apply bg-primary-200 dark:bg-primary-700;
+    @apply bg-accent-200 dark:bg-accent-800;
   }
 
   /* Scrollbar styling */

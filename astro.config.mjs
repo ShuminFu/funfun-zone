@@ -59,8 +59,14 @@ export default defineConfig({
       [rehypeAutolinkHeadings, { behavior: 'wrap' }],
       rehypeKatex,  // Render math with KaTeX
     ],
+    // Two palettes, no inline default: global.css picks --shiki-light or
+    // --shiki-dark per mode and owns the block background.
     shikiConfig: {
-      theme: 'min-dark',
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark-dimmed',
+      },
+      defaultColor: false,
       wrap: true,
     },
   },
