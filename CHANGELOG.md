@@ -26,6 +26,10 @@
 - Articles: headings are ink (they inherited the link colour), inline code
   is a neutral chip, code blocks follow the page theme, blockquotes are
   upright, and body leading is 1.85 for Chinese long-form.
+- The Connections panel in the article sidebar is collapsed by default: one
+  row with the number of linked notes. Opening it lists the linked notes and
+  draws the graph. The choice is remembered across notes, and d3 is only
+  loaded when the panel is first opened.
 - Sage, Anthropic and Nord light-mode links were below 4.5:1 contrast;
   their accent 600-950 steps are darker. Hues are unchanged.
 

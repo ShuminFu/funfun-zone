@@ -2,10 +2,13 @@
 /**
  * LocalGraph Component
  *
- * D3.js force-directed graph visualization showing:
- * - Current post as center node
- * - Connected posts as surrounding nodes
- * - Links between posts
+ * "Connections" panel in the article sidebar: a collapsed row that opens to
+ * the linked notes as a list, plus a small D3 force graph of
+ * - the current post as center node
+ * - connected posts as surrounding nodes
+ * - links between them
+ * d3 is loaded the first time the panel is opened. The open state is
+ * remembered across notes in localStorage.
  */
 
 import type { Post } from '../types';
@@ -107,34 +110,93 @@ if (currentSlug) {
 
 // Check if there are any connections to show
 const hasConnections = filteredNodes.length > 1;
+const connectedNotes = filteredNodes.filter((n) => n.id !== currentSlug);
 
 const graphData = JSON.stringify({
   nodes: filteredNodes,
   connections: filteredConnections,
   currentSlug,
 });
+
+// Markup notes (Astro 7 does not allow HTML comments inside an expression):
+// the panel is collapsed by default, one row with the count. Opening it shows
+// the linked notes as a list and draws the graph. The id on <details> is what
+// PostLayout's :has() selectors look for to show the sidebar.
 ---
 
 {hasConnections && siteConfig.features.localGraph && (
-  <div>
-    <h3 class="text-sm font-medium text-primary-600 dark:text-primary-400 mb-3">
-      Connections
-    </h3>
-    <div
-      id="local-graph-container"
-      class="relative w-full bg-white dark:bg-primary-900 rounded-xl border border-primary-200 dark:border-primary-800 overflow-hidden"
-      style="height: 280px;"
-      data-graph={graphData}
+  <details
+    id="local-graph-container"
+    class="connections group/conn rounded-xl border border-primary-200 bg-white dark:border-primary-800 dark:bg-primary-900"
+    data-graph={graphData}
+  >
+    <summary
+      class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 font-sans text-sm font-medium text-primary-700 transition-colors hover:text-primary-900 dark:text-primary-300 dark:hover:text-primary-100 [&::-webkit-details-marker]:hidden"
     >
-      <div id="local-graph-content" class="w-full h-full"></div>
-    </div>
-  </div>
+      <span class="inline-flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary-500 dark:text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+          <circle cx="6" cy="6" r="2.5"/>
+          <circle cx="18" cy="9" r="2.5"/>
+          <circle cx="9" cy="18" r="2.5"/>
+          <path d="M8.3 7 15.7 8.4M7 8.3 8.4 15.6M16.3 10.9 10.6 16.2"/>
+        </svg>
+        Connections
+        <span class="rounded-full bg-primary-100 px-2 py-0.5 text-xs tabular-nums text-primary-600 dark:bg-primary-800 dark:text-primary-300">
+          {connectedNotes.length}<span class="sr-only"> linked {connectedNotes.length === 1 ? 'note' : 'notes'}</span>
+        </span>
+      </span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary-500 transition-transform duration-200 group-open/conn:rotate-180 dark:text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    </summary>
+
+    <ul class="border-t border-primary-200 p-1.5 dark:border-primary-800">
+      {connectedNotes.map((note) => (
+        <li>
+          <a
+            href={`/posts/${note.id}/`}
+            class="block rounded-lg px-2 py-1.5 text-sm leading-snug text-primary-700 transition-colors hover:bg-primary-100 hover:text-accent-700 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-accent-300"
+          >
+            {note.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div
+      id="local-graph-content"
+      class="w-full border-t border-primary-200 text-primary-600 dark:border-primary-800 dark:text-primary-400"
+      style="height: 220px;"
+      role="img"
+      aria-label={`Graph of this note and its ${connectedNotes.length} linked ${connectedNotes.length === 1 ? 'note' : 'notes'}`}
+    ></div>
+  </details>
 )}
 
-<script>
-  import * as d3 from 'd3';
+<style>
+  /* Smooth open and close where the browser can animate to height:auto.
+     Elsewhere the panel simply opens. */
+  @media (prefers-reduced-motion: no-preference) {
+    .connections {
+      interpolate-size: allow-keywords;
+    }
 
-  interface GraphNode extends d3.SimulationNodeDatum {
+    .connections::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition: block-size 0.22s ease, content-visibility 0.22s allow-discrete;
+    }
+
+    .connections[open]::details-content {
+      block-size: auto;
+    }
+  }
+</style>
+
+<script>
+  import type * as D3 from 'd3';
+
+  interface GraphNode extends D3.SimulationNodeDatum {
     id: string;
     title: string;
     connections: number;
@@ -151,25 +213,40 @@ const graphData = JSON.stringify({
     currentSlug?: string;
   }
 
-  function initLocalGraph() {
-    const container = document.getElementById('local-graph-container');
-    const content = document.getElementById('local-graph-content');
+  const STORAGE_KEY = 'connections-open';
+  const LABEL_MAX = 14;
 
-    if (!container || !content) return;
+  function readOpen(): boolean {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === '1';
+    } catch {
+      return false;
+    }
+  }
 
+  function writeOpen(open: boolean) {
+    try {
+      localStorage.setItem(STORAGE_KEY, open ? '1' : '0');
+    } catch {
+      // Private mode or blocked storage: the panel still works, it just forgets.
+    }
+  }
+
+  // d3 is only fetched the first time a reader opens the panel.
+  async function drawGraph(container: HTMLElement, content: HTMLElement) {
     const dataAttr = container.dataset.graph;
     if (!dataAttr) return;
 
     const data: GraphData = JSON.parse(dataAttr);
     if (data.nodes.length === 0) return;
 
-    // Clear previous content
+    const d3 = await import('d3');
+
     content.innerHTML = '';
 
     const width = content.clientWidth;
     const height = content.clientHeight;
 
-    // Create SVG
     const svg = d3
       .select(content)
       .append('svg')
@@ -177,11 +254,9 @@ const graphData = JSON.stringify({
       .attr('height', height)
       .attr('viewBox', [-width / 2, -height / 2, width, height]);
 
-    // Process links
     const links = data.connections.map((d) => ({ ...d }));
     const nodes = data.nodes.map((d) => ({ ...d }));
 
-    // Create force simulation
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -189,31 +264,27 @@ const graphData = JSON.stringify({
         d3
           .forceLink(links)
           .id((d: any) => d.id)
-          .distance(60)
+          .distance(78)
       )
-      .force('charge', d3.forceManyBody().strength(-100))
-      .force('center', d3.forceCenter(0, 0))
-      .force('collision', d3.forceCollide().radius(20));
+      .force('charge', d3.forceManyBody().strength(-180))
+      .force('center', d3.forceCenter(0, -6))
+      .force('collision', d3.forceCollide().radius(34));
 
-    // Create links
     const link = svg
       .append('g')
-      .attr('class', 'links')
       .selectAll('line')
       .data(links)
       .join('line')
       .attr('stroke', 'currentColor')
-      .attr('stroke-opacity', 0.3)
+      .attr('stroke-opacity', 0.35)
       .attr('stroke-width', 1);
 
-    // Create node groups
     const node = svg
       .append('g')
-      .attr('class', 'nodes')
       .selectAll('g')
       .data(nodes)
       .join('g')
-      .attr('cursor', 'pointer')
+      .attr('cursor', (d) => (d.id === data.currentSlug ? 'grab' : 'pointer'))
       .call(
         d3
           .drag<SVGGElement, GraphNode>()
@@ -233,49 +304,56 @@ const graphData = JSON.stringify({
           }) as any
       );
 
-    // Add circles
+    // Full title on hover; the visible label is shortened so labels do not collide.
+    node.append('title').text((d) => d.title);
+
     node
       .append('circle')
-      .attr('r', (d) => (d.id === data.currentSlug ? 8 : 5 + Math.min(d.connections, 5)))
-      .attr('fill', (d) =>
-        d.id === data.currentSlug
-          ? 'rgb(var(--color-accent-500))'
-          : 'rgb(var(--color-primary-400))'
+      .attr('r', (d) => (d.id === data.currentSlug ? 8 : 5 + Math.min(d.connections, 4)))
+      .style('fill', (d) =>
+        d.id === data.currentSlug ? 'rgb(var(--color-accent-500))' : 'rgb(var(--color-primary-400))'
       )
-      .attr('stroke', 'rgb(var(--color-primary-100))')
-      .attr('stroke-width', 1);
+      .style('stroke', 'rgb(var(--color-primary-50))')
+      .attr('stroke-width', 1.5);
 
-    // Add labels
     node
       .append('text')
-      .text((d) => d.title)
+      .text((d) => {
+        if (d.id === data.currentSlug) return 'This note';
+        const chars = Array.from(d.title);
+        return chars.length > LABEL_MAX ? chars.slice(0, LABEL_MAX).join('') + '…' : d.title;
+      })
       .attr('x', 0)
-      .attr('y', (d) => (d.id === data.currentSlug ? 20 : 16))
+      // The current note's label sits above its node, clear of its neighbours' labels below theirs.
+      .attr('y', (d) => (d.id === data.currentSlug ? -14 : 20))
       .attr('text-anchor', 'middle')
       .attr('fill', 'currentColor')
       .attr('font-size', '10px')
-      .attr('opacity', 0.8);
+      .attr('font-weight', (d) => (d.id === data.currentSlug ? 600 : 400));
 
-    // Click handler for navigation
-    node.on('click', (event, d) => {
+    node.on('click', (_event, d) => {
       if (d.id !== data.currentSlug) {
         window.location.href = `/posts/${d.id}/`;
       }
     });
 
-    // Hover effects
     node
       .on('mouseover', function () {
-        d3.select(this).select('circle').attr('stroke-width', 2);
-        d3.select(this).select('text').attr('opacity', 1);
+        d3.select(this).select('circle').attr('stroke-width', 2.5);
       })
       .on('mouseout', function () {
-        d3.select(this).select('circle').attr('stroke-width', 1);
-        d3.select(this).select('text').attr('opacity', 0.8);
+        d3.select(this).select('circle').attr('stroke-width', 1.5);
       });
 
-    // Update positions on tick
+    // Keep nodes and their labels inside the panel.
+    const padX = 44;
+    const padY = 18;
     simulation.on('tick', () => {
+      nodes.forEach((d: any) => {
+        d.x = Math.max(-width / 2 + padX, Math.min(width / 2 - padX, d.x));
+        d.y = Math.max(-height / 2 + padY + 12, Math.min(height / 2 - padY - 14, d.y));
+      });
+
       link
         .attr('x1', (d: any) => d.source.x)
         .attr('y1', (d: any) => d.source.y)
@@ -286,7 +364,33 @@ const graphData = JSON.stringify({
     });
   }
 
-  // Initialize on load
+  function initLocalGraph() {
+    const container = document.getElementById('local-graph-container') as HTMLDetailsElement | null;
+    const content = document.getElementById('local-graph-content');
+    if (!container || !content) return;
+    // Both load events call this.
+    if (container.dataset.bound) return;
+    container.dataset.bound = '1';
+
+    let drawn = false;
+    const drawOnce = () => {
+      if (drawn || !container.open) return;
+      drawn = true;
+      drawGraph(container, content);
+    };
+
+    container.addEventListener('toggle', () => {
+      writeOpen(container.open);
+      drawOnce();
+    });
+
+    // A reader who left it open on the last note gets it open on this one.
+    if (readOpen()) {
+      container.open = true;
+      drawOnce();
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', initLocalGraph);
   document.addEventListener('astro:page-load', initLocalGraph);
 </script>
