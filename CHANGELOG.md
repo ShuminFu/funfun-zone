@@ -2,7 +2,32 @@
 
 ## Unreleased
 
+### Added
+
+- `/llms.txt` and a Markdown copy of every note at `/posts/<slug>.md`, for
+  answer engines and agents. Site-wide WebSite and Person JSON-LD, article
+  meta tags, real `<time datetime>` dates, a default social image, and a
+  404 page.
+- Notes are served in their own language: `<html lang>` is detected from
+  the title, or set with a new optional `lang` frontmatter field. Chinese
+  notes were previously served as `lang="en"`.
+- Project skills in `.claude/skills/`: `design-audit` (palette measurement
+  and screenshot scripts) and `geo-check` (build verifier).
+
 ### Changed
+
+- Classic is rebuilt as single-hue scales. The neutral scale mixed three
+  hues, so dark cards had the same lightness as the dark page. The accent
+  has a full scale per mode (`accentDark`): blue for light, mint for dark.
+- Growth stages, callouts and confidence badges share one family of status
+  colours instead of stock Tailwind hues. Link icons take the link colour.
+- Cards have no inner rules, tags are filled chips, and cards have a hover
+  state. The home hero is left-aligned with live garden counts.
+- Articles: headings are ink (they inherited the link colour), inline code
+  is a neutral chip, code blocks follow the page theme, blockquotes are
+  upright, and body leading is 1.85 for Chinese long-form.
+- Sage, Anthropic and Nord light-mode links were below 4.5:1 contrast;
+  their accent 600-950 steps are darker. Hues are unchanged.
 
 - Anthropic is a fifth theme and keeps the warm cream paper palette. Sage,
   classic, nord, and minimal each have their own primary, accent, and background

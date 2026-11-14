@@ -28,6 +28,8 @@ Dates display in **Asia/Bangkok**, the zone AstroPaper already used. Timestamps 
 
 Garden features that are on: wikilinks, backlinks, growth (seedling / budding / evergreen, including the Codex series), local and global graph, RSS at `/feed.xml`, sitemap, OG meta tags.
 
+For answer engines and agents: `/llms.txt`, a Markdown copy of each note at `/posts/<slug>.md`, and JSON-LD on every page. `node .claude/skills/geo-check/scripts/geo-check.mjs` verifies them after a build.
+
 Optional post frontmatter `icon` is a memory-point: a public path such as `/icons/notch.webp` (WebP on a transparent background). On the multi-column garden that card spans two columns, with the drawing sitting on the card at the right, about 40%. The same file is the badge above the title. Leave it unset for a one-column text note. `image` is still the cover / social image, separate from `icon`.
 
 `/rss.xml` redirects to `/feed.xml`.
