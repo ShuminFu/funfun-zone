@@ -25,7 +25,7 @@ Object.keys(categories).forEach(cat => {
   <div class="container mx-auto px-4 py-12 max-w-4xl">
     <header class="mb-12">
       <h1 class="text-4xl font-semibold text-primary-900 dark:text-primary-100 mb-4">Documentation</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400">
+      <p class="text-xl text-primary-600 dark:text-primary-400">
         Guides, tutorials, and reference documentation
       </p>
     </header>
@@ -41,7 +41,7 @@ Object.keys(categories).forEach(cat => {
               {categoryDocs.map((doc, index) => (
                 <a
                   href={`/docs/${doc.id}`}
-                  class="group flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors"
+                  class="group flex items-center gap-4 p-4 bg-white dark:bg-primary-900 rounded-lg border border-primary-200 dark:border-primary-800 hover:border-primary-400 dark:hover:border-primary-600 transition-colors"
                 >
                   <span class="shrink-0 w-8 h-8 flex items-center justify-center bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium">
                     {index + 1}
@@ -51,7 +51,7 @@ Object.keys(categories).forEach(cat => {
                       {doc.data.title}
                     </h3>
                     {doc.data.description && (
-                      <p class="text-sm text-gray-600 dark:text-gray-400">
+                      <p class="text-sm text-primary-600 dark:text-primary-400">
                         {doc.data.description}
                       </p>
                     )}
@@ -64,7 +64,7 @@ Object.keys(categories).forEach(cat => {
       </div>
     ) : (
       <div class="text-center py-12">
-        <p class="text-gray-500 dark:text-gray-400">No documentation yet.</p>
+        <p class="text-primary-600 dark:text-primary-400">No documentation yet.</p>
       </div>
     )}
   </div>

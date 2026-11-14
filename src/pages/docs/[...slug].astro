@@ -46,21 +46,21 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
         </h1>
 
         {doc.data.description && (
-          <p class="text-xl text-gray-600 dark:text-gray-400 mt-4">
+          <p class="text-xl text-primary-600 dark:text-primary-400 mt-4">
             {doc.data.description}
           </p>
         )}
       </header>
 
       {headings.length > 0 && (
-        <nav class="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <nav class="mb-8 p-4 bg-primary-100 dark:bg-primary-900 rounded-lg">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-2">On this page</h2>
           <ul class="space-y-1">
             {headings.filter(h => h.depth <= 3).map(heading => (
               <li style={`padding-left: ${(heading.depth - 2) * 12}px`}>
                 <a
                   href={`#${heading.slug}`}
-                  class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
+                  class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   {heading.text}
                 </a>
@@ -75,10 +75,10 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
       </div>
 
       {(prevDoc || nextDoc) && (
-        <nav class="flex justify-between mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <nav class="flex justify-between mt-12 pt-8 border-t border-primary-200 dark:border-primary-800">
           {prevDoc ? (
             <a href={`/docs/${prevDoc.id}`} class="group">
-              <span class="text-sm text-gray-500 dark:text-gray-400">Previous</span>
+              <span class="text-sm text-primary-600 dark:text-primary-400">Previous</span>
               <p class="font-medium text-primary-900 dark:text-primary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
                 ← {prevDoc.data.title}
               </p>
@@ -86,7 +86,7 @@ const nextDoc = currentIndex < sameCategoryDocs.length - 1 ? sameCategoryDocs[cu
           ) : <div />}
           {nextDoc ? (
             <a href={`/docs/${nextDoc.id}`} class="group text-right">
-              <span class="text-sm text-gray-500 dark:text-gray-400">Next</span>
+              <span class="text-sm text-primary-600 dark:text-primary-400">Next</span>
               <p class="font-medium text-primary-900 dark:text-primary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">
                 {nextDoc.data.title} →
               </p>
