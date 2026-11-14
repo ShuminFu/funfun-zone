@@ -48,16 +48,16 @@
 }
 
 @utility growth-seedling {
-  /* Growth status indicators */
-  @apply text-green-500;
+  /* Growth status indicators. Colours are the status tokens below. */
+  color: var(--growth-seedling);
 }
 
 @utility growth-budding {
-  @apply text-amber-500;
+  color: var(--growth-budding);
 }
 
 @utility growth-evergreen {
-  @apply text-emerald-600 dark:text-emerald-400;
+  color: var(--growth-evergreen);
 }
 
 @utility highlight {
@@ -85,28 +85,53 @@
    the variants are always generated instead of being tree-shaken away. */
 @layer components {
   .callout {
-    /* Callout blocks */
-    @apply p-4 rounded-lg border-l-4 my-4;
+    /* Callout blocks: a tint and a hairline of the status colour. */
+    --callout: var(--status-note);
+    @apply my-5 rounded-lg px-4 py-3;
+    background: color-mix(in srgb, var(--callout) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--callout) 28%, transparent);
   }
 
-  .callout-note {
-    @apply bg-blue-50 border-blue-500 dark:bg-blue-950/50 dark:border-blue-400;
+  .callout-title {
+    @apply mb-1 flex flex-wrap items-baseline gap-x-2 font-sans text-sm font-semibold;
+    color: var(--callout);
   }
 
-  .callout-tip {
-    @apply bg-green-50 border-green-500 dark:bg-green-950/50 dark:border-green-400;
+  .callout-title-text {
+    @apply text-primary-900 dark:text-primary-100;
+  }
+
+  .callout-content > :first-child {
+    margin-top: 0;
+  }
+
+  .callout-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  .callout-tip,
+  .callout-success {
+    --callout: var(--status-tip);
   }
 
   .callout-warning {
-    @apply bg-amber-50 border-amber-500 dark:bg-amber-950/50 dark:border-amber-400;
+    --callout: var(--status-warning);
   }
 
-  .callout-danger {
-    @apply bg-red-50 border-red-500 dark:bg-red-950/50 dark:border-red-400;
+  .callout-danger,
+  .callout-error,
+  .callout-bug {
+    --callout: var(--status-danger);
   }
 
-  .callout-info {
-    @apply bg-purple-50 border-purple-500 dark:bg-purple-950/50 dark:border-purple-400;
+  .callout-info,
+  .callout-question,
+  .callout-example {
+    --callout: var(--status-info);
+  }
+
+  .callout-quote {
+    --callout: rgb(var(--color-primary-500));
   }
 }
 
@@ -280,6 +305,38 @@
     --background: rgb(var(--bg-primary));
     --accent: rgb(var(--color-accent-400));
     --muted: rgb(var(--color-primary-800));
+  }
+
+  /* ============================================================================
+   STATUS COLOURS
+   Shared by every theme. One lightness and one chroma per mode (OKLCH
+   0.54 / 0.13 light, 0.77 / 0.115 dark); only the hue moves, so growth
+   stages, callouts and confidence badges read as one family. Seedling is
+   a step lighter and evergreen a step deeper so the two greens stay apart.
+   ============================================================================ */
+
+  :root {
+    --growth-seedling: #54994d;
+    --growth-budding: #976202;
+    --growth-evergreen: #036b55;
+    --status-note: #0275b3;
+    --status-tip: #1e8347;
+    --status-warning: #976202;
+    --status-danger: #ad4b47;
+    --status-info: #7b5aae;
+  }
+
+  /* .on-dark: surfaces that stay dark in both modes (graph overlay). */
+  .dark,
+  .on-dark {
+    --growth-seedling: #92d18b;
+    --growth-budding: #e2a85c;
+    --growth-evergreen: #3fb596;
+    --status-note: #6fbcf8;
+    --status-tip: #79c990;
+    --status-warning: #e2a85c;
+    --status-danger: #f5968f;
+    --status-info: #bfa3f3;
   }
 
   /* ============================================================================
@@ -483,71 +540,38 @@
    LINK TYPE ICONS
    ============================================================================ */
 
-/* External link icon - applies to http/https links except localhost and same-origin */
-/* Note: Add your domain to the :not() selector or use .no-icon class to exclude */
-.prose-mycelium a[href^="http"]:not([href^="http://localhost"]):not([href^="https://localhost"]):not(.no-icon):not(.wikilink)::after {
+/* Icons are masks filled with the link's own colour, so they follow the
+   theme and the mode. :where() keeps every rule at the same specificity:
+   the generic external icon comes first and a more specific site icon,
+   declared later, replaces it. Use .no-icon to opt a link out. */
+.prose-mycelium a:where([href^="http"], [href$=".pdf"]):where(:not([href^="http://localhost"], [href^="https://localhost"], .no-icon, .wikilink))::after {
   content: "";
   display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  margin-left: 0.25em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.5'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  vertical-align: middle;
+  width: 0.72em;
+  height: 0.72em;
+  margin-left: 0.22em;
+  vertical-align: -0.02em;
+  background-color: currentColor;
+  opacity: 0.75;
+  -webkit-mask: var(--link-icon) center / contain no-repeat;
+  mask: var(--link-icon) center / contain no-repeat;
+  --link-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
 }
 
-/* PDF link icon */
-.prose-mycelium a[href$=".pdf"]:not(.no-icon)::after {
-  content: "";
-  display: inline-block;
-  width: 0.9em;
-  height: 0.9em;
-  margin-left: 0.25em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3Cpath d='M9 15h6'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  vertical-align: middle;
+.prose-mycelium a:where([href$=".pdf"]):where(:not(.no-icon))::after {
+  --link-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3Cpath d='M9 15h6'/%3E%3C/svg%3E");
 }
 
-/* Wikipedia link icon */
-.prose-mycelium a[href*="wikipedia.org"]:not(.no-icon)::after {
-  content: "";
-  display: inline-block;
-  width: 0.9em;
-  height: 0.9em;
-  margin-left: 0.25em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M12.09 13.119c-.936 1.932-2.217 4.548-2.853 5.728-.616 1.074-1.127.931-1.532.029-1.406-3.321-4.293-9.144-5.651-12.409-.251-.601-.441-.987-.619-1.139-.181-.15-.554-.24-1.122-.271C.103 5.033 0 4.982 0 4.898v-.455l.052-.045c.924-.005 5.401 0 5.401 0l.051.045v.434c0 .119-.075.176-.225.176l-.564.031c-.485.029-.727.164-.727.436 0 .135.053.33.166.601 1.082 2.646 4.818 10.521 4.818 10.521l.136.046 2.411-4.81-.482-1.067-1.658-3.264s-.318-.654-.428-.872c-.728-1.443-.712-1.518-1.447-1.617-.207-.023-.313-.05-.313-.149v-.468l.06-.045h4.292l.113.037v.451c0 .105-.076.15-.227.15l-.308.047c-.792.061-.661.381-.136 1.422l1.582 3.252 1.758-3.504c.293-.64.233-.801.111-.947-.07-.084-.305-.22-.812-.24l-.201-.021c-.052 0-.098-.015-.145-.051-.045-.031-.067-.076-.067-.129v-.427l.061-.045c1.247-.008 4.043 0 4.043 0l.059.045v.436c0 .121-.059.178-.193.178-.646.03-.782.095-1.023.439-.12.186-.375.589-.646 1.039l-2.301 4.273-.065.135 2.792 5.712.17.048 4.396-10.438c.154-.422.129-.722-.064-.895-.197-.172-.346-.273-.857-.295l-.42-.016c-.061 0-.105-.014-.152-.045-.043-.029-.072-.075-.072-.119v-.436l.059-.045h4.961l.041.045v.437c0 .119-.074.18-.209.18-.648.03-1.127.18-1.443.421-.314.255-.557.616-.736 1.067 0 0-4.043 9.258-5.426 12.339-.525 1.007-1.053.917-1.503-.031-.571-1.171-1.773-3.786-2.646-5.71l.053-.036z'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  vertical-align: middle;
+.prose-mycelium a:where([href*="wikipedia.org"]):where(:not(.no-icon))::after {
+  --link-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12.09 13.119c-.936 1.932-2.217 4.548-2.853 5.728-.616 1.074-1.127.931-1.532.029-1.406-3.321-4.293-9.144-5.651-12.409-.251-.601-.441-.987-.619-1.139-.181-.15-.554-.24-1.122-.271C.103 5.033 0 4.982 0 4.898v-.455l.052-.045c.924-.005 5.401 0 5.401 0l.051.045v.434c0 .119-.075.176-.225.176l-.564.031c-.485.029-.727.164-.727.436 0 .135.053.33.166.601 1.082 2.646 4.818 10.521 4.818 10.521l.136.046 2.411-4.81-.482-1.067-1.658-3.264s-.318-.654-.428-.872c-.728-1.443-.712-1.518-1.447-1.617-.207-.023-.313-.05-.313-.149v-.468l.06-.045h4.292l.113.037v.451c0 .105-.076.15-.227.15l-.308.047c-.792.061-.661.381-.136 1.422l1.582 3.252 1.758-3.504c.293-.64.233-.801.111-.947-.07-.084-.305-.22-.812-.24l-.201-.021c-.052 0-.098-.015-.145-.051-.045-.031-.067-.076-.067-.129v-.427l.061-.045c1.247-.008 4.043 0 4.043 0l.059.045v.436c0 .121-.059.178-.193.178-.646.03-.782.095-1.023.439-.12.186-.375.589-.646 1.039l-2.301 4.273-.065.135 2.792 5.712.17.048 4.396-10.438c.154-.422.129-.722-.064-.895-.197-.172-.346-.273-.857-.295l-.42-.016c-.061 0-.105-.014-.152-.045-.043-.029-.072-.075-.072-.119v-.436l.059-.045h4.961l.041.045v.437c0 .119-.074.18-.209.18-.648.03-1.127.18-1.443.421-.314.255-.557.616-.736 1.067 0 0-4.043 9.258-5.426 12.339-.525 1.007-1.053.917-1.503-.031-.571-1.171-1.773-3.786-2.646-5.71l.053-.036z'/%3E%3C/svg%3E");
 }
 
-/* GitHub link icon */
-.prose-mycelium a[href*="github.com"]:not(.no-icon)::after {
-  content: "";
-  display: inline-block;
-  width: 0.85em;
-  height: 0.85em;
-  margin-left: 0.25em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  vertical-align: middle;
+.prose-mycelium a:where([href*="github.com"]):where(:not(.no-icon))::after {
+  --link-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z'/%3E%3C/svg%3E");
 }
 
-/* Archive.org link icon */
-.prose-mycelium a[href*="archive.org"]:not(.no-icon)::after {
-  content: "";
-  display: inline-block;
-  width: 0.85em;
-  height: 0.85em;
-  margin-left: 0.2em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M21 8v13H3V8'/%3E%3Cpath d='M23 3H1v5h22V3z'/%3E%3Cpath d='M10 12h4'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  vertical-align: middle;
-  opacity: 0.6;
+.prose-mycelium a:where([href*="archive.org"]):where(:not(.no-icon))::after {
+  --link-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M21 8v13H3V8'/%3E%3Cpath d='M23 3H1v5h22V3z'/%3E%3Cpath d='M10 12h4'/%3E%3C/svg%3E");
 }
 
 /* Internal wiki links (no icon needed, they have dashed underline) */
@@ -601,48 +625,36 @@ details.collapsible details.collapsible {
 
 .confidence-rating {
   @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;
+  --confidence: var(--status-note);
+  color: var(--confidence);
+  background: color-mix(in srgb, var(--confidence) 12%, transparent);
 }
 
 .confidence-high {
-  @apply bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400;
+  --confidence: var(--status-tip);
 }
 
 .confidence-medium {
-  @apply bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400;
+  --confidence: var(--status-warning);
 }
 
 .confidence-low {
-  @apply bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400;
+  --confidence: var(--status-danger);
 }
 
 .confidence-speculative {
-  @apply bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-400;
+  --confidence: var(--status-info);
 }
 
-/* Confidence icons */
+/* Confidence dot */
 .confidence-rating::before {
   content: "";
   display: inline-block;
-  width: 0.75em;
-  height: 0.75em;
+  width: 0.5em;
+  height: 0.5em;
   border-radius: 50%;
-  margin-right: 0.25em;
-}
-
-.confidence-high::before {
-  @apply bg-green-500;
-}
-
-.confidence-medium::before {
-  @apply bg-amber-500;
-}
-
-.confidence-low::before {
-  @apply bg-red-500;
-}
-
-.confidence-speculative::before {
-  @apply bg-purple-500;
+  margin-right: 0.3em;
+  background: var(--confidence);
 }
 
 /* ============================================================================
@@ -654,11 +666,11 @@ details.collapsible details.collapsible {
 }
 
 .importance-rating .star {
-  @apply text-accent-400;
+  @apply text-primary-300 dark:text-primary-700;
 }
 
 .importance-rating .star-filled {
-  @apply text-accent-500;
+  @apply text-accent-500 dark:text-accent-400;
 }
 
 /* Text-based importance indicators */
@@ -769,5 +781,3 @@ details.collapsible details.collapsible {
   @apply top-[-7px] left-1/2 -translate-x-1/2;
   transform: rotate(45deg);
 }
-
-/* Theme update test - Wed Dec 31 19:22:13 EST 2025 */

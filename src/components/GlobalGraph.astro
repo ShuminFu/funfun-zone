@@ -60,7 +60,7 @@ const graphData = { nodes, links };
 <!-- Graph Modal -->
 <div
   id="global-graph-modal"
-  class="fixed inset-0 z-50 hidden"
+  class="on-dark fixed inset-0 z-50 hidden"
   role="dialog"
   aria-modal="true"
   aria-labelledby="graph-title"
@@ -99,15 +99,15 @@ const graphData = { nodes, links };
     <!-- Legend -->
     <footer class="px-6 py-3 bg-primary-900/90 flex items-center gap-6 text-sm">
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-green-400"></span>
+        <span class="h-3 w-3 rounded-full" style="background: var(--growth-seedling)"></span>
         <span class="text-primary-300">Seedling</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+        <span class="h-3 w-3 rounded-full" style="background: var(--growth-budding)"></span>
         <span class="text-primary-300">Budding</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+        <span class="h-3 w-3 rounded-full" style="background: var(--growth-evergreen)"></span>
         <span class="text-primary-300">Evergreen</span>
       </div>
       <div class="ml-auto text-primary-400">
@@ -197,10 +197,10 @@ const graphData = { nodes, links };
       // Color based on growth status
       function getColor(growth) {
         switch(growth) {
-          case 'seedling': return '#4ade80';
-          case 'budding': return '#fbbf24';
-          case 'evergreen': return '#10b981';
-          default: return '#6b7280';
+          case 'seedling': return 'var(--growth-seedling)';
+          case 'budding': return 'var(--growth-budding)';
+          case 'evergreen': return 'var(--growth-evergreen)';
+          default: return 'rgb(var(--color-primary-400))';
         }
       }
 
@@ -216,7 +216,7 @@ const graphData = { nodes, links };
         .selectAll('line')
         .data(graphData.links)
         .join('line')
-        .attr('stroke', '#4b5563')
+        .style('stroke', 'rgb(var(--color-primary-600))')
         .attr('stroke-opacity', 0.6)
         .attr('stroke-width', 1.5);
 
@@ -234,8 +234,8 @@ const graphData = { nodes, links };
       // Node circles
       node.append('circle')
         .attr('r', 8)
-        .attr('fill', d => getColor(d.growth))
-        .attr('stroke', '#fff')
+        .style('fill', d => getColor(d.growth))
+        .style('stroke', 'rgb(var(--color-primary-950))')
         .attr('stroke-width', 2);
 
       // Node labels
@@ -243,7 +243,7 @@ const graphData = { nodes, links };
         .text(d => d.title)
         .attr('x', 12)
         .attr('y', 4)
-        .attr('fill', '#e5e7eb')
+        .style('fill', 'rgb(var(--color-primary-200))')
         .attr('font-size', '12px')
         .attr('font-family', 'system-ui, sans-serif');
 
