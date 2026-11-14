@@ -47,6 +47,7 @@ const postsCollection = defineCollection({
     iconAlt: z.string().optional(),
     // SEO
     noIndex: z.boolean().optional(),
+    lang: z.string().optional(),          // BCP 47, e.g. "zh-CN". Detected from the title when omitted.
     // Gwern-style metadata
     confidence: confidenceEnum,           // How confident are you in this content?
     importance: importanceLevel,          // How important is this (1-5 stars)?

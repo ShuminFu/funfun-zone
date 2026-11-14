@@ -2,9 +2,12 @@
 /**
  * Generate OG images for all posts
  *
- * Usage: npm run generate-og
+ * Usage: npm run generate-og                    (per-post images + the site default)
+ *        npm run generate-og -- --default-only  (only public/og-default.png)
+ *        add --force to overwrite existing images
  *
- * Creates 1200x630 PNG images in public/og/posts/
+ * Creates 1200x630 PNG images in public/og/posts/, and public/og-default.png,
+ * the card BaseLayout uses for every page without its own image.
  * Uses satori + resvg for portability (no ImageMagick needed)
  */
 
@@ -43,12 +46,14 @@ async function getSiteBranding() {
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// Colors matching site theme
+// Colors from the Classic theme, dark mode (src/themes/index.ts)
 const COLORS = {
-  bgStart: '#1a1a2e',
-  bgEnd: '#16213e',
-  title: '#e2e8f0',
-  subtitle: '#94a3b8',
+  bgStart: '#111c28', // primary-950
+  bgEnd: '#1b2837', // primary-900
+  title: '#f0f3f8', // primary-100
+  subtitle: '#94a3b4', // primary-400
+  accent: '#03ce91', // accentDark-400
+  mark: '#273546', // primary-800
 };
 
 /**
@@ -190,8 +195,79 @@ async function loadFont() {
   return Buffer.from(await response.arrayBuffer());
 }
 
+/**
+ * Site default card: name, description, domain and the sprout mark.
+ */
+async function generateDefaultImage(siteBranding) {
+  const config = await readFile(join(ROOT, 'src/config.ts'), 'utf-8');
+  const name = config.match(/\bname:\s*['"]([^'"]+)['"]/)?.[1] ?? siteBranding;
+  const description = config.match(/\bdescription:\s*['"]([^'"]+)['"]/)?.[1] ?? '';
+  const logo = await readFile(join(ROOT, 'src/components/Logo.astro'), 'utf-8');
+  const logoPath = logo.match(/<path d="([^"]+)"/)?.[1];
+  const serif = await readFile(
+    join(ROOT, 'node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-600-normal.woff')
+  );
+  const sans = await readFile(join(ROOT, 'node_modules/@fontsource/inter/files/inter-latin-400-normal.woff'));
+
+  const svg = await satori(
+    {
+      type: 'div',
+      props: {
+        style: {
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: `linear-gradient(135deg, ${COLORS.bgStart} 0%, ${COLORS.bgEnd} 100%)`,
+          padding: '80px 90px',
+        },
+        children: [
+          {
+            type: 'div',
+            props: {
+              style: { display: 'flex', flexDirection: 'column', maxWidth: '760px' },
+              children: [
+                { type: 'div', props: { style: { fontFamily: 'Source Serif 4', fontSize: '104px', fontWeight: 600, color: COLORS.title, lineHeight: 1.05 }, children: name } },
+                { type: 'div', props: { style: { fontFamily: 'Inter', fontSize: '32px', color: COLORS.subtitle, marginTop: '28px', lineHeight: 1.4 }, children: description } },
+                { type: 'div', props: { style: { fontFamily: 'Inter', fontSize: '26px', color: COLORS.accent, marginTop: '44px' }, children: siteBranding } },
+              ],
+            },
+          },
+          logoPath && {
+            type: 'svg',
+            props: {
+              width: 218,
+              height: 400,
+              viewBox: '0 0 481 884',
+              children: { type: 'path', props: { d: logoPath, fill: COLORS.mark } },
+            },
+          },
+        ].filter(Boolean),
+      },
+    },
+    {
+      width: WIDTH,
+      height: HEIGHT,
+      fonts: [
+        { name: 'Source Serif 4', data: serif, weight: 600, style: 'normal' },
+        { name: 'Inter', data: sans, weight: 400, style: 'normal' },
+      ],
+    }
+  );
+
+  return svg;
+}
+
 async function main() {
   console.log('Generating OG images...\n');
+
+  const defaultPath = join(ROOT, 'public/og-default.png');
+  if (!existsSync(defaultPath) || process.argv.includes('--force')) {
+    console.log('  Generating: og-default.png');
+    await writeFile(defaultPath, svgToPng(await generateDefaultImage(await getSiteBranding())));
+  }
+  if (process.argv.includes('--default-only')) return;
 
   // Ensure output directory exists
   if (!existsSync(OUTPUT_DIR)) {

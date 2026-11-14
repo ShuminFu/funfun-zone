@@ -30,6 +30,7 @@ import MemoryPoint from '../components/MemoryPoint.astro';
 import { siteConfig } from '../config';
 import type { Post, GrowthStatus } from '../types';
 import { participatesInGrowth, type GrowthMetrics } from '../utils/growth';
+import { detectLang } from '../utils/lang';
 
 export interface Props {
   post: Post;
@@ -39,7 +40,8 @@ export interface Props {
 }
 
 const { post, headings = [], effectiveGrowth, growthMetrics } = Astro.props;
-const { title, description, growth, planted, lastTended, tags, image, imageAlt, icon, iconAlt, confidence, importance } = post.data;
+const { title, description, growth, planted, lastTended, tags, image, imageAlt, icon, iconAlt, confidence, importance, noIndex } = post.data;
+const lang = detectLang(`${title} ${description ?? ''}`, post.data.lang);
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
 const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
@@ -66,7 +68,10 @@ const readingTime = Math.ceil(words / 200);
 
 // Build canonical URL
 const canonicalUrl = new URL(`/posts/${post.id}`, Astro.site);
-const ogImage = image ? new URL(image, Astro.site) : undefined;
+const ogImage = new URL(image ?? '/og-default.png', Astro.site);
+// Only published notes have a Markdown copy; the dev-only draft preview does not.
+const markdownPath = Astro.url.pathname.startsWith('/posts/') ? `/posts/${post.id}.md` : undefined;
+const personId = new URL('/#person', Astro.site).href;
 
 // JSON-LD structured data for SEO
 const jsonLd = {
@@ -74,33 +79,52 @@ const jsonLd = {
   "@type": "BlogPosting",
   "headline": title,
   "description": description || "",
+  "inLanguage": lang,
   "author": {
     "@type": "Person",
+    "@id": personId,
     "name": siteConfig.gardener,
-    "url": Astro.site
+    "url": new URL('/about/', Astro.site).toString()
   },
   "datePublished": planted.toISOString(),
   "dateModified": lastTended?.toISOString() || planted.toISOString(),
   "url": canonicalUrl.toString(),
   "wordCount": words,
   "timeRequired": `PT${readingTime}M`,
-  ...(ogImage && { "image": ogImage.toString() }),
+  "image": ogImage.toString(),
   ...(tags && tags.length > 0 && { "keywords": tags.join(", ") }),
-  "publisher": {
-    "@type": "Person",
-    "name": siteConfig.gardener,
-    "url": Astro.site
-  },
+  "publisher": { "@id": personId },
+  "isPartOf": { "@id": new URL('/#website', Astro.site).href },
   "mainEntityOfPage": {
     "@type": "WebPage",
     "@id": canonicalUrl.toString()
   }
 };
+
+// Where this note sits: Home > Garden > note.
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": siteConfig.name, "item": new URL('/', Astro.site).toString() },
+    { "@type": "ListItem", "position": 2, "name": "Garden", "item": new URL('/posts/', Astro.site).toString() },
+    { "@type": "ListItem", "position": 3, "name": title, "item": canonicalUrl.toString() }
+  ]
+};
 ---
 
-<BaseLayout title={title} description={description} image={image}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  noIndex={noIndex}
+  lang={lang}
+  article={{ publishedTime: planted, modifiedTime: lastTended, tags }}
+  markdownPath={markdownPath}
+>
   <!-- JSON-LD structured data -->
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
   <Header slot="header" />
 
   <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
@@ -121,7 +145,7 @@ const jsonLd = {
                   <path d="M12 2v6m0 0a4 4 0 100 8 4 4 0 000-8z"/>
                   <path d="M12 22v-6"/>
                 </svg>
-                Planted {plantedDate}
+                Planted <time datetime={planted.toISOString()}>{plantedDate}</time>
               </span>
             )}
 
@@ -131,7 +155,7 @@ const jsonLd = {
                   <path d="M12 8v4l3 3"/>
                   <circle cx="12" cy="12" r="10"/>
                 </svg>
-                Tended {tendedDate}
+                Tended <time datetime={lastTended?.toISOString()}>{tendedDate}</time>
               </span>
             )}
 

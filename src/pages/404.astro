@@ -1,0 +1,41 @@
+---
+/**
+ * 404 page. Cloudflare Pages serves this with a real 404 status; without it,
+ * unknown URLs fall back to the home page with a 200.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
+---
+
+<BaseLayout title="Page not found" description="This page is not in the garden." noIndex>
+  <Header slot="header" />
+
+  <div class="relative mx-auto max-w-5xl px-4 py-20 sm:py-28">
+    <Logo class="pointer-events-none absolute right-6 top-16 hidden h-44 w-24 text-primary-200 sm:block dark:text-primary-800" />
+    <p class="mb-3 font-mono text-sm text-primary-600 dark:text-primary-400">404</p>
+    <h1 class="mb-4 text-4xl tracking-tight text-primary-900 dark:text-primary-100 sm:text-5xl">
+      Nothing is planted here
+    </h1>
+    <p class="mb-8 max-w-xl text-lg text-primary-600 dark:text-primary-400">
+      The page may have moved, or the link was mistyped. The garden index lists every note.
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <a
+        href="/posts/"
+        class="inline-flex items-center rounded-xl bg-primary-900 px-5 py-2.5 font-sans font-medium text-primary-50 transition-colors hover:bg-primary-700 dark:bg-primary-100 dark:text-primary-950 dark:hover:bg-white"
+      >
+        Browse the Garden
+      </a>
+      <a
+        href="/"
+        class="inline-flex items-center rounded-xl border border-primary-300 px-5 py-2.5 font-sans font-medium text-primary-800 transition-colors hover:border-primary-500 hover:bg-white dark:border-primary-700 dark:text-primary-200 dark:hover:border-primary-500 dark:hover:bg-primary-900"
+      >
+        Home
+      </a>
+    </div>
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>

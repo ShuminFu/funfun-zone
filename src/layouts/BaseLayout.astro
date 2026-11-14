@@ -13,6 +13,7 @@
 
 import { siteConfig } from '../config';
 import { defaultTheme, themes } from '../themes';
+import { ogLocale } from '../utils/lang';
 import CommandPalette from '../components/CommandPalette.astro';
 import GlobalGraph from '../components/GlobalGraph.astro';
 import '../styles/global.css';
@@ -22,6 +23,16 @@ export interface Props {
   description?: string;
   image?: string;
   noIndex?: boolean;
+  /** BCP 47 language of the page content. Defaults to the site language. */
+  lang?: string;
+  /** Article pages pass their dates and tags; everything else is a website page. */
+  article?: {
+    publishedTime: Date;
+    modifiedTime?: Date;
+    tags?: string[];
+  };
+  /** Path of a Markdown copy of this page, advertised to agents. */
+  markdownPath?: string;
 }
 
 const {
@@ -29,10 +40,40 @@ const {
   description = siteConfig.description,
   image,
   noIndex = false,
+  lang = siteConfig.language,
+  article,
+  markdownPath,
 } = Astro.props;
 
-const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name;
+// The home page has no title of its own; say what the site is.
+const pageTitle = title
+  ? `${title} | ${siteConfig.name}`
+  : `${siteConfig.name} | ${siteConfig.description.replace(/\.$/, '')}`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const authorUrl = new URL('/about/', Astro.site);
+
+// Who publishes this site. Article pages add their own BlogPosting on top.
+const siteJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': new URL('/#website', Astro.site).href,
+      url: new URL('/', Astro.site).href,
+      name: siteConfig.name,
+      description: siteConfig.description,
+      inLanguage: [...new Set([siteConfig.language, lang])],
+      publisher: { '@id': new URL('/#person', Astro.site).href },
+    },
+    {
+      '@type': 'Person',
+      '@id': new URL('/#person', Astro.site).href,
+      name: siteConfig.gardener,
+      url: authorUrl.href,
+      sameAs: siteConfig.navigation.social.map((link) => link.url),
+    },
+  ],
+};
 // Use post image if provided, otherwise fall back to default OG image
 const ogImage = image
   ? new URL(image, Astro.site)
@@ -40,7 +81,7 @@ const ogImage = image
 ---
 
 <!doctype html>
-<html lang={siteConfig.language}>
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,7 +97,12 @@ const ogImage = image
     <title>{pageTitle}</title>
     <meta name="title" content={pageTitle} />
     <meta name="description" content={description} />
+    <meta name="author" content={siteConfig.gardener} />
     <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Plain-text copies for agents and LLM tools -->
+    <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+    {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} />}
 
     <!-- RSS Feed -->
     {siteConfig.features.rss && (
@@ -72,18 +118,30 @@ const ogImage = image
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:site_name" content={siteConfig.name} />
+    <meta property="og:locale" content={ogLocale(lang)} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     {ogImage && <meta property="og:image" content={ogImage} />}
+    {article && (
+      <>
+        <meta property="article:published_time" content={article.publishedTime.toISOString()} />
+        <meta property="article:modified_time" content={(article.modifiedTime ?? article.publishedTime).toISOString()} />
+        <meta property="article:author" content={authorUrl.href} />
+        {(article.tags ?? []).map((tag) => <meta property="article:tag" content={tag} />)}
+      </>
+    )}
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalUrl} />
-    <meta property="twitter:title" content={pageTitle} />
-    <meta property="twitter:description" content={description} />
-    {ogImage && <meta property="twitter:image" content={ogImage} />}
+    <!-- Twitter / X reads name=, not property= -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Site and author, for search and answer engines -->
+    <script type="application/ld+json" set:html={JSON.stringify(siteJsonLd)} />
 
     <!-- Dark mode initialization (prevent flash) -->
     <script is:inline>

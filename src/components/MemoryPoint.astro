@@ -13,7 +13,7 @@ const { src, alt = '', variant } = Astro.props;
 ---
 
 {variant === 'card' && (
-  <img src={src} alt={alt} class="max-h-44 w-full object-contain" />
+  <img src={src} alt={alt} role={alt ? undefined : 'presentation'} class="max-h-44 w-full object-contain" />
 )}
 
 {variant === 'article' && (
