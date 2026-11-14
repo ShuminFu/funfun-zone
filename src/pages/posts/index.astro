@@ -131,7 +131,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
         <div id="selected-tags" class="flex flex-wrap gap-2 mb-2 empty:mb-0"></div>
 
         <!-- Search Input -->
-        <div class="relative">
+        <div class="relative max-w-xs">
           <input
             type="text"
             id="tag-search"
