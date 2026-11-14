@@ -33,34 +33,31 @@ const plantedDate = planted.toLocaleDateString('en-US', {
 const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
 ---
 
-<article class="card group flex h-full min-w-0 flex-1 flex-col overflow-hidden">
+<article class="card card-lift group flex h-full min-w-0 flex-1 flex-col overflow-hidden">
   <a href={`/posts/${post.id}/`} class="flex min-h-0 min-w-0 grow flex-col">
-    <div class="flex items-center justify-between gap-3 border-b border-primary-200 px-6 py-3 text-xs text-primary-500 dark:border-primary-800">
-      <span class="inline-flex min-w-0 items-center gap-2">
-        <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
-          <path d="M14 3v5h5"/>
-        </svg>
-        <span>{kind}</span>
+    <!-- No rules inside the card: spacing separates meta, text and tags. -->
+    <div class="flex items-center justify-between gap-3 px-6 pt-5 text-xs text-primary-600 dark:text-primary-400">
+      <span class="inline-flex min-w-0 items-center gap-1.5">
         {showGrowth && (
           <GrowthIndicator status={displayGrowth} size="sm" />
         )}
+        <span>{kind}</span>
       </span>
-      <time class="shrink-0">{plantedDate}</time>
+      <time class="shrink-0 tabular-nums">{plantedDate}</time>
     </div>
 
     <div class="flex min-h-0 grow">
-      <div class="flex min-w-0 grow flex-col px-6 pt-5 pb-5">
+      <div class="flex min-w-0 grow flex-col px-6 pt-3 pb-5">
         <h3
           class:list={[
-            "mb-2 leading-snug text-primary-900 dark:text-primary-100",
+            "mb-2 leading-snug text-primary-900 transition-colors group-hover:text-accent-700 dark:text-primary-100 dark:group-hover:text-accent-300",
             icon ? "text-2xl" : "text-xl",
           ]}
         >
           {title}
         </h3>
         {description && (
-          <p class="text-sm text-primary-600 dark:text-primary-400 line-clamp-2">
+          <p class="text-sm leading-relaxed text-primary-600 dark:text-primary-400 line-clamp-2">
             {description}
           </p>
         )}
@@ -75,7 +72,7 @@ const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
   </a>
 
   {hasTags && (
-    <div class="mt-auto min-w-0 border-t border-primary-100 px-6 pt-3 pb-5 dark:border-primary-800">
+    <div class="mt-auto min-w-0 px-6 pb-5">
       <Tags tags={(tags ?? []).slice(0, 4)} />
     </div>
   )}

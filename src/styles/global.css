@@ -136,10 +136,40 @@
 }
 
 @utility card {
-  /* One outlined surface. Hairline only, no shadow stack. */
+  /* A surface one step above the page: white on the tinted light page,
+     primary-900 on the primary-950 dark page. */
   @apply bg-white dark:bg-primary-900;
   @apply border border-primary-200 dark:border-primary-800;
   @apply rounded-xl;
+}
+
+@utility card-lift {
+  /* Hover state for a card that is a link. Light mode lifts with a soft
+     shadow in the neutral hue; dark mode brightens the edge instead. */
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+
+  &:hover,
+  &:focus-within {
+    @apply border-primary-300 dark:border-primary-600;
+    box-shadow:
+      0 1px 2px rgb(var(--color-primary-900) / 0.05),
+      0 10px 28px -14px rgb(var(--color-primary-900) / 0.22);
+    transform: translateY(-1px);
+  }
+
+  .dark &:hover,
+  .dark &:focus-within {
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-within {
+      transform: none;
+    }
+  }
 }
 
 /* ============================================================================
