@@ -2,7 +2,7 @@
 
 Shumin Fu's digital garden. [funfun.zone](https://funfun.zone).
 
-The site is the [Mycelium](https://github.com/0bserver07/mycelium-theme) theme (MIT, Astro 7) with the existing notes moved into `src/content/`. Open `src/content/` as an Obsidian vault, not the repo root.
+The site is an Astro 7 digital garden. Notes live in `src/content/`. Open `src/content/` as an Obsidian vault, not the repo root.
 
 ## Run locally
 
@@ -14,7 +14,7 @@ npm run dev    # http://localhost:4321
 npm run build  # static site in dist/
 ```
 
-`npm run setup` is Mycelium's interactive wizard (site name, URL, git remote). This repo is already set to FunFun Zone / https://funfun.zone. Skip setup unless you mean to reconfigure it. It can replace the `origin` remote.
+`npm run setup` is an interactive wizard (site name, URL, git remote). This repo is already set to FunFun Zone / https://funfun.zone. Skip setup unless you mean to reconfigure it. It can replace the `origin` remote.
 
 ## Content
 
@@ -38,7 +38,7 @@ Posts that used to be `src/data/blog/<slug>.embed.md` are now `src/content/posts
 
 What changed for that skill:
 
-- Write Mycelium frontmatter (`title`, `description`, `planted`, `tags`, `draft`). `pubDatetime` is now `planted`. `modDatetime` is `lastTended`.
+- Write frontmatter (`title`, `description`, `planted`, `tags`, `draft`). `pubDatetime` is now `planted`. `modDatetime` is `lastTended`.
 - Drop the `.embed.md` suffix. The filename (or `slug` in frontmatter, which Astro's loader prefers) is the URL.
 - Do not wrap the file as MDX. Raw HTML in `.md` is the path that already builds.
 - `author` is site-wide (`src/config.ts`). Per-post `featured: true` is kept on Claude Island and ignored by the index.
@@ -53,6 +53,4 @@ Cloudflare Pages, static output. See [docs/cloudflare-pages.md](docs/cloudflare-
 
 Titles use Source Serif 4 with Noto Serif SC for Chinese. Navigation, buttons, and meta stay in Inter. Five color themes: classic (default, AstroPaper grey-blue), sage (green), anthropic (warm cream paper), nord (cool grey-blue), and minimal (near-white / grey). Accent stays on links and small marks.
 
-Upstream: https://github.com/0bserver07/mycelium-theme
-
-`npm run update-theme` merges that repo. It will conflict if theme files here have local edits (date timezone, HTML-link backlinks, embed CSS aliases, footer link).
+`npm run update-theme` merges upstream theme updates. It will conflict if theme files here have local edits (date timezone, HTML-link backlinks, embed CSS aliases, footer link).
