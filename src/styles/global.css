@@ -216,40 +216,39 @@
 @layer utilities {
   /* ============================================================================
    THEME: Classic (Default)
-   AstroPaper grey-blue. Light links are accent-600 (#006cac);
-   dark links are accent-400 (#03CE91).
+   Unloaded fallback; src/themes/index.ts is the source of truth and the
+   inline script in BaseLayout applies it before first paint.
    ============================================================================ */
 
   :root {
-    /* Primary — same stops as the classic theme. Unloaded fallback. */
-    --color-primary-50: 253 253 253;
-    --color-primary-100: 234 237 243;
-    --color-primary-200: 205 210 221;
-    --color-primary-300: 177 184 199;
-    --color-primary-400: 150 158 178;
-    --color-primary-500: 124 134 157;
-    --color-primary-600: 99 109 136;
-    --color-primary-700: 75 86 116;
-    --color-primary-800: 52 63 96;
-    --color-primary-900: 40 39 40;
-    --color-primary-950: 29 42 53;
+    /* Primary: one cool slate hue, even lightness steps. */
+    --color-primary-50: 250 251 253;
+    --color-primary-100: 240 243 248;
+    --color-primary-200: 222 229 237;
+    --color-primary-300: 201 211 222;
+    --color-primary-400: 148 163 180;
+    --color-primary-500: 109 126 145;
+    --color-primary-600: 76 94 114;
+    --color-primary-700: 54 71 90;
+    --color-primary-800: 39 53 70;
+    --color-primary-900: 27 40 55;
+    --color-primary-950: 17 28 40;
 
-    /* Accent — blue in the light, teal at 400 for dark links. */
-    --color-accent-50: 239 246 253;
-    --color-accent-100: 222 237 251;
-    --color-accent-200: 192 219 244;
-    --color-accent-300: 134 229 185;
-    --color-accent-400: 3 206 145; /* #03CE91 */
-    --color-accent-500: 30 122 188;
-    --color-accent-600: 0 108 172; /* #006cac */
-    --color-accent-700: 0 84 138;
-    --color-accent-800: 0 64 107;
-    --color-accent-900: 7 54 86;
-    --color-accent-950: 3 28 48;
+    /* Accent, light mode: blue. Links are accent-600 (#006cac). */
+    --color-accent-50: 241 248 255;
+    --color-accent-100: 223 240 255;
+    --color-accent-200: 190 225 255;
+    --color-accent-300: 139 202 251;
+    --color-accent-400: 85 171 235;
+    --color-accent-500: 35 138 205;
+    --color-accent-600: 0 108 172;
+    --color-accent-700: 1 86 134;
+    --color-accent-800: 1 66 104;
+    --color-accent-900: 2 50 80;
+    --color-accent-950: 1 30 50;
 
-    /* Background for light mode — classic page ground */
-    --bg-primary: 253 253 253;
-    --bg-secondary: 234 237 243;
+    --bg-primary: 250 251 253;
+    --bg-secondary: 240 243 248;
     --text-primary: var(--color-primary-900);
     --text-secondary: var(--color-primary-700);
     /* Aliases used by historical HTML-embed posts. */
@@ -259,12 +258,24 @@
     --muted: rgb(var(--color-primary-100));
   }
 
-  /* Dark mode colors - cozy, low contrast for night reading */
   .dark {
-    --bg-primary: 29 42 53;
-    --bg-secondary: 40 39 40;
-    --text-primary: 234 237 243;
-    --text-secondary: 177 184 199;
+    /* Accent, dark mode: mint. Links are accent-400 (#03CE91). */
+    --color-accent-50: 235 251 243;
+    --color-accent-100: 212 249 230;
+    --color-accent-200: 171 242 208;
+    --color-accent-300: 120 231 182;
+    --color-accent-400: 3 206 145;
+    --color-accent-500: 16 172 121;
+    --color-accent-600: 13 137 96;
+    --color-accent-700: 8 106 73;
+    --color-accent-800: 7 81 55;
+    --color-accent-900: 9 59 40;
+    --color-accent-950: 5 34 22;
+
+    --bg-primary: 17 28 40;
+    --bg-secondary: 27 40 55;
+    --text-primary: 240 243 248;
+    --text-secondary: 201 211 222;
     --foreground: rgb(var(--color-primary-100));
     --background: rgb(var(--bg-primary));
     --accent: rgb(var(--color-accent-400));

@@ -143,12 +143,13 @@ const ogImage = image
           Object.entries(theme.colors.primary).forEach(function (entry) {
             el.style.setProperty('--color-primary-' + entry[0], entry[1]);
           });
-          Object.entries(theme.colors.accent).forEach(function (entry) {
+          // Inline values beat the stylesheet, so anything that differs between
+          // light and dark has to be chosen here, per mode.
+          var dark = el.classList.contains('dark');
+          var accent = (dark && theme.colors.accentDark) || theme.colors.accent;
+          Object.entries(accent).forEach(function (entry) {
             el.style.setProperty('--color-accent-' + entry[0], entry[1]);
           });
-          // Page ground follows the active palette in both modes. An inline value
-          // beats the stylesheet, so the dark stop has to be set here too.
-          var dark = el.classList.contains('dark');
           var ground = dark ? theme.colors.bg.dark : theme.colors.bg.light;
           el.style.setProperty('--bg-primary', ground);
           el.style.setProperty('--bg-secondary', ground);

@@ -13,6 +13,8 @@ export interface Theme {
   colors: {
     primary: Record<string, string>;
     accent: Record<string, string>;
+    /** Accent scale used in dark mode. Omit to use `accent` in both modes. */
+    accentDark?: Record<string, string>;
     bg: {
       light: string;
       dark: string;
@@ -96,41 +98,57 @@ export const themes: Record<ThemeName, Theme> = {
     },
   },
 
-  // AstroPaper palette from before the Mycelium rewrite.
-  // Light links use accent-600 (#006cac); dark links use accent-400 (#03CE91).
+  // AstroPaper's colours, rebuilt as single-hue scales (computed in OKLCH).
+  // Neutrals are one cool slate (252°) with even lightness steps, so dark
+  // cards (900) sit a step above the dark page (950). The accent has a full
+  // scale per mode: blue anchored on #006cac for light, mint anchored on
+  // #03CE91 for dark, so one screen never mixes the two.
   classic: {
     name: 'classic',
     label: 'Classic',
     colors: {
       primary: {
-        '50': '253 253 253',
-        '100': '234 237 243',
-        '200': '205 210 221',
-        '300': '177 184 199',
-        '400': '150 158 178',
-        '500': '124 134 157',
-        '600': '99 109 136',
-        '700': '75 86 116',
-        '800': '52 63 96',
-        '900': '40 39 40',
-        '950': '29 42 53',
+        '50': '250 251 253',
+        '100': '240 243 248',
+        '200': '222 229 237',
+        '300': '201 211 222',
+        '400': '148 163 180',
+        '500': '109 126 145',
+        '600': '76 94 114',
+        '700': '54 71 90',
+        '800': '39 53 70',
+        '900': '27 40 55',
+        '950': '17 28 40',
       },
       accent: {
-        '50': '239 246 253',
-        '100': '222 237 251',
-        '200': '192 219 244',
-        '300': '134 229 185',
-        '400': '3 206 145',
-        '500': '30 122 188',
+        '50': '241 248 255',
+        '100': '223 240 255',
+        '200': '190 225 255',
+        '300': '139 202 251',
+        '400': '85 171 235',
+        '500': '35 138 205',
         '600': '0 108 172',
-        '700': '0 84 138',
-        '800': '0 64 107',
-        '900': '7 54 86',
-        '950': '3 28 48',
+        '700': '1 86 134',
+        '800': '1 66 104',
+        '900': '2 50 80',
+        '950': '1 30 50',
+      },
+      accentDark: {
+        '50': '235 251 243',
+        '100': '212 249 230',
+        '200': '171 242 208',
+        '300': '120 231 182',
+        '400': '3 206 145',
+        '500': '16 172 121',
+        '600': '13 137 96',
+        '700': '8 106 73',
+        '800': '7 81 55',
+        '900': '9 59 40',
+        '950': '5 34 22',
       },
       bg: {
-        light: '253 253 253',
-        dark: '29 42 53',
+        light: '250 251 253',
+        dark: '17 28 40',
       },
     },
   },
