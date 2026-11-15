@@ -22,6 +22,7 @@ import { remarkGallery } from './src/utils/remark-gallery.ts';
 import { remarkSidenotes } from './src/utils/remark-sidenotes.ts';
 import { remarkDropcap } from './src/utils/remark-dropcap.ts';
 import { remarkCollapsible } from './src/utils/remark-collapsible.ts';
+import { rehypeTableScroll } from './src/utils/rehype-table-scroll.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -58,6 +59,7 @@ export default defineConfig({
       rehypeSlug,
       [rehypeAutolinkHeadings, { behavior: 'wrap' }],
       rehypeKatex,  // Render math with KaTeX
+      rehypeTableScroll,  // Each table scrolls sideways on its own
     ],
     // Two palettes, no inline default: global.css picks --shiki-light or
     // --shiki-dark per mode and owns the block background.

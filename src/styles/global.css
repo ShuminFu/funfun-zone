@@ -11,7 +11,10 @@
 @import '@fontsource/jetbrains-mono/400.css' layer(base);
 @import '@fontsource/jetbrains-mono/500.css' layer(base);
 @import '@fontsource/source-serif-4/600.css' layer(base);
-@import '@fontsource/noto-serif-sc/chinese-simplified-600.css' layer(base);
+/* Noto Serif SC, cut down to the characters headings use. The full file is
+   1.5 MB; this one is built by scripts/subset-heading-font.mjs before every
+   dev and build run (npm run fonts to refresh it by hand). */
+@import './generated/heading-font.css' layer(base);
 
 @import 'tailwindcss';
 
@@ -631,6 +634,34 @@
 /* Internal wiki links (no icon needed, they have dashed underline) */
 .wikilink::after {
   display: none !important;
+}
+
+/* ============================================================================
+   TABLES
+   Every table sits in a .table-scroll wrapper (rehype-table-scroll.ts), so a
+   wide table scrolls by itself and never drags the article sideways.
+   ============================================================================ */
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* On a phone a table squeezed into the column gets cells three characters
+   wide. Give it room by column count and let the wrapper scroll. */
+@media (max-width: 640px) {
+  .table-scroll > table:has(:is(th, td):nth-child(3)) {
+    min-width: 30rem;
+  }
+
+  .table-scroll > table:has(:is(th, td):nth-child(5)) {
+    min-width: 40rem;
+  }
+
+  .table-scroll > table:has(:is(th, td):nth-child(7)) {
+    min-width: 50rem;
+  }
 }
 
 /* ============================================================================

@@ -19,13 +19,17 @@
     "wikilinks"
   ],
   "scripts": {
+    "predev": "node scripts/subset-heading-font.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/subset-heading-font.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "setup": "node scripts/setup.mjs",
     "update-theme": "bash scripts/update-theme.sh",
-    "generate-og": "node scripts/generate-og.mjs"
+    "generate-og": "node scripts/generate-og.mjs",
+    "fonts": "node scripts/subset-heading-font.mjs",
+    "images": "node scripts/extract-post-images.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -56,6 +60,7 @@
     "rehype-slug": "^6.0.0",
     "remark-directive": "^4.0.0",
     "remark-math": "^6.0.0",
+    "subset-font": "^2.9.0",
     "unist-util-visit": "^5.0.0"
   }
 }

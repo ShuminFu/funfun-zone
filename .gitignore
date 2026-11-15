@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# heading font, built by scripts/subset-heading-font.mjs
+src/styles/generated/
+
 # dependencies
 node_modules/
 
