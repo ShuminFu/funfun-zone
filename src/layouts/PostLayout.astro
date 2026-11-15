@@ -31,6 +31,7 @@ import { siteConfig } from '../config';
 import type { Post, GrowthStatus } from '../types';
 import { participatesInGrowth, type GrowthMetrics } from '../utils/growth';
 import { detectLang } from '../utils/lang';
+import { countWords, opensWithDescription, readableText, readingMinutes } from '../utils/reading';
 
 export interface Props {
   post: Post;
@@ -61,10 +62,13 @@ const tendedDate = lastTended?.toLocaleDateString('en-US', {
   timeZone: siteConfig.timezone,
 });
 
-// Calculate reading time (rough estimate)
+// Reading time from the prose a reader actually reads (see utils/reading.ts).
 const content = post.body || '';
-const words = content.split(/\s+/).length;
-const readingTime = Math.ceil(words / 200);
+const words = countWords(readableText(content)).total;
+const readingTime = readingMinutes(content);
+// Many notes open by restating their description. Printing it under the
+// title as well would show the same sentence twice, so the body's copy wins.
+const showDescription = Boolean(description) && !opensWithDescription(content, description);
 
 // Build canonical URL
 const canonicalUrl = new URL(`/posts/${post.id}`, Astro.site);
@@ -188,7 +192,7 @@ const breadcrumbLd = {
           </h1>
 
           <!-- Description -->
-          {description && (
+          {showDescription && (
             <p class="text-lg text-primary-600 dark:text-primary-400 mb-4">
               {description}
             </p>

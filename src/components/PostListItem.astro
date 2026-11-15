@@ -17,6 +17,7 @@ import MemoryPoint from './MemoryPoint.astro';
 import Tags from './Tags.astro';
 import { siteConfig } from '../config';
 import { participatesInGrowth } from '../utils/growth';
+import { readingMinutes } from '../utils/reading';
 
 export interface Props {
   post: Post;
@@ -36,10 +37,7 @@ const plantedDate = planted.toLocaleDateString('en-US', {
   timeZone: siteConfig.timezone,
 });
 
-// Estimate reading time (rough: 200 words per minute)
-const content = post.body || '';
-const wordCount = content.split(/\s+/).length;
-const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+const readingTime = readingMinutes(post.body || '');
 ---
 
 <article class="group min-w-0 border-b border-primary-200 py-8 last:border-b-0 dark:border-primary-800">
