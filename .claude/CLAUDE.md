@@ -41,6 +41,10 @@ This is a digital garden publishing system built with Astro + Obsidian.
   palette measurement, contrast checks, before/after screenshots.
 - `.claude/skills/geo-check/` - how answer engines and agents read the
   site: llms.txt, Markdown copies, structured data, what to check per note.
+- `.claude/skills/post-review/` - review notes as a reader meets them, at
+  phone and desktop width in both modes. Run it before publishing a note and
+  after any layout or theme change; a note with a defect is not ready:
+  `node .claude/skills/post-review/scripts/post-audit.mjs`
 
 ## Commands
 

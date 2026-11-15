@@ -12,7 +12,28 @@
   the title, or set with a new optional `lang` frontmatter field. Chinese
   notes were previously served as `lang="en"`.
 - Project skills in `.claude/skills/`: `design-audit` (palette measurement
-  and screenshot scripts) and `geo-check` (build verifier).
+  and screenshot scripts), `geo-check` (build verifier) and `post-review`
+  (every note checked at phone and desktop width, light and dark).
+
+### Fixed
+
+- Reading time counted whitespace-separated words, so Chinese notes showed
+  "1 min read" for six minutes of text and a note with a script showed 11
+  for three. It now counts Chinese by character and English by word, on the
+  prose only. 30 of 41 notes were wrong.
+- Eight embedded notes carry a dark palette keyed on `html[data-theme="dark"]`,
+  which the site never set, so three of them were unreadable in dark mode
+  (dark ink on the dark page). `<html>` now carries `data-theme` as well as
+  the `dark` class.
+- A note that opens by restating its description no longer prints it twice
+  (27 notes).
+- Linked Mentions excerpts showed raw Markdown and HTML.
+- Figure captions in one note used the `--muted` surface tone as a text
+  colour and were invisible; `--muted-foreground` is the alias for text.
+- The seedling label, the mentions count and code comments were below 4.5:1.
+- Two notes had an empty "Table of contents" heading.
+- On phones the floating graph button covered the text; it now slides away
+  while scrolling down.
 
 ### Changed
 
