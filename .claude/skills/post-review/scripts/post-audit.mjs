@@ -122,6 +122,14 @@ for (const p of posts) {
   }
 
   const imgs = [...p.body.matchAll(/<img\b[^>]*>/gi)].map((m) => m[0]);
+  // Figures belong in files (npm run images), not in the HTML as base64.
+  const inline = imgs.filter((tag) => /\bsrc="data:image\//i.test(tag) && tag.length > 4096);
+  if (inline.length) {
+    const kb = Math.round(inline.reduce((n, tag) => n + tag.length, 0) / 1024);
+    defect(p.id, `${inline.length} image(s) are embedded as base64 (${kb} KB of HTML before the reader sees text); run "npm run images"`);
+  }
+  const unsized = imgs.filter((tag) => !/\bsrc="data:/i.test(tag) && !(/\bwidth="\d+"/i.test(tag) && /\bheight="\d+"/i.test(tag))).length;
+  if (unsized) note(p.id, `${unsized} image(s) have no width and height, so the text jumps when they load`);
   const noAlt = imgs.filter((tag) => !/\balt="[^"]+"/i.test(tag)).length + (p.body.match(/!\[\]\(/g) || []).length;
   if (noAlt) note(p.id, `${noAlt} of ${imgs.length} image(s) have no alt text; a screen reader and the Markdown copy get nothing`);
 
@@ -133,7 +141,7 @@ for (const p of posts) {
   const built = path.join('dist/posts', p.id, 'index.html');
   if (fs.existsSync(built)) {
     const kb = Math.round(fs.statSync(built).size / 1024);
-    if (kb > 600) note(p.id, `the page is ${kb} KB of HTML because images are embedded as base64; it loads slowly on a phone connection`);
+    if (kb > 400) note(p.id, `the page is ${kb} KB of HTML; a first-time reader on a phone waits for all of it before the first paragraph`);
     const shown = fs.readFileSync(built, 'utf8').match(/(\d+) min read/)?.[1];
     const real = readingMinutes(text);
     if (shown && Math.abs(Number(shown) - real) >= Math.max(2, real * 0.5)) defect(p.id, `reading time says ${shown} min, a reader needs about ${real}`);
@@ -168,10 +176,17 @@ if (!flag('--source')) {
         continue;
       }
       await page.waitForTimeout(350);
+      // Lazy images only load near the viewport: walk the page so each one gets its chance.
+      await page.evaluate(async () => {
+        const step = window.innerHeight * 2;
+        for (let y = 0; y < document.documentElement.scrollHeight; y += step) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 40)); }
+        window.scrollTo(0, 0);
+        await Promise.all([...document.images].filter((i) => !i.complete).map((i) => new Promise((r) => { i.onload = i.onerror = r; setTimeout(r, 3000); })));
+      });
       const r = await page.evaluate(() => {
         const vw = document.documentElement.clientWidth;
         const article = document.querySelector('article') ?? document.body;
-        const out = { overflow: document.documentElement.scrollWidth - vw, wide: [], brokenImages: 0, lowContrast: [], tiny: 0, textCount: 0 };
+        const out = { overflow: document.documentElement.scrollWidth - vw, wide: [], brokenImages: 0, lowContrast: [], tiny: 0, textCount: 0, dragsText: 0 };
 
         const parse = (c) => { const m = c.match(/rgba?\(([^)]+)\)/); if (!m) return null; const v = m[1].split(/[ ,/]+/).map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
         const over = (top, under) => ({ r: top.r * top.a + under.r * (1 - top.a), g: top.g * top.a + under.g * (1 - top.a), b: top.b * top.a + under.b * (1 - top.a), a: 1 });
@@ -212,6 +227,16 @@ if (!flag('--source')) {
             }
             if (fate && out.wide.length < 3) out.wide.push(`${el.tagName.toLowerCase()} ${Math.round(rect.width)}px ${fate}`);
           }
+          // A table wider than its box must scroll alone. If the box that
+          // scrolls also holds the text, the reader drags the whole article.
+          if (el.tagName === 'TABLE' && style.overflowX !== 'auto' && style.overflowX !== 'scroll') {
+            for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+              const o = getComputedStyle(n).overflowX;
+              if (o !== 'auto' && o !== 'scroll') continue;
+              if (n.scrollWidth > n.clientWidth + 2 && (n.children.length > 1 || n.matches('.html-embed, article'))) out.dragsText++;
+              break;
+            }
+          }
 
           if (el.tagName === 'svg') continue;
           const ownText = [...el.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim().length > 1).map((n) => n.textContent.trim()).join(' ');
@@ -233,6 +258,7 @@ if (!flag('--source')) {
 
       if (r.overflow > 2) defect(p.id, `${where}: the page scrolls sideways by ${r.overflow}px${r.wide.length ? ` (${r.wide.join(', ')})` : ''}`);
       else if (r.wide.length) defect(p.id, `${where}: content wider than the screen ${r.wide.join(', ')}`);
+      if (r.dragsText) defect(p.id, `${where}: ${r.dragsText} wide table(s) scroll the whole text sideways instead of scrolling alone`);
       if (r.brokenImages) defect(p.id, `${where}: ${r.brokenImages} image(s) do not load`);
       if (errors.length) defect(p.id, `${where}: script error: ${errors[0].slice(0, 120)}`);
       if (r.lowContrast.length) {

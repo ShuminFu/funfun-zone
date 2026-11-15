@@ -15,6 +15,21 @@
   and screenshot scripts), `geo-check` (build verifier) and `post-review`
   (every note checked at phone and desktop width, light and dark).
 
+### Performance
+
+- Every page downloaded one 1.5 MB font holding all of simplified Chinese
+  for its headings. `scripts/subset-heading-font.mjs` now builds a font with
+  only the characters headings use (about 800, 140 KB) before each build.
+- 44 figures were base64 inside 13 notes, up to 890 KB of HTML in front of
+  the first paragraph. `npm run images` moved them to
+  `public/images/posts/<slug>/` with width, height, lazy loading and an
+  800px copy for phones. WebP bytes are unchanged.
+- KaTeX's stylesheet was a render-blocking link to another host in every
+  page's head. It is added only on pages that contain math.
+- Every table has its own sideways scroller (`rehype-table-scroll.ts`); a
+  wide table no longer drags the article with it, and on phones tables get
+  a minimum width by column count.
+
 ### Fixed
 
 - Reading time counted whitespace-separated words, so Chinese notes showed

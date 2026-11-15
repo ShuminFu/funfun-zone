@@ -50,6 +50,8 @@ This is a digital garden publishing system built with Astro + Obsidian.
 
 - `npm run dev` - Dev server at localhost:4321
 - `npm run build` - Production build to `dist/`
+- `npm run images` - Move base64 figures in notes to `public/images/posts/`
+- `npm run fonts` - Rebuild the Chinese heading font (also runs before dev and build)
 - `npm run setup` - Interactive site configuration
 - `npm run generate-og` - Generate OG images for posts
 - `npm run update-theme` - Pull upstream theme updates

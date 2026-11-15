@@ -20,6 +20,10 @@ node .claude/skills/post-review/scripts/post-audit.mjs
 One note: `--only <slug>`. Source checks without a browser: `--source`.
 Screenshots of every view that has a problem: `--shots <dir>`.
 
+After changing a remark or rehype plugin, delete `.astro/data-store.json`
+before building. Astro caches rendered notes, and embedded notes will keep
+their old HTML until it is gone.
+
 The script exits 1 if any note has a **defect**. A **note** is something
 the author should know but that does not block publishing.
 
@@ -27,7 +31,8 @@ the author should know but that does not block publishing.
 
 | Check | Defect when | Why |
 | --- | --- | --- |
-| Sideways scroll | the page, or a table, figure or code block not in its own scroller, is wider than the screen | On a phone the whole page wobbles, or content is cut off and unreachable |
+| Sideways scroll | the page, or a table, figure or code block not in its own scroller, is wider than the screen; or a wide table scrolls the text along with it | On a phone the whole page wobbles, or content is cut off and unreachable |
+| Images | a figure is embedded as base64 | Hundreds of kilobytes arrive before the first paragraph, uncached and never lazy |
 | Readable text | 8 or more text elements below 4.5:1 (3:1 for large text), or any below 2:1 | Usually an embedded note whose colours only work in one mode |
 | Broken images, script errors | any | The reader sees a gap or a dead widget |
 | Description | missing, or printed under the title and again as the first line | The card, search result and social preview are empty, or the page opens by saying the same thing twice |
@@ -35,8 +40,9 @@ the author should know but that does not block publishing.
 | Internal links | a `/posts/...` link to a note that does not exist | Dead end |
 | Reading time | off by half or more | A "1 min read" that takes six is a small broken promise |
 
-Reported as notes only: images without alt text, heading levels that skip,
-pages over 600 KB (base64 images), a few faint labels, text under 11px.
+Reported as notes only: images without alt text or without width and
+height, heading levels that skip, pages over 400 KB of HTML, a few faint
+labels, text under 11px.
 
 ## Rules the layouts already enforce
 
@@ -49,7 +55,15 @@ Do not work around these in a note; if one is wrong, fix it in the layout.
 - **Dark mode is announced two ways** on `<html>`: the `dark` class, which
   the site's own styles use, and `data-theme="dark"`, which embedded notes
   that began as standalone pages use.
-- **Wide tables, figures and code** scroll inside their own box.
+- **Every table scrolls inside its own box.** `rehype-table-scroll.ts` wraps
+  each one, in Markdown and in embedded HTML, unless the author already
+  did. On phones a table gets a minimum width by column count, so cells
+  are not three characters wide.
+- **Figures are files.** `npm run images` moves base64 images to
+  `public/images/posts/<slug>/`, keeps WebP bytes as they are, adds width,
+  height, lazy loading and an 800px copy for phones.
+- **The Chinese heading font is cut to the characters in use** by
+  `scripts/subset-heading-font.mjs` before every dev and build run.
 
 ## Writing an embedded (HTML) note
 
@@ -72,11 +86,11 @@ ways they have broken, so check them when writing one.
   contrast is lost: amber on cream, grey on grey.
 - **No `# ` first-level heading and no repeat of the description** at the
   top. The layout prints the title; start with the content.
-- **Images:** give each one `alt` text that says what it shows. Prefer a
-  file in `public/` over base64 once a note has more than a couple; a page
-  of 800 KB of HTML holds back the first paragraph on a slow connection.
-- **Anything wide** (table, diagram, code) goes in a wrapper with
-  `overflow-x: auto`, so it scrolls alone.
+- **Images:** give each one `alt` text that says what it shows. Write them
+  however is convenient, then run `npm run images` before committing; the
+  audit fails a note that still carries a base64 figure.
+- **Tables** need nothing. **Diagrams and other wide blocks** go in a
+  wrapper with `overflow-x: auto`, so they scroll alone.
 
 ## Looking, after measuring
 
@@ -91,11 +105,34 @@ width, top, middle and end, in both modes:
 `node .claude/skills/design-audit/scripts/screenshots.mjs <dir>` takes the
 standard set; for one note, open it in the preview server.
 
+## Loading speed
+
+```bash
+node .claude/skills/post-review/scripts/perf-audit.mjs            # the live site
+BASE_URL=http://127.0.0.1:4329 node .claude/skills/post-review/scripts/perf-audit.mjs
+```
+
+It loads the home page, the garden and three notes in a fresh browser on an
+emulated phone over slow 4G, and reports when text first appears, when the
+page is fully loaded, and what was downloaded by type. Timings depend on
+where it runs; byte counts do not. Compare runs from the same place.
+
+What to look for, in the order it has mattered here:
+
+1. **Fonts.** One file with every Chinese glyph is 1.5 MB. Headings use a
+   few hundred characters; a note should fetch about 140 KB of Chinese font
+   and under 100 KB of Latin.
+2. **The page HTML.** It should be tens of kilobytes on the wire. If it is
+   hundreds, a figure is embedded in it.
+3. **Anything from another host in `<head>`.** A stylesheet there blocks
+   the first paint on a connection the site does not control. KaTeX's is
+   added only on pages that contain math, after the page has rendered.
+4. **Images** should appear in the list only when the reader reaches them.
+
 ## What is the author's call
 
 Report these; do not change them unasked.
 
 - The wording, structure and length of the note.
-- Moving base64 images into files (it changes how notes are authored).
 - Mock interfaces inside a note that use faint greys on purpose.
 - Whether a near-repeat of the description at the top should be rewritten.
