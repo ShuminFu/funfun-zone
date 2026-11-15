@@ -40,7 +40,7 @@ const graphData = { nodes, links };
 <!-- Graph Toggle Button -->
 <button
   id="global-graph-toggle"
-  class="fixed bottom-6 right-6 z-40 rounded-full border border-primary-200 bg-white p-3 text-primary-700 shadow-lg shadow-primary-900/10 transition-colors hover:border-primary-400 hover:text-primary-900 dark:border-primary-700 dark:bg-primary-900 dark:text-primary-200 dark:shadow-none dark:hover:border-primary-500 dark:hover:text-primary-50"
+  class="graph-fab fixed bottom-6 right-6 z-40 rounded-full border border-primary-200 bg-white p-3 text-primary-700 shadow-lg shadow-primary-900/10 transition-colors hover:border-primary-400 hover:text-primary-900 dark:border-primary-700 dark:bg-primary-900 dark:text-primary-200 dark:shadow-none dark:hover:border-primary-500 dark:hover:text-primary-50"
   aria-label="Open graph view"
   title="View all connections (G)"
 >
@@ -116,6 +116,50 @@ const graphData = { nodes, links };
     </footer>
   </div>
 </div>
+
+<style>
+  /* Below desktop width the button sits on top of the text column. It slides
+     away while the reader scrolls down and returns on any scroll up. */
+  .graph-fab {
+    transition: transform 0.25s ease, opacity 0.25s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  @media (max-width: 1023px) {
+    .graph-fab[data-away] {
+      transform: translateY(5rem);
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .graph-fab {
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var last = window.scrollY;
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var fab = document.getElementById('global-graph-toggle');
+        var y = window.scrollY;
+        // Ignore tiny movements so the button does not flicker.
+        if (fab && Math.abs(y - last) > 8) {
+          if (y > last && y > 160) fab.setAttribute('data-away', '');
+          else fab.removeAttribute('data-away');
+          last = y;
+        }
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+</script>
 
 <script define:vars={{ graphData }}>
   // D3.js for global graph

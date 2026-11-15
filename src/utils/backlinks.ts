@@ -5,6 +5,7 @@
  */
 
 import type { Post, LinkedMention, WikilinkMatch } from '../types';
+import { readableText } from './reading';
 
 // Create slug from title
 function createSlug(title: string): string {
@@ -157,6 +158,21 @@ export function findBacklinks(posts: Post[], targetSlug: string): LinkedMention[
   return backlinks;
 }
 
+// The excerpt is shown as plain text, so Markdown and HTML syntax has to go:
+// keep link and image labels, drop targets, heading and quote markers.
+function cleanExcerpt(text: string): string {
+  return text
+    .replace(/<(style|script)\b[\s\S]*?(<\/\1>|$)/gi, ' ')
+    .replace(/<[^>]*>?/g, ' ')
+    .replace(/!?\[([^\]]*)\]\([^)]*\)?/g, '$1')
+    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, link, label) => label ?? link)
+    .replace(/(^|\s)(?:#{1,6}|>+)\s+/g, '$1')
+    .replace(/[*_`~]/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^[\s\p{P}\p{S}]*/u, '')
+    .trim();
+}
+
 // Create an excerpt around a link mention
 function createExcerpt(content: string, linkText: string): string {
   // Remove frontmatter
@@ -168,10 +184,10 @@ function createExcerpt(content: string, linkText: string): string {
 
   let match = withoutFrontmatter.match(wikilinkPattern) || withoutFrontmatter.match(markdownPattern);
 
-  if (!match) {
-    // Return first 150 characters as fallback
-    return withoutFrontmatter.slice(0, 150).trim() + '...';
-  }
+  // When the link is written some other way (raw HTML, a full URL), or the
+  // text around it is all markup, show how the mentioning note opens instead.
+  const opening = () => readableText(withoutFrontmatter).slice(0, 120).trim() + '...';
+  if (!match) return opening();
 
   const matchIndex = withoutFrontmatter.indexOf(match[0]);
   const contextLength = 100;
@@ -182,12 +198,8 @@ function createExcerpt(content: string, linkText: string): string {
 
   let excerpt = withoutFrontmatter.slice(start, end);
 
-  // Clean up the excerpt
-  excerpt = excerpt
-    .replace(/\n+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .replace(/^[^\w]*/, '')  // Remove leading non-word chars
-    .trim();
+  excerpt = cleanExcerpt(excerpt);
+  if (excerpt.length < 24) return opening();
 
   // Add ellipsis if needed
   if (start > 0) excerpt = '...' + excerpt;

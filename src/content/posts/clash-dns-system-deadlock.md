@@ -15,8 +15,6 @@ draft: false
 
 下面从头讲。不懂 DNS 也没关系。
 
-## Table of contents
-
 ## 我看到的现象
 
 环境是 macOS + Clash Verge Rev，开着 TUN 模式和 fake-ip。
