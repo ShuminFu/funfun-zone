@@ -224,12 +224,16 @@ const breadcrumbLd = {
         <Giscus />
       </article>
 
-      <!-- Sidebar -->
-      <aside class="hidden lg:has-[#local-graph-container]:block lg:has-[nav.toc]:block">
-        <div class="sticky top-24 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto">
+      <!-- Sidebar. On desktop it is a sticky column with the table of
+           contents and Connections. Below lg there is no column: the table
+           of contents stays hidden and Connections drops under the article. -->
+      <aside class="mt-10 hidden has-[#local-graph-container]:block lg:mt-0 lg:has-[nav.toc]:block">
+        <div class="space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
           <!-- Table of Contents -->
           {siteConfig.features.tableOfContents && headings.length > 0 && (
-            <TableOfContents headings={headings} />
+            <div class="hidden lg:block">
+              <TableOfContents headings={headings} />
+            </div>
           )}
 
           <!-- Local Graph -->
