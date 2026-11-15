@@ -3,8 +3,8 @@
  *
  * The source is already Markdown, so this is the body with a small header.
  * Two things are stripped because they are noise to a reader that cannot
- * render them: inline <style> blocks from HTML-embed posts, and base64
- * images, which can run to megabytes.
+ * render them: inline <style> blocks from HTML-embed posts, and any base64
+ * image that has not been moved to a file yet (npm run images).
  */
 
 import type { Post } from '../types';
@@ -28,6 +28,12 @@ export function postToMarkdown(post: Post, site: URL | string): string {
       return alt ? `[image: ${alt}]` : '[image]';
     })
     .replace(/!\[([^\]]*)\]\(data:[^)]*\)/g, (_, alt) => (alt ? `[image: ${alt}]` : '[image]'))
+    // Figures are files under /images/. As Markdown with an absolute URL they
+    // survive being read outside the site.
+    .replace(/<img\b[^>]*\bsrc="(\/[^"]+)"[^>]*>/gi, (tag, src) => {
+      const alt = tag.match(/\balt="([^"]*)"/i)?.[1] ?? '';
+      return `![${alt}](${new URL(src, site).href})`;
+    })
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
