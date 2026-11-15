@@ -63,8 +63,8 @@ export default defineConfig({
     // --shiki-dark per mode and owns the block background.
     shikiConfig: {
       themes: {
-        light: 'github-light',
-        dark: 'github-dark-dimmed',
+        light: 'github-light-default',
+        dark: 'github-dark-default',
       },
       defaultColor: false,
       wrap: true,

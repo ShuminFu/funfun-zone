@@ -156,11 +156,11 @@ const ogImage = image
             theme = null;
           }
           var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (theme === 'dark' || (!theme && prefersDark)) {
-            root.classList.add('dark');
-          } else {
-            root.classList.remove('dark');
-          }
+          var dark = theme === 'dark' || (!theme && prefersDark);
+          root.classList.toggle('dark', dark);
+          // Embedded notes that started life as standalone pages key their
+          // dark palette on html[data-theme], so the root says it both ways.
+          root.setAttribute('data-theme', dark ? 'dark' : 'light');
         }
 
         applyDark(document.documentElement);
@@ -256,6 +256,7 @@ const ogImage = image
         toggleButtons.forEach((button) => {
           button.addEventListener('click', () => {
             const isDark = document.documentElement.classList.toggle('dark');
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             // Dispatch event for components that need to react to theme changes
             window.dispatchEvent(new CustomEvent('themechange', { detail: { dark: isDark } }));

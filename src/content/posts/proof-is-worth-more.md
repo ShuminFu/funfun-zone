@@ -17,7 +17,7 @@ table{border-collapse:collapse;width:100%}
 td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;vertical-align:top}
 .illus{margin:1.6em 0;text-align:center}
 .illus img{max-width:100%;height:auto;border-radius:8px}
-.illus figcaption{font-size:.85em;color:var(--muted);margin-top:.4em}
+.illus figcaption{font-size:.85em;color:var(--muted-foreground);margin-top:.4em}
 </style>
 
 <div class="html-embed" lang="zh">

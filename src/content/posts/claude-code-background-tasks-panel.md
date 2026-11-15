@@ -28,7 +28,7 @@ draft: false
 .html-embed .diagram .m{font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.85}
 .html-embed .tag{display:inline-block;font-size:.75em;line-height:1.5;padding:0 .45em;border-radius:4px;border:1px solid currentColor;margin-right:.2em;white-space:nowrap}
 .html-embed .tag.ok{color:var(--accent)}
-.html-embed .tag.guess{color:#b7791f}
+.html-embed .tag.guess{color:var(--status-warning)}
 .html-embed .tag.unk{opacity:.7}
 .html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums}
 </style>

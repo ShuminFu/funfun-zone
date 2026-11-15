@@ -328,7 +328,9 @@
     --foreground: rgb(var(--color-primary-900));
     --background: rgb(var(--bg-primary));
     --accent: rgb(var(--color-accent-600));
+    /* --muted is a surface tone. Text that should recede uses --muted-foreground. */
     --muted: rgb(var(--color-primary-100));
+    --muted-foreground: rgb(var(--color-primary-600));
   }
 
   .dark {
@@ -353,18 +355,21 @@
     --background: rgb(var(--bg-primary));
     --accent: rgb(var(--color-accent-400));
     --muted: rgb(var(--color-primary-800));
+    --muted-foreground: rgb(var(--color-primary-400));
   }
 
   /* ============================================================================
    STATUS COLOURS
    Shared by every theme. One lightness and one chroma per mode (OKLCH
    0.54 / 0.13 light, 0.77 / 0.115 dark); only the hue moves, so growth
-   stages, callouts and confidence badges read as one family. Seedling is
-   a step lighter and evergreen a step deeper so the two greens stay apart.
+   stages, callouts and confidence badges read as one family. The two greens
+   are told apart by hue (142 and 172) and evergreen is a step deeper. Every
+   light value clears 4.5:1 as text on the page, a card and a chip, because
+   the stage name is printed in its colour.
    ============================================================================ */
 
   :root {
-    --growth-seedling: #54994d;
+    --growth-seedling: #367b30;
     --growth-budding: #976202;
     --growth-evergreen: #036b55;
     --status-note: #0275b3;
