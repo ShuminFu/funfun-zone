@@ -104,7 +104,7 @@ html[data-theme="dark"] .html-embed .tier .label {
       <p><strong>整条线可以压成一段话：</strong>显卡的硬件寿命大约还能再跑好几年，并不是第三年就坏掉。但是云厂商和规则制定者可以靠合同、撕约和破产重整，把算力包租公从一级训练价（约 4 美元/小时）压到二级推理价（约 1.8 美元/小时），顺便把泡沫出清。五年期高息债撑不住之后，包租公违约进重整；云巨头逼债主本金砍半、租金腰斩，再以白菜价收回还能再跑约五年的机房与卡。华尔街先赚前端费，再拿优先债权接管去杠杆后的现金奶牛。</p>
     </div>
     <figure class="fig">
-      <img alt="显卡物理寿命仍有多年，云厂用合同与破产重整把训练租金压到推理价" src="/images/posts/gpu-subprime-wash-debt/fig-01.webp" width="1280" height="466" loading="lazy" srcset="/images/posts/gpu-subprime-wash-debt/fig-01-800.webp 800w, /images/posts/gpu-subprime-wash-debt/fig-01.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" decoding="async">
+      <img alt="显卡物理寿命仍有多年，云厂用合同与破产重整把训练租金压到推理价" src="/images/posts/gpu-subprime-wash-debt/fig-01.webp" width="1280" height="466" loading="lazy" srcset="/images/posts/gpu-subprime-wash-debt/fig-01-800.webp 800w, /images/posts/gpu-subprime-wash-debt/fig-01.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" decoding="async" data-avif="no">
       <figcaption>图 1 · 显卡还能再跑好几年，但云厂用合同和破产桌把训练租金压成推理价。</figcaption>
     </figure>
     <p>先把三件并不冲突的事实拆开说清楚。</p>
@@ -121,7 +121,7 @@ html[data-theme="dark"] .html-embed .tier .label {
     <h2>二、四级实物链：每一层发生了什么</h2>
     <p>整场局是一张四级实物链金字塔。各层分工不同，结局也不同。</p>
     <figure class="fig">
-      <img alt="四级实物链金字塔：规则制定者、云巨头、算力包租工（白手套）、终极买单人" src="/images/posts/gpu-subprime-wash-debt/fig-02.webp" width="970" height="1432" loading="lazy" decoding="async">
+      <picture><source type="image/avif" srcset="/images/posts/gpu-subprime-wash-debt/fig-02.avif"><img alt="四级实物链金字塔：规则制定者、云巨头、算力包租工（白手套）、终极买单人" src="/images/posts/gpu-subprime-wash-debt/fig-02.webp" width="970" height="1432" loading="lazy" decoding="async"></picture>
       <figcaption>图 2 · 四级实物链：上面定规则的人通吃，下面买单的人扛损。</figcaption>
     </figure>
     <div class="tier">
@@ -154,14 +154,14 @@ html[data-theme="dark"] .html-embed .tier .label {
       <p><strong>这一层发生了什么：</strong>他们听信「显卡寿命八年堪比福特贷款」，贪图 10% 按月分红；重整时本金减记约一半，默默替全行业报销早期抢卡溢价。他们才是真正的买单人。</p>
     </div>
     <figure class="fig">
-      <img alt="破产重整谈判：债权人面对本金砍半、租金腰斩与云巨头的城下之盟" src="/images/posts/gpu-subprime-wash-debt/fig-03.webp" width="1280" height="720" loading="lazy" srcset="/images/posts/gpu-subprime-wash-debt/fig-03-800.webp 800w, /images/posts/gpu-subprime-wash-debt/fig-03.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" decoding="async">
+      <img alt="破产重整谈判：债权人面对本金砍半、租金腰斩与云巨头的城下之盟" src="/images/posts/gpu-subprime-wash-debt/fig-03.webp" width="1280" height="720" loading="lazy" srcset="/images/posts/gpu-subprime-wash-debt/fig-03-800.webp 800w, /images/posts/gpu-subprime-wash-debt/fig-03.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" decoding="async" data-avif="no">
       <figcaption>图 3 · 破产重整桌上，债权人往往只能接受本金砍半、租金腰斩；与此同时，硬件还在继续跑。</figcaption>
     </figure>
   </section>
   <section>
     <h2>三、跟以前有什么不一样</h2>
     <figure class="fig">
-      <img alt="暗光纤与今日 GPU 机房对照：出清剧本相似，这次更像主动设计" src="/images/posts/gpu-subprime-wash-debt/fig-04.webp" width="1280" height="720" loading="lazy" srcset="/images/posts/gpu-subprime-wash-debt/fig-04-800.webp 800w, /images/posts/gpu-subprime-wash-debt/fig-04.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" decoding="async">
+      <img alt="暗光纤与今日 GPU 机房对照：出清剧本相似，这次更像主动设计" src="/images/posts/gpu-subprime-wash-debt/fig-04.webp" width="1280" height="720" loading="lazy" srcset="/images/posts/gpu-subprime-wash-debt/fig-04-800.webp 800w, /images/posts/gpu-subprime-wash-debt/fig-04.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" decoding="async" data-avif="no">
       <figcaption>图 4 · 暗光纤换成了 GPU 机房，出清剧本仍旧相似；但是这一次更像主动设计，而不是失控后的被动遗产。</figcaption>
     </figure>
     <div class="diff">

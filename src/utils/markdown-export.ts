@@ -28,6 +28,9 @@ export function postToMarkdown(post: Post, site: URL | string): string {
       return alt ? `[image: ${alt}]` : '[image]';
     })
     .replace(/!\[([^\]]*)\]\(data:[^)]*\)/g, (_, alt) => (alt ? `[image: ${alt}]` : '[image]'))
+    // <picture> and <source> only choose a format for browsers; the <img>
+    // inside is the figure.
+    .replace(/<\/?picture>|<source\b[^>]*>/gi, '')
     // Figures are files under /images/. As Markdown with an absolute URL they
     // survive being read outside the site.
     .replace(/<img\b[^>]*\bsrc="(\/[^"]+)"[^>]*>/gi, (tag, src) => {

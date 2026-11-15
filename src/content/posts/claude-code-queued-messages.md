@@ -28,7 +28,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 <pre><code>03:51:04 LocalSessions.sendMessage: ... messageLength=4, imageCount=0, toolStates=0, attachmentCount=0, priority=next
 03:51:07 [LocalSessionManager] flushed held steers (1 steer(s)) for local_&lt;id&gt;</code></pre>
 <p><code>messageLength=4</code> 对应的是「你自己做」四个字。App 内部把这种消息叫 steer，扣了 3 秒后放行。如果发消息时已经有工具在跑，App 不扣，日志里也没有 flush 这一行，消息直接进队列。</p>
-<figure class="illus"><img src="/images/posts/claude-code-queued-messages/fig-01.webp" alt="用户猛按 SEND NOW 按钮，机器人正在执行工具调用" loading="lazy" width="1200" srcset="/images/posts/claude-code-queued-messages/fig-01-800.webp 800w, /images/posts/claude-code-queued-messages/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"><figcaption>Claude 写字或思考时，消息先被 App 扣着，等它发起下一个工具调用才放行。</figcaption></figure>
+<figure class="illus"><img src="/images/posts/claude-code-queued-messages/fig-01.webp" alt="用户猛按 SEND NOW 按钮，机器人正在执行工具调用" loading="lazy" width="1200" srcset="/images/posts/claude-code-queued-messages/fig-01-800.webp 800w, /images/posts/claude-code-queued-messages/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async" data-avif="no"><figcaption>Claude 写字或思考时，消息先被 App 扣着，等它发起下一个工具调用才放行。</figcaption></figure>
 <h2>第二道关：等当前工具跑完</h2>
 <p>放行后消息进入队列，但还要等正在跑的工具返回，才跟在工具结果后面交给模型。会话记录在 <code>~/.claude/projects/&lt;project&gt;/&lt;session&gt;.jsonl</code>，每行一条 JSON，时间为 UTC：</p>
 <pre><code>07:51:05.819Z assistant  [thinking]
@@ -44,7 +44,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 <li>浏览器工具跑了 13 秒，消息跟着工具结果一起进入对话。</li>
 <li><code>absorbed_mid_turn</code> 表示这条消息在本轮中途被吸收，没有另开一轮。Claude 下一句话就回应了它。</li>
 </ul>
-<figure class="illus"><img src="/images/posts/claude-code-queued-messages/fig-02.webp" alt="便利贴形式的排队消息被贴到 tool_result 箱子上，传送带末端的机器人读取" loading="lazy" width="1200" srcset="/images/posts/claude-code-queued-messages/fig-02-800.webp 800w, /images/posts/claude-code-queued-messages/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"><figcaption>排队消息贴在工具结果上一起送进对话。</figcaption></figure>
+<figure class="illus"><img src="/images/posts/claude-code-queued-messages/fig-02.webp" alt="便利贴形式的排队消息被贴到 tool_result 箱子上，传送带末端的机器人读取" loading="lazy" width="1200" srcset="/images/posts/claude-code-queued-messages/fig-02-800.webp 800w, /images/posts/claude-code-queued-messages/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async" data-avif="no"><figcaption>排队消息贴在工具结果上一起送进对话。</figcaption></figure>
 <h2>模型实际收到什么</h2>
 <p>中途插入的消息不会成为一条独立的 user 消息，而是塞进装着工具结果的那条 user 消息里，大致是：</p>
 <pre><code>{role: "assistant", content: [thinking, tool_use(id=dsi8UjU4)]}
@@ -103,7 +103,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 </tbody></table>
 <p>延迟等于两段相加：Claude 隔多久发起下一个工具调用，加上那个工具跑多久。碰上长命令或子代理，就会拖到几十秒甚至几分钟。</p>
 <h2>有没有被忽略的消息</h2>
-<figure class="illus"><img src="/images/posts/claude-code-queued-messages/fig-03.webp" alt="灰色幽灵对话气泡拍着忙碌机器人的肩膀问 am I real yet?" loading="lazy" width="1200" srcset="/images/posts/claude-code-queued-messages/fig-03-800.webp 800w, /images/posts/claude-code-queued-messages/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"><figcaption>发出去的消息，真的被读到了吗？</figcaption></figure>
+<figure class="illus"><img src="/images/posts/claude-code-queued-messages/fig-03.webp" alt="灰色幽灵对话气泡拍着忙碌机器人的肩膀问 am I real yet?" loading="lazy" width="1200" srcset="/images/posts/claude-code-queued-messages/fig-03-800.webp 800w, /images/posts/claude-code-queued-messages/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async" data-avif="no"><figcaption>发出去的消息，真的被读到了吗？</figcaption></figure>
 <p>上面说消息会被送到，那有没有发出去却没被读到、或者读到了却没被理会的？我把四种可能都查了一遍。统计按「同一时间戳 + 同样内容」去重，因为会话分叉时一条消息会被复制进多个会话文件（上面的统计没有去重，所以数字更大）。去重后，人发出的入队一共 6747 条。</p>
 <h3>1. 入队了，但记录里找不到送达</h3>
 <p>出队记录只有三种：<code>dequeue</code>（13615 条）、<code>remove</code> + <code>absorbed_mid_turn</code>（1017 条）、早期版本里不带 reason 的 <code>remove</code>（135 条，抽查都送达了）。没有 cancelled、cleared、interrupted 这类原因。</p>

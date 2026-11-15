@@ -302,7 +302,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <h2>三种造变异体的方法</h2>
   <p class="sub">还是那个比方：同一个保安，换三种人去试探他。</p>
   <figure class="fig">
-    <img src="/images/posts/reverse-fix-mutation-testing-pilot/fig-01.webp" width="960" height="540" decoding="async" alt="夜间博物馆里一名保安守着展柜，三个闯入者用不同方式试探他：左边一个随手碰倒东西，中间一个躲在柱子后观察保安，右边一个照着旧图纸重演以前的盗窃" loading="lazy">
+    <img src="/images/posts/reverse-fix-mutation-testing-pilot/fig-01.webp" width="960" height="540" decoding="async" alt="夜间博物馆里一名保安守着展柜，三个闯入者用不同方式试探他：左边一个随手碰倒东西，中间一个躲在柱子后观察保安，右边一个照着旧图纸重演以前的盗窃" loading="lazy" data-avif="no">
     <figcaption>左：随手乱挪的人（规则工具）。中：躲在柱子后先看保安站位的人（大模型）。右：照着旧案图纸再偷一次的人（撤回历史修复）。保安始终是同一个——仓库里现有的测试。</figcaption>
   </figure>
   <div class="grid g3">

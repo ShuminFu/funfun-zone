@@ -33,7 +33,7 @@ draft: false
 
 <div class="html-embed" lang="zh">
 <p class="lead">AI 让写软件几乎免费，跑软件却更贵。价值从代码搬走以后，中小公司的机会在哪里。</p>
-<figure class="illus"><img src="/images/posts/code-is-cheap-where-money-goes/fig-01.webp" alt="工坊里，店主和 AI 助手看着软件窗口自己拼起来，一旁的服务器和内存条挂着价签" loading="lazy" srcset="/images/posts/code-is-cheap-where-money-goes/fig-01-800.webp 800w, /images/posts/code-is-cheap-where-money-goes/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" decoding="async"></figure>
+<figure class="illus"><img src="/images/posts/code-is-cheap-where-money-goes/fig-01.webp" alt="工坊里，店主和 AI 助手看着软件窗口自己拼起来，一旁的服务器和内存条挂着价签" loading="lazy" srcset="/images/posts/code-is-cheap-where-money-goes/fig-01-800.webp 800w, /images/posts/code-is-cheap-where-money-goes/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" decoding="async" data-avif="no"></figure>
 <p>这个月，一个开发者用 Claude 把 Word、Excel、PowerPoint 各克隆了一遍，Rust 写的，开源。表格那个，Excel 的 523 个函数做出了 513 个。</p>
 <p>今年第一季度，内存合约价一个季度涨了九成左右。</p>
 <p>写软件快不要钱了，跑软件却越来越贵。两件事碰在一起，会改变企业买什么、软件公司卖什么。我想把它想清楚，最后落到一个具体问题上：<strong>中小公司在 AI 时代该做什么。</strong></p>
@@ -53,7 +53,7 @@ draft: false
 <p>问题是，这种粘性越来越像扣人质。以前 SaaS 收钱，是因为你自己做不出来；现在你做得出来，它还在收钱，凭的只是数据。企业当然更想走。AI 还顺手降低了搬家成本：读懂旧系统的导出、对上新表的字段、照着旧审批流重建一份，都是 agent 擅长的活。</p>
 <p>厂商有两条路：锁得更紧，或者主动开放、靠服务留人。2025 年 5 月，Salesforce 改了 Slack 的 API 条款，不许第三方批量导出数据，也不许拿这些数据喂大模型。我更相信最后的形态是<strong>数据和软件分开</strong>：数据放在企业自己名下，上面的软件随时能换。软件股大跌那阵子，做数据底座的 Snowflake 有一天涨了 35%，钱在往数据层走。</p>
 <h3>2. 入口</h3>
-<figure class="illus"><img src="/images/posts/code-is-cheap-where-money-goes/fig-02.webp" alt="三座大厂的城门人来人往，小店主在冷清的街边造一扇小门，两个机器人隔着小巷握手" loading="lazy" srcset="/images/posts/code-is-cheap-where-money-goes/fig-02-800.webp 800w, /images/posts/code-is-cheap-where-money-goes/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" decoding="async"></figure>
+<figure class="illus"><img src="/images/posts/code-is-cheap-where-money-goes/fig-02.webp" alt="三座大厂的城门人来人往，小店主在冷清的街边造一扇小门，两个机器人隔着小巷握手" loading="lazy" srcset="/images/posts/code-is-cheap-where-money-goes/fig-02-800.webp 800w, /images/posts/code-is-cheap-where-money-goes/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" decoding="async" data-avif="no"></figure>
 <p>公司内部可以各用各的软件。可你要和客户、供应商打交道，大家就得用同一个产品。企业微信背后是微信，钉钉背后是阿里的商家生态，飞书背后是字节。入口在大厂手里。</p>
 <p>所以我觉得，不是大厂的公司，别去碰通用办公 SaaS。功能做得再好，客户也不会为你装一个新 app；大厂把办公软件当引流的门，可以不收钱，你不行。</p>
 <p>有一个变数。agent 之间可以通过协议直接对话，比如 Google 发起、现在归 Linux 基金会管的 A2A。真走到那一步，入口就像电子邮件：谁家的邮箱都能互相发信，不需要用同一个产品。但大厂也在抢「企业的 agent」这个位置，起点还更好，所以这只是变数，不是小公司的必胜牌。agent 之间怎么交接，我在<a href="/posts/front-desk-agent/zh/">另一篇文章</a>里写过。</p>
@@ -88,7 +88,7 @@ draft: false
 <tr><td><strong>新入口</strong></td><td>门禁</td><td>钉钉、飞书上的行业 agent</td><td>企业 agent 前台、A2A 接口</td></tr>
 </tbody></table>
 <h3>养护：像维护一条流水线</h3>
-<figure class="illus"><img src="/images/posts/code-is-cheap-where-money-goes/fig-03.webp" alt="软件流水线旁，企业自己的机器人在调一个工位，供应商的技师拿着监控平板走进来" loading="lazy" srcset="/images/posts/code-is-cheap-where-money-goes/fig-03-800.webp 800w, /images/posts/code-is-cheap-where-money-goes/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" decoding="async"></figure>
+<figure class="illus"><img src="/images/posts/code-is-cheap-where-money-goes/fig-03.webp" alt="软件流水线旁，企业自己的机器人在调一个工位，供应商的技师拿着监控平板走进来" loading="lazy" srcset="/images/posts/code-is-cheap-where-money-goes/fig-03-800.webp 800w, /images/posts/code-is-cheap-where-money-goes/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" decoding="async" data-avif="no"></figure>
 <p>企业的软件像工厂里的一条流水线。可以自己养工程师来维护，也可以不养人，交给流水线的供应商维保。线少、不关键，自己兼着管；线多、停不起，就签维保合同。</p>
 <p>麻烦在于，供应商能维保，是因为它认识这台机器，机器本来就是它造的。企业用 AI 自己造的软件，世上没有一个供应商认识，接手就像修一台没有图纸的机器。</p>
 <p>解法是<strong>行业种子</strong>。拿连锁餐饮举例，一个「餐饮种子」里有门店、菜品、库存、排班这些数据结构，有订货、盘点、交班的标准流程，接好了外卖平台、收银机和电子发票，带着食品安全台账，还附一份给 AI 看的说明书和测试：哪里能改，哪里不能动，改完怎么检查有没有改坏。一家有五个门店的火锅店拿到它，对 AI 说「加一个锅底配方管理」，AI 就在种子上改，不用从零开始。</p>

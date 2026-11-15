@@ -65,7 +65,7 @@ ul.check li::marker{content:"✓  ";color:var(--accent)}
 <li>持久化三件套：<code>/etc/cron.d</code> 每 5 分钟拉起一次、<code>/etc/init.d</code> 的 S99 开机脚本、<code>/etc/profile.d</code> 登录钩子。</li>
 <li>最后把真正的 <code>curl</code> 和 <code>chattr</code> 改成 <code>chmod 000</code>，防止别人用它们下载清理工具或解除文件锁。</li>
 </ol>
-<figure class="illus"><img src="/images/posts/vps-pipelines-ddos-botnet-incident/fig-01.webp" alt="牧师在机房向服务器洒圣水，驱赶冒充内核线程的红色小恶魔和代表 cron、开机脚本的幽灵" loading="lazy" width="1200" height="800" srcset="/images/posts/vps-pipelines-ddos-botnet-incident/fig-01-800.webp 800w, /images/posts/vps-pipelines-ddos-botnet-incident/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" decoding="async"><figcaption>木马和它的持久化三件套：清理时得一个个“驱”干净。</figcaption></figure>
+<figure class="illus"><img src="/images/posts/vps-pipelines-ddos-botnet-incident/fig-01.webp" alt="牧师在机房向服务器洒圣水，驱赶冒充内核线程的红色小恶魔和代表 cron、开机脚本的幽灵" loading="lazy" width="1200" height="800" srcset="/images/posts/vps-pipelines-ddos-botnet-incident/fig-01-800.webp 800w, /images/posts/vps-pipelines-ddos-botnet-incident/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" decoding="async" data-avif="no"><figcaption>木马和它的持久化三件套：清理时得一个个“驱”干净。</figcaption></figure>
 <h3>木马本身</h3>
 <p>样本是一个 396KB 的静态链接 x86-64 程序，环境变量里带 <code>SPIDER_NAME=psiphon</code>，属于叫 Spider 的 DDoS 僵尸网络家族。拆开能看到的能力：</p>
 <ul>

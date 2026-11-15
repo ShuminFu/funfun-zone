@@ -23,7 +23,9 @@
 - 44 figures were base64 inside 13 notes, up to 890 KB of HTML in front of
   the first paragraph. `npm run images` moved them to
   `public/images/posts/<slug>/` with width, height, lazy loading and an
-  800px copy for phones. WebP bytes are unchanged.
+  800px copy for phones. WebP bytes are unchanged. Figures also get an AVIF
+  copy, served through `<picture>` with the WebP as fallback, where the AVIF
+  is at least 15% smaller at the same fidelity.
 - KaTeX's stylesheet was a render-blocking link to another host in every
   page's head. It is added only on pages that contain math.
 - Every table has its own sideways scroller (`rehype-table-scroll.ts`); a

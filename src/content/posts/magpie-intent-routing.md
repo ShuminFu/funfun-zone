@@ -142,7 +142,7 @@ html.dark .html-embed .mir-try{
 <h2>一轮是怎么选模型的</h2>
 <p>一个路由组里通常放一个强模型和一个便宜模型。新的一轮开始时，分类器会读用户的话，并判断这是困难任务还是简单任务。这个答案只决定谁先被问到，另一个模型仍然留在后面做故障转移。选定之后，这个选择会管住整一轮。因此，agent 把工具结果送回来时，请求会回到当初提出工具调用的那个模型，而不会重新分类。</p>
 <figure>
-  <img src="/images/posts/magpie-intent-routing/fig-01.webp" alt="一轮开始时，分类器先判断难或易，再决定强模型还是便宜模型先回答；失败时另一个模型做故障转移。整一轮包括工具结果都沿用这个选择。" srcset="/images/posts/magpie-intent-routing/fig-01-800.webp 800w, /images/posts/magpie-intent-routing/fig-01.webp 2096w" sizes="(max-width: 768px) 100vw, 760px" width="2096" height="780" loading="lazy" decoding="async">
+  <picture><source type="image/avif" srcset="/images/posts/magpie-intent-routing/fig-01-800.avif 800w, /images/posts/magpie-intent-routing/fig-01.avif 2096w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/magpie-intent-routing/fig-01.webp" alt="一轮开始时，分类器先判断难或易，再决定强模型还是便宜模型先回答；失败时另一个模型做故障转移。整一轮包括工具结果都沿用这个选择。" srcset="/images/posts/magpie-intent-routing/fig-01-800.webp 800w, /images/posts/magpie-intent-routing/fig-01.webp 2096w" sizes="(max-width: 768px) 100vw, 760px" width="2096" height="780" loading="lazy" decoding="async"></picture>
   <figcaption>图 1　一轮开始时，分类器只决定谁先上场。工具结果也会回到同一个模型。</figcaption>
 </figure>
 <p>分类器并不是只看到最新这一句。源码说明写明，它拿到的是开启这一轮的用户原文，长消息会保留开头 3000 个字符和结尾 1000 个字符；同时还会拿到上一条用户消息和助手上一次回复，各最多 1000 个字符，并且被告知上一轮属于哪一类。因此，用户只回一句「go on」时，分类器可以按上一轮的类别来判断。官方文档则写分类器只看最新一条消息。就这一点而言，源码说明比文档写得更具体。</p>
@@ -333,13 +333,13 @@ The number of the kind that fits it best (0 only if none does):</pre>
 <h2>分类器失败时会怎样</h2>
 <p>同一道题在 10 分钟内再问一次，会直接用记忆里的答案。分类器失败之后会被搁置 30 秒，这样后面的每一轮都不必再把超时时间等完。</p>
 <figure>
-  <img src="/images/posts/magpie-intent-routing/fig-02.webp" alt="每条请求按顺序处理：是否在压缩对话、是否仍是同一轮、读取可见事实、必要时才问分类器、分类器变慢或失败时怎么处理、第一条命中的规则说了算，以及把决定记住整一轮。分类器失败或回答 0 时，会沿用上一轮意图，或退回组的默认顺序。" srcset="/images/posts/magpie-intent-routing/fig-02-800.webp 800w, /images/posts/magpie-intent-routing/fig-02.webp 1467w" sizes="(max-width: 768px) 100vw, 760px" width="1467" height="2515" loading="lazy" decoding="async">
+  <img src="/images/posts/magpie-intent-routing/fig-02.webp" alt="每条请求按顺序处理：是否在压缩对话、是否仍是同一轮、读取可见事实、必要时才问分类器、分类器变慢或失败时怎么处理、第一条命中的规则说了算，以及把决定记住整一轮。分类器失败或回答 0 时，会沿用上一轮意图，或退回组的默认顺序。" srcset="/images/posts/magpie-intent-routing/fig-02-800.webp 800w, /images/posts/magpie-intent-routing/fig-02.webp 1467w" sizes="(max-width: 768px) 100vw, 760px" width="1467" height="2515" loading="lazy" decoding="async" data-avif="no">
   <figcaption>图 3　每条请求按这个顺序处理。分类器失败或回答 0 时，会沿用上一轮的意图，或退回组的默认顺序。</figcaption>
 </figure>
 <h2>它做不到的事</h2>
 <p>源码说明也列出了这项机制的短处。这些限制来自对源码的阅读，而不是线上评测。</p>
 <figure>
-  <img src="/images/posts/magpie-intent-routing/fig-03.webp" alt="六条短处：每轮多一次调用，判断的是消息而不是接下来的工作，难易取决于你写的措辞，没有反馈，换模型会丢掉 prompt cache，一张图片会把对话钉在强模型上。" srcset="/images/posts/magpie-intent-routing/fig-03-800.webp 800w, /images/posts/magpie-intent-routing/fig-03.webp 1418w" sizes="(max-width: 768px) 100vw, 760px" width="1418" height="763" loading="lazy" decoding="async">
+  <picture><source type="image/avif" srcset="/images/posts/magpie-intent-routing/fig-03-800.avif 800w, /images/posts/magpie-intent-routing/fig-03.avif 1418w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/magpie-intent-routing/fig-03.webp" alt="六条短处：每轮多一次调用，判断的是消息而不是接下来的工作，难易取决于你写的措辞，没有反馈，换模型会丢掉 prompt cache，一张图片会把对话钉在强模型上。" srcset="/images/posts/magpie-intent-routing/fig-03-800.webp 800w, /images/posts/magpie-intent-routing/fig-03.webp 1418w" sizes="(max-width: 768px) 100vw, 760px" width="1418" height="763" loading="lazy" decoding="async"></picture>
   <figcaption>图 4　源码说明里列出的六条短处。</figcaption>
 </figure>
 <p class="source">根据公开的 Claude Artifact <a href="https://claude.ai/artifact/Guj5eVmEapGk72iy4hgDtk">Magpie Intent Routing</a> 整理，对应开源项目 <a href="https://github.com/yetone/magpie">yetone/magpie</a> 的 commit 873b498。产品介绍参考了 <a href="https://usemagpie.ai/">usemagpie.ai</a>。</p>

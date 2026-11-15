@@ -61,7 +61,10 @@ Do not work around these in a note; if one is wrong, fix it in the layout.
   are not three characters wide.
 - **Figures are files.** `npm run images` moves base64 images to
   `public/images/posts/<slug>/`, keeps WebP bytes as they are, adds width,
-  height, lazy loading and an 800px copy for phones.
+  height, lazy loading and an 800px copy for phones. It then adds an AVIF
+  copy inside a `<picture>`, with the WebP as fallback, but only where the
+  AVIF is at least 15% smaller and measurably faithful (40 dB PSNR). A
+  figure that does not pass stays WebP only; that is expected, not a fault.
 - **The Chinese heading font is cut to the characters in use** by
   `scripts/subset-heading-font.mjs` before every dev and build run.
 

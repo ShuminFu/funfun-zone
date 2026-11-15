@@ -21,7 +21,7 @@ img{max-width:100%;height:auto}
 <div class="html-embed" lang="zh-CN">
 <p>agent 开始自己花钱买服务了。按结果收费的 AI 客服已经做到上亿美元的年收入，卖给 agent 的接口和任务市场却还很冷清。</p><p>设想一个替 HR 干活的 agent。发 offer 前，它要查一下候选人是不是本人，之前的公司是不是真的存在。它不想买会员，也不想签年框，只想问一次、付一次钱，拿到一个能直接用的结论。</p>
 <p>在这个场景里，付钱的是 agent，不是人。收钱的一方可能是另一个 agent，也可能是一家公司、一个独立开发者，甚至是一个跑腿的真人。我很好奇，这种由 agent 当买家的生意（下文叫 A2A）现在发展到了哪一步。于是我把能找到的做法和数据整理了一遍，下面按做法逐一介绍，每一种后面写上我自己得到的启发。</p>
-<p><img alt="HR 的 agent 投一次币，拿到一份背景调查报告" src="/images/posts/a2a-outcome-delivery/fig-01.webp" srcset="/images/posts/a2a-outcome-delivery/fig-01-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-01.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" /></p>
+<p><img alt="HR 的 agent 投一次币，拿到一份背景调查报告" src="/images/posts/a2a-outcome-delivery/fig-01.webp" srcset="/images/posts/a2a-outcome-delivery/fig-01-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-01.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" data-avif="no" /></p>
 <h2>目前大致有五种做法，冷热差别很大</h2>
 <table>
 <thead>
@@ -71,7 +71,7 @@ img{max-width:100%;height:auto}
 </tr>
 </tbody>
 </table>
-<p><img alt="五种 A2A 做法" src="/images/posts/a2a-outcome-delivery/fig-02.webp" srcset="/images/posts/a2a-outcome-delivery/fig-02-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-02.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" /></p>
+<p><img alt="五种 A2A 做法" src="/images/posts/a2a-outcome-delivery/fig-02.webp" srcset="/images/posts/a2a-outcome-delivery/fig-02-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-02.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" data-avif="no" /></p>
 <p>这五种做法里，目前只有第一种已经有了大规模收入。</p>
 <h2>按结果收费的 AI 服务已经跑通，因为"成没成"容易判断</h2>
 <p><strong>怎么做的。</strong> 企业把 AI 客服嵌进自己的网站或 App。用户来问退款、改地址或者查订单，AI 会直接把事情办完。严格说，这里付钱的是企业而不是 agent，但在"按结果付钱"这件事上，它是目前走得最远的例子。</p>
@@ -83,9 +83,9 @@ img{max-width:100%;height:auto}
 <li>Decagon：2026 年 8 月说年化收入超过 1 亿美元（自报）。</li>
 <li>Agentforce：2026-08-26 财报说年化收入超过 15 亿美元，但从这季起把 Slackbot 等也算了进去（自报）。</li>
 </ul>
-<p><img alt="AI 客服年化收入（自报）" src="/images/posts/a2a-outcome-delivery/fig-03.webp" srcset="/images/posts/a2a-outcome-delivery/fig-03-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" loading="lazy" decoding="async" /></p>
+<p><picture><source type="image/avif" srcset="/images/posts/a2a-outcome-delivery/fig-03-800.avif 800w, /images/posts/a2a-outcome-delivery/fig-03.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img alt="AI 客服年化收入（自报）" src="/images/posts/a2a-outcome-delivery/fig-03.webp" srcset="/images/posts/a2a-outcome-delivery/fig-03-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" loading="lazy" decoding="async" /></picture></p>
 <p>图中四个数字都是公司自报：Intercom Fin 来自 SiliconANGLE（2026-04-24），Sierra 来自 Bret Taylor 的领英帖（2026-05），Decagon 来自 Newcomer（2026-08），Agentforce 来自 Salesforce 财报（2026-08-26）。Agentforce 从这一季起把 Slackbot 和 Headless 360 也算了进去，口径和另外三家不同，所以图里用灰色表示。</p>
-<p><img alt="做完了能否被机器判断" src="/images/posts/a2a-outcome-delivery/fig-04.webp" srcset="/images/posts/a2a-outcome-delivery/fig-04-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-04.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" /></p>
+<p><img alt="做完了能否被机器判断" src="/images/posts/a2a-outcome-delivery/fig-04.webp" srcset="/images/posts/a2a-outcome-delivery/fig-04-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-04.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" data-avif="no" /></p>
 <p><strong>启发。</strong> 要按结果收钱，买卖双方得对"结果"有一个都认的标准。客服恰好有现成的标准：没有转人工，用户也没有回来再问。写代码和做法律分析就很难这样判定，所以这类产品大多还是按席位或用量收费，Devin 则按算力计费。所以我在评估一个方向时，会先问自己：这件事做没做完，机器能不能判断出来？</p>
 <h2>按次卖数据和结论给 agent 的接口很多，买家还很少</h2>
 <p><strong>怎么做的。</strong> 卖家把一次查询或一个判断做成接口，agent 每调用一次就付一次钱。x402 协议让 agent 可以直接用 USDC 付款，MCP 则让 agent 像使用工具一样调用这些接口。</p>
@@ -95,9 +95,9 @@ img{max-width:100%;height:auto}
 <p><strong>启发。</strong> 现在把接口上架几乎没有门槛，难的是让 agent 找到它，并且反复回来调用。我猜卖得动的接口，交付的更像是一个现成的结论，而不是一份原始数据。</p>
 <h2>agent 之间的任务市场已经设计好了流程，但交易还没有起来</h2>
 <p><strong>怎么做的。</strong> Virtuals ACP 把每一笔活写成一份链上合约，依次经过发布、报价、托管、提交和验收几个步骤，还可以请一个评估 agent 来把关，平台从中抽成 5%。Fetch.ai 的 Agentverse 和 Olas 的 Mech 也在做类似的 agent 市场。</p>
-<p><img alt="一笔 agent 任务的一生" src="/images/posts/a2a-outcome-delivery/fig-05.webp" srcset="/images/posts/a2a-outcome-delivery/fig-05-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-05.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" /></p>
+<p><img alt="一笔 agent 任务的一生" src="/images/posts/a2a-outcome-delivery/fig-05.webp" srcset="/images/posts/a2a-outcome-delivery/fig-05-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-05.webp 1280w" sizes="(max-width: 768px) 100vw, 760px" width="1280" height="720" loading="lazy" decoding="async" data-avif="no" /></p>
 <p><strong>接受度。</strong> 按 agenteconomy.to 的统计（2026-10-24），ACP 累计创建 12.2 万个任务，完成 6.7 万个，完成的总价值约 7.8 万美元；最近 30 天完成 3,287 个，价值约 65 美元。ChainWard 的数据显示，ACP 平台费 2026 年 3 月最高约 34.5 万美元，9 月只剩几美元。Agentverse、Olas 没找到可信的收入数字。</p>
-<p><img alt="Virtuals ACP 平台费两个时点" src="/images/posts/a2a-outcome-delivery/fig-06.webp" srcset="/images/posts/a2a-outcome-delivery/fig-06-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-06.webp 1050w" sizes="(max-width: 768px) 100vw, 760px" width="1050" height="630" loading="lazy" decoding="async" /></p>
+<p><picture><source type="image/avif" srcset="/images/posts/a2a-outcome-delivery/fig-06-800.avif 800w, /images/posts/a2a-outcome-delivery/fig-06.avif 1050w" sizes="(max-width: 768px) 100vw, 760px"><img alt="Virtuals ACP 平台费两个时点" src="/images/posts/a2a-outcome-delivery/fig-06.webp" srcset="/images/posts/a2a-outcome-delivery/fig-06-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-06.webp 1050w" sizes="(max-width: 768px) 100vw, 760px" width="1050" height="630" loading="lazy" decoding="async" /></picture></p>
 <p>数据来自 ChainWard 对 Virtuals Protocol 的链上统计，2026 年 10 月访问。图里只有这两个月份的数字，中间几个月没有画出来。</p>
 <p><strong>启发。</strong> 托管和验收的流程已经有人做出来了，现在缺的是持续的真实需求，以及出了争议时由谁来裁决。我觉得这类市场也许应该先围绕一种具体的活做起来，而不是一开始就建一个什么活都接的大市场。</p>
 <h2>agent 也开始雇人，去做它自己做不了的那一段</h2>
@@ -120,7 +120,7 @@ img{max-width:100%;height:auto}
 <p>这些行业有几个共同点：问题提得清楚，答案很短，结果可以核对，而且按次收费本来就是行业惯例。</p>
 <h2>TrustMRR 上按次卖核验的产品，收入在涨</h2>
 <p>我在上一篇《假的越便宜，证明真的越值钱》里查过 TrustMRR 上经过核验的收入数据。其中 1lookup 按次核验电话、邮箱和 IP，近 30 天营收从 38 万美元涨到了约 44.5 万美元。下图把它和前面几种 A2A 做法的月收入放在一起比较：</p>
-<p><img alt="一个月的钱对比（对数刻度）" src="/images/posts/a2a-outcome-delivery/fig-07.webp" srcset="/images/posts/a2a-outcome-delivery/fig-07-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-07.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" loading="lazy" decoding="async" /></p>
+<p><picture><source type="image/avif" srcset="/images/posts/a2a-outcome-delivery/fig-07-800.avif 800w, /images/posts/a2a-outcome-delivery/fig-07.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img alt="一个月的钱对比（对数刻度）" src="/images/posts/a2a-outcome-delivery/fig-07.webp" srcset="/images/posts/a2a-outcome-delivery/fig-07-800.webp 800w, /images/posts/a2a-outcome-delivery/fig-07.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="675" loading="lazy" decoding="async" /></picture></p>
 <p>图中数据来自 agenteconomy.to、402radar 和 Barker（2026-10-24 访问）以及 TrustMRR（2026-10-23）。Fin 那一栏是我用它自报的年化收入（超过 1 亿美元）除以 12 算出来的。几项数字口径不同，只适合比较量级。</p>
 <p>一个按次卖核验的小产品，一个月的收入和 x402 全网一个月的流水差不多。这至少说明，按次卖一个结论的生意已经有人愿意付钱，只是现在付钱的主要还是人，而不是 agent。</p>
 <h2>能跑起来的做法，大概有五个共同点</h2>

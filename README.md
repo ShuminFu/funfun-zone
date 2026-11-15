@@ -43,7 +43,7 @@ What changed for that skill:
 - Write frontmatter (`title`, `description`, `planted`, `tags`, `draft`). `pubDatetime` is now `planted`. `modDatetime` is `lastTended`.
 - Drop the `.embed.md` suffix. The filename (or `slug` in frontmatter, which Astro's loader prefers) is the URL.
 - Do not wrap the file as MDX. Raw HTML in `.md` is the path that already builds.
-- Figures can still be written as base64 `<img src="data:...">`. Run `npm run images` before committing: it moves each one to `public/images/posts/<slug>/`, adds its width, height and a phone-sized copy, and rewrites the tag.
+- Figures can still be written as base64 `<img src="data:...">`. Run `npm run images` before committing: it moves each one to `public/images/posts/<slug>/`, adds its width, height and a phone-sized copy, makes an AVIF copy where that is clearly smaller (the WebP stays as the fallback), and rewrites the tag.
 - Tables need no wrapper. Each one is given its own sideways scroller at build time.
 - `author` is site-wide (`src/config.ts`). Per-post `featured: true` is kept on Claude Island and ignored by the index.
 

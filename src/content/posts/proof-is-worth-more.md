@@ -22,7 +22,7 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 
 <div class="html-embed" lang="zh">
 <p class="lead">AI 让文字、代码、照片甚至身份都能廉价造出来。翻了一遍有收入核验的产品榜单，我发现越来越多人在为一件事付钱：证明某样东西是真的。</p>
-<figure class="illus"><img src="/images/posts/proof-is-worth-more/fig-01.webp" alt="针和印章" srcset="/images/posts/proof-is-worth-more/fig-01-800.webp 800w, /images/posts/proof-is-worth-more/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="560" loading="lazy" decoding="async"><figcaption>针会自己织毛衣以后，毛衣不稀奇，担保才稀奇</figcaption></figure>
+<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/proof-is-worth-more/fig-01-800.avif 800w, /images/posts/proof-is-worth-more/fig-01.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/proof-is-worth-more/fig-01.webp" alt="针和印章" srcset="/images/posts/proof-is-worth-more/fig-01-800.webp 800w, /images/posts/proof-is-worth-more/fig-01.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="560" loading="lazy" decoding="async"></picture><figcaption>针会自己织毛衣以后，毛衣不稀奇，担保才稀奇</figcaption></figure>
 <p>这是<a href="/posts/will-model-labs-eat-software/">《毛线厂拿到了一根会自己织毛衣的针》</a>的续篇。上一篇的结论是：软件越来越便宜，钱会流向信任、担责、品味和注意力。这篇去翻真实的账本，看看这些说法站不站得住。</p>
 <h2>一张收入截图，现在要有人核验才算数</h2>
 <p>以前独立开发者晒收入，发张 Stripe 后台截图就行。现在截图谁都能 P，AI 做一张更是几秒钟的事。</p>
@@ -30,7 +30,7 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 <p>这件事很小，但说明了一个变化：代码不值钱了，「这个数字是真的」反倒值钱了。</p>
 <h2>账本显示：卖「证明是真的」的在涨，卖「检测是假的」的在掉</h2>
 <p>先说数据口径。TrustMRR 显示的是近 30 天营收，不完全等于 MRR。历史数字是我用 Wayback 快照（2025-12-01、2026-03-01、2026-06-15）和 2026-10-23 的页面拼出来的，各产品的起点月份不完全一样。</p>
-<figure class="illus"><img src="/images/posts/proof-is-worth-more/fig-02.webp" alt="TrustMRR 收入变化图" srcset="/images/posts/proof-is-worth-more/fig-02-800.webp 800w, /images/posts/proof-is-worth-more/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="620" loading="lazy" decoding="async"><figcaption>只画了真实数字；起点月份不同，看方向，别细比幅度</figcaption></figure>
+<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/proof-is-worth-more/fig-02-800.avif 800w, /images/posts/proof-is-worth-more/fig-02.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/proof-is-worth-more/fig-02.webp" alt="TrustMRR 收入变化图" srcset="/images/posts/proof-is-worth-more/fig-02-800.webp 800w, /images/posts/proof-is-worth-more/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="620" loading="lazy" decoding="async"></picture><figcaption>只画了真实数字；起点月份不同，看方向，别细比幅度</figcaption></figure>
 <ul>
 <li><strong>1lookup</strong>：查一个电话、邮箱或 IP 是不是真的、有没有风险，按次收 API 费。近 30 天营收从 2026 年 6 月的 38.18 万美元涨到 10 月的 44.50 万美元。</li>
 <li><strong>Comp AI</strong>：帮公司拿 SOC 2、ISO 27001 这类安全认证。从 2026 年 3 月的 43.85 万美元涨到 52.71 万，再到现在的 75.60 万。</li>
@@ -38,7 +38,7 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 </ul>
 <p>同样是在回答「这东西真不真」，方向却相反。我的猜测是：检测假的，对手是下一代模型。模型越强，假的越像真的，检测就越难做准，而且给出的只是一个概率，没人为它签字。证明真的，是从源头记录下来：钱确实进了账户，证件确实对得上，审计师确实看过。假的越多，这种证明越抢手。</p>
 <p class="note">这是从几个产品推出来的假设，样本很小，不是定论。</p>
-<figure class="illus"><img src="/images/posts/proof-is-worth-more/fig-03.webp" alt="检测假的与证明真的对比" srcset="/images/posts/proof-is-worth-more/fig-03-800.webp 800w, /images/posts/proof-is-worth-more/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="600" loading="lazy" decoding="async"><figcaption>两种回答「真不真」的方式</figcaption></figure>
+<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/proof-is-worth-more/fig-03-800.avif 800w, /images/posts/proof-is-worth-more/fig-03.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/proof-is-worth-more/fig-03.webp" alt="检测假的与证明真的对比" srcset="/images/posts/proof-is-worth-more/fig-03-800.webp 800w, /images/posts/proof-is-worth-more/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="600" loading="lazy" decoding="async"></picture><figcaption>两种回答「真不真」的方式</figcaption></figure>
 <h2>大公司的账本也指向同一个方向</h2>
 <p>榜单上都是小公司，那大一点的公司呢？我找了几家有公开数字的：</p>
 <ul>

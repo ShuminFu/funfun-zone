@@ -49,7 +49,7 @@ draft: false
 <li><strong>输出靠一个编号挂上去。</strong>每次调用工具都有一个 id，结果带着同一个 id 回来。后台命令还会多一个输出文件，所以面板能点开看；前台命令没有这个文件，面板就显示 "No output captured"。</li>
 </ul>
 <figure class="illus">
-<img src="/images/posts/claude-code-background-tasks-panel/fig-01.webp" alt="Background tasks 面板：上半是 workflow 卡片 im-multi-device-ticket-09，有 Implement、Verify、Fix 三个阶段，分别对应 impl:09、verify:09、fix:09；下半是 Finished 91 列表" loading="lazy" width="961" height="1393" decoding="async">
+<picture><source type="image/avif" srcset="/images/posts/claude-code-background-tasks-panel/fig-01.avif"><img src="/images/posts/claude-code-background-tasks-panel/fig-01.webp" alt="Background tasks 面板：上半是 workflow 卡片 im-multi-device-ticket-09，有 Implement、Verify、Fix 三个阶段，分别对应 impl:09、verify:09、fix:09；下半是 Finished 91 列表" loading="lazy" width="961" height="1393" decoding="async"></picture>
 <figcaption>Background tasks 面板。上半是 workflow 卡片，下半是 Finished 列表。</figcaption>
 </figure>
 <h2>一张图看懂这些记录放在哪</h2>
@@ -108,7 +108,7 @@ draft: false
 <h2>发现一：fork 出来的会话复制了什么</h2>
 <h3>看到什么</h3>
 <p>比喻：<strong>复印了一本笔记，换了一个新本子，但人还坐在同一张桌子前。</strong>笔记是对话记录，新本子是新的会话文件夹，桌子是代码目录。</p>
-<figure class="illus"><img src="/images/posts/claude-code-background-tasks-panel/fig-02.webp" alt="一个机器人在复印笔记，另一个拿着复印出的新本子，两个人坐在同一张桌子前，伸手去拿同一叠纸" loading="lazy" width="1200" srcset="/images/posts/claude-code-background-tasks-panel/fig-02-800.webp 800w, /images/posts/claude-code-background-tasks-panel/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"><figcaption>fork 复制了笔记，换了新本子，可两个人还在同一张桌子上干活。</figcaption></figure>
+<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/claude-code-background-tasks-panel/fig-02-800.avif 800w, /images/posts/claude-code-background-tasks-panel/fig-02.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/claude-code-background-tasks-panel/fig-02.webp" alt="一个机器人在复印笔记，另一个拿着复印出的新本子，两个人坐在同一张桌子前，伸手去拿同一叠纸" loading="lazy" width="1200" srcset="/images/posts/claude-code-background-tasks-panel/fig-02-800.webp 800w, /images/posts/claude-code-background-tasks-panel/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"></picture><figcaption>fork 复制了笔记，换了新本子，可两个人还在同一张桌子上干活。</figcaption></figure>
 <ul>
 <li><span class="tag ok">核实</span> 会话记录放在 <code>~/.claude/projects/&lt;项目路径转成短横线&gt;/</code>，按工作目录分开，例如 <code>-Users-me-work-myproject</code>。</li>
 <li><span class="tag ok">核实</span> 每个会话有一个 <code>&lt;会话id&gt;.jsonl</code>（对话记录），加一个同名文件夹。</li>
@@ -149,7 +149,7 @@ draft: false
 <h2>发现二：面板上的名字是谁写的</h2>
 <h3>看到什么</h3>
 <p>比喻：<strong>每个干活的人进门前，自己在登记本上写一句「我要去做什么」。</strong>没有专门的秘书替他们写。</p>
-<figure class="illus"><img src="/images/posts/claude-code-background-tasks-panel/fig-03.webp" alt="一排机器人排队，每个都拿着笔，在门口的登记本上自己写一句，然后走进门" loading="lazy" width="1200" srcset="/images/posts/claude-code-background-tasks-panel/fig-03-800.webp 800w, /images/posts/claude-code-background-tasks-panel/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"><figcaption>面板上的每一行，都是干活的模型进门前自己写下的。</figcaption></figure>
+<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/claude-code-background-tasks-panel/fig-03-800.avif 800w, /images/posts/claude-code-background-tasks-panel/fig-03.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/claude-code-background-tasks-panel/fig-03.webp" alt="一排机器人排队，每个都拿着笔，在门口的登记本上自己写一句，然后走进门" loading="lazy" width="1200" srcset="/images/posts/claude-code-background-tasks-panel/fig-03-800.webp 800w, /images/posts/claude-code-background-tasks-panel/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"></picture><figcaption>面板上的每一行，都是干活的模型进门前自己写下的。</figcaption></figure>
 <table>
 <thead><tr><th>面板上的位置</th><th>例子</th><th>从哪来</th><th>谁写的</th></tr></thead>
 <tbody>
@@ -170,7 +170,7 @@ draft: false
 <h2>发现三：输出怎么和任务对上</h2>
 <h3>看到什么</h3>
 <p>比喻：<strong>寄快递时贴一张单号，回件上印着同一个单号。</strong>拿两个单号一对，就知道哪个回件属于哪次寄件。</p>
-<figure class="illus"><img src="/images/posts/claude-code-background-tasks-panel/fig-04.webp" alt="机器人寄出贴着标签的包裹，回来的包裹贴着一样的标签，放大镜显示两个标签对上了" loading="lazy" width="1200" srcset="/images/posts/claude-code-background-tasks-panel/fig-04-800.webp 800w, /images/posts/claude-code-background-tasks-panel/fig-04.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"><figcaption>tool_use 的 id 就是单号，tool_result 带着同一个单号回来。</figcaption></figure>
+<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/claude-code-background-tasks-panel/fig-04-800.avif 800w, /images/posts/claude-code-background-tasks-panel/fig-04.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/claude-code-background-tasks-panel/fig-04.webp" alt="机器人寄出贴着标签的包裹，回来的包裹贴着一样的标签，放大镜显示两个标签对上了" loading="lazy" width="1200" srcset="/images/posts/claude-code-background-tasks-panel/fig-04-800.webp 800w, /images/posts/claude-code-background-tasks-panel/fig-04.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" height="675" decoding="async"></picture><figcaption>tool_use 的 id 就是单号，tool_result 带着同一个单号回来。</figcaption></figure>
 <p>真名叫 tool_use id。子代理的 <code>.jsonl</code> 是一行一条 JSON。下面是 <code>agent-a6ecd6ce8367a0647.jsonl</code> 里挨着的两行（<span class="tag ok">核实</span>，命令和 id 有删节）：</p>
 <pre><code>第 374 行  type=assistant
 {"type":"tool_use","name":"Bash","id":"toolu_01JnowgQXg…",
@@ -187,7 +187,7 @@ draft: false
 <li>每行还带着 <code>agentId</code>、<code>cwd</code>、<code>gitBranch</code>、<code>isSidechain</code>，以及 <code>parentUuid</code>（指向上一行，把各行串成一条链）。</li>
 </ul>
 <figure class="illus">
-<img src="/images/posts/claude-code-background-tasks-panel/fig-05.webp" alt="Finished 列表里 Red check for never-reaches-gate drop 展开后显示 No output captured；下一条 Build and start peer imB on feat 标为 Failed" loading="lazy" width="944" height="144" decoding="async">
+<picture><source type="image/avif" srcset="/images/posts/claude-code-background-tasks-panel/fig-05.avif"><img src="/images/posts/claude-code-background-tasks-panel/fig-05.webp" alt="Finished 列表里 Red check for never-reaches-gate drop 展开后显示 No output captured；下一条 Build and start peer imB on feat 标为 Failed" loading="lazy" width="944" height="144" decoding="async"></picture>
 <figcaption>同一条红测，面板上却显示 "No output captured"。</figcaption>
 </figure>
 <h3>为什么面板上看不到</h3>

@@ -66,7 +66,7 @@ html.dark .html-embed .cal{
 <p class="key">一种常见的做法，是让一个 agent 负责写代码，另一个负责审阅。</p>
 <p>两边并不直接对话：写的一方改代码，审的一方查看并给出判断，消息都经过中间的宿主，规则则写在方法卡片里。</p>
 <figure>
-  <img src="/images/posts/coding-agents-learn-without-weights/fig-01.webp" alt="横向示意图：左边是 Driver，中间是 Host（Guards、Method rules、Delivery、Turn-end contracts、Loop check），右边是 Navigator；底部是 Method card、You 和 Background check。消息经过 Host，规则写在 Method card 里。" srcset="/images/posts/coding-agents-learn-without-weights/fig-01-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-01.webp 2096w" sizes="(max-width: 768px) 100vw, 760px" width="2096" height="943" loading="lazy" decoding="async">
+  <picture><source type="image/avif" srcset="/images/posts/coding-agents-learn-without-weights/fig-01-800.avif 800w, /images/posts/coding-agents-learn-without-weights/fig-01.avif 2096w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/coding-agents-learn-without-weights/fig-01.webp" alt="横向示意图：左边是 Driver，中间是 Host（Guards、Method rules、Delivery、Turn-end contracts、Loop check），右边是 Navigator；底部是 Method card、You 和 Background check。消息经过 Host，规则写在 Method card 里。" srcset="/images/posts/coding-agents-learn-without-weights/fig-01-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-01.webp 2096w" sizes="(max-width: 768px) 100vw, 760px" width="2096" height="943" loading="lazy" decoding="async"></picture>
   <figcaption>图 1　写代码的一方和审阅的一方并不直接对话。消息都经过中间的宿主，规则写在方法卡片里。</figcaption>
 </figure>
 <h2>五种办法改的不是同一种东西</h2>
@@ -75,7 +75,7 @@ html.dark .html-embed .cal{
 <p class="key">对模型权重做强化学习，并不适合直接用在改不了权重的闭源系统上。</p>
 <p>这一类的例子有 Agent Lightning、OpenPipe ART 和 SWE-RL。它们需要可训练的模型、沙盒和大量试跑。Claude Code、Codex 这类闭源系统改不了权重，所以这一路暂时用不上。</p>
 <figure>
-  <img src="/images/posts/coding-agents-learn-without-weights/fig-02.webp" alt="公开研究把改进办法分成五类的原表：Family、What it changes、What it needs、Fit、Examples。前四类适配度较高，对模型权重做强化学习目前较低。" srcset="/images/posts/coding-agents-learn-without-weights/fig-02-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-02.webp 2080w" sizes="(max-width: 768px) 100vw, 760px" width="2080" height="958" loading="lazy" decoding="async">
+  <picture><source type="image/avif" srcset="/images/posts/coding-agents-learn-without-weights/fig-02-800.avif 800w, /images/posts/coding-agents-learn-without-weights/fig-02.avif 2080w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/coding-agents-learn-without-weights/fig-02.webp" alt="公开研究把改进办法分成五类的原表：Family、What it changes、What it needs、Fit、Examples。前四类适配度较高，对模型权重做强化学习目前较低。" srcset="/images/posts/coding-agents-learn-without-weights/fig-02-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-02.webp 2080w" sizes="(max-width: 768px) 100vw, 760px" width="2080" height="958" loading="lazy" decoding="async"></picture>
   <figcaption>图 2　公开研究把改进办法分成五类。前四类都不训练模型权重。</figcaption>
 </figure>
 <h2>谁来审稿，符号可能会翻过来</h2>
@@ -94,7 +94,7 @@ html.dark .html-embed .cal{
 <p class="key">准备变成默认设置的经验，仍然需要人来把关。</p>
 <p>SkillsBench 表明，人工整理的技能能把 87 项任务、18 种配置上的平均通过率从 33.9% 提到 <strong>50.5%</strong>；但在三个专用配置里，智能体自己写的技能反而比不用技能低 8.1 到 11.5 个百分点。OpenHands 的一篇研究还指出，能对上「PR 被合并」的工作片段大约只有 <strong>6%</strong>，只用这类标签训练出来的评判模型，AUC 只有 0.58。</p>
 <figure>
-  <img src="/images/posts/coding-agents-learn-without-weights/fig-03.webp" alt="公开研究里关于结对的几条证据：谁来审稿会翻转结果；第二个 agent 也可能帮倒忙；失败多半来自设计；智能体自写的教训不可靠；旧日志不能代替重跑；使用标签往往又少又弱；权重级强化学习存在，但规模不同。目前还没有发现把强化学习或赌博机专门用在写代码加审稿这种结对上的公开研究。" srcset="/images/posts/coding-agents-learn-without-weights/fig-03-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-03.webp 1409w" sizes="(max-width: 768px) 100vw, 760px" width="1409" height="1350" loading="lazy" decoding="async">
+  <img src="/images/posts/coding-agents-learn-without-weights/fig-03.webp" alt="公开研究里关于结对的几条证据：谁来审稿会翻转结果；第二个 agent 也可能帮倒忙；失败多半来自设计；智能体自写的教训不可靠；旧日志不能代替重跑；使用标签往往又少又弱；权重级强化学习存在，但规模不同。目前还没有发现把强化学习或赌博机专门用在写代码加审稿这种结对上的公开研究。" srcset="/images/posts/coding-agents-learn-without-weights/fig-03-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-03.webp 1409w" sizes="(max-width: 768px) 100vw, 760px" width="1409" height="1350" loading="lazy" decoding="async" data-avif="no">
   <figcaption>图 3　公开研究里，关于结对的几条证据。</figcaption>
 </figure>
 <p class="key">Cursor 已经把在线强化学习用在 Tab 补全上，不过它和编程 agent 并不在一个量级。</p>
