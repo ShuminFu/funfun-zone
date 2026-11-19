@@ -18,6 +18,38 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 .illus{margin:1.6em 0;text-align:center}
 .illus img{max-width:100%;height:auto;border-radius:8px}
 .illus figcaption{font-size:.85em;color:var(--muted-foreground);margin-top:.4em}
+/* Bar chart (fig 2): diverging bars around one axis; widths are value / 223 x 90% of a half. */
+.bars{margin:1.6em auto;max-width:680px}
+.bars .bt{font-weight:600;font-size:1.02em;text-align:center;margin:0 0 .9em;color:var(--foreground)}
+.bars .br{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center}
+.bars .br>div{display:flex;flex-wrap:wrap;align-items:center;gap:.15em .5em;padding:.38em .55em;font-size:.88em;line-height:1.35;min-width:0}
+.bars .br>div:last-child{border-left:1px solid var(--foreground)}
+.bars .br>.l{flex-direction:row-reverse;text-align:right}
+.bars .br.gap>div{padding-top:1.1em}
+.bars .nm{color:var(--foreground)}
+.bars .val{color:var(--muted-foreground)}
+.bars .bar{flex:none;height:1.5em;min-width:3px;width:calc(var(--v) / 223 * 90%);box-sizing:border-box}
+.bars .pr{background:var(--status-danger)}
+.bars .vis{background:var(--status-warning)}
+.bars .gr{background:var(--muted-foreground)}
+.bars .key{display:flex;flex-wrap:wrap;justify-content:center;gap:.3em 1.2em;margin-top:1em;font-size:.85em;color:var(--foreground)}
+.bars .key i{display:inline-block;width:.85em;height:.85em;margin-right:.35em;vertical-align:-.08em}
+.bars .nt{margin:.45em 0 0;font-size:.85em;text-align:center;color:var(--foreground)}
+.bars .src{margin:.45em 0 0;font-size:.78em;text-align:center;color:var(--muted-foreground)}
+.bars figcaption{font-size:.85em;color:var(--muted-foreground);margin-top:.6em;text-align:center}
+/* Two cards (fig 3): neutral vs highlighted; stack on phones. */
+.vs{margin:1.6em 0}
+.vs .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vs .card{background:var(--muted);border:2px solid transparent;border-radius:12px;padding:1em 1.1em;display:flex;flex-direction:column;min-width:0}
+.vs .card.hi{background:transparent;border-color:var(--accent)}
+.vs .card h4{margin:0 0 .6em;font-size:1.12em;text-align:center;color:var(--foreground)}
+.vs .card.hi h4,.vs .card.hi .ft{color:var(--accent)}
+.vs .card ul{margin:0;padding-left:1.2em;flex:1}
+.vs .card li{margin:.25em 0}
+.vs .ft{margin:.8em 0 0;text-align:center;color:var(--muted-foreground)}
+.vs .hyp{margin:.7em 0 0;text-align:center;font-size:.85em;color:var(--muted-foreground)}
+.vs figcaption{font-size:.85em;color:var(--muted-foreground);margin-top:.4em;text-align:center}
+@media (max-width:640px){.vs .cards{grid-template-columns:1fr}}
 </style>
 
 <div class="html-embed" lang="zh">
@@ -30,7 +62,18 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 <p>这件事很小，但说明了一个变化：代码不值钱了，「这个数字是真的」反倒值钱了。</p>
 <h2>账本显示：卖「证明是真的」的在涨，卖「检测是假的」的在掉</h2>
 <p>先说数据口径。TrustMRR 显示的是近 30 天营收，不完全等于 MRR。历史数字是我用 Wayback 快照（2025-12-01、2026-03-01、2026-06-15）和 2026-10-23 的页面拼出来的，各产品的起点月份不完全一样。</p>
-<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/proof-is-worth-more/fig-02-800.avif 800w, /images/posts/proof-is-worth-more/fig-02.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/proof-is-worth-more/fig-02.webp" alt="TrustMRR 收入变化图" srcset="/images/posts/proof-is-worth-more/fig-02-800.webp 800w, /images/posts/proof-is-worth-more/fig-02.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="620" loading="lazy" decoding="async"></picture><figcaption>只画了真实数字；起点月份不同，看方向，别细比幅度</figcaption></figure>
+<figure class="bars" aria-label="TrustMRR 收入变化图">
+<p class="bt">TrustMRR 近 30 天营收变化（经收款渠道核验）</p>
+<div class="br"><div class="l"><span class="nm">1lookup 号码/邮箱校验</span></div><div><span class="bar pr" style="--v:17"></span><span class="val">+17%（2026-06→10）</span></div></div>
+<div class="br"><div class="l"><span class="nm">Comp AI 合规认证</span></div><div><span class="bar pr" style="--v:72"></span><span class="val">+72%（2026-03→10）</span></div></div>
+<div class="br"><div class="l"><span class="nm">AEO Engine 被 AI 推荐</span></div><div><span class="bar vis" style="--v:223"></span><span class="val">+223%（2025-12 起）</span></div></div>
+<div class="br gap"><div class="l"><span class="bar gr" style="--v:52"></span><span class="val">约 -52%（季度营收）</span></div><div><span class="nm">ZeroGPT Plus AI 检测</span></div></div>
+<div class="br"><div class="l"><span class="bar gr" style="--v:64"></span><span class="val">-64%（2025-12→2026-10）</span></div><div><span class="nm">SEObot AI 写文章</span></div></div>
+<div class="key"><span><i class="pr"></i>红色：卖「证明是真的」</span><span><i class="gr"></i>灰色：卖「一次模型调用」或「检测假的」</span></div>
+<p class="nt">另：Postiz 同期 $16.0K → $340.2K（约 +2026%，超出刻度未画）</p>
+<p class="src">数据：TrustMRR 页面 2026-10-23 抓取 + Wayback 快照；起点月份不同，ZeroGPT 为季度营收约 $22K→$10.5K</p>
+<figcaption>只画了真实数字；起点月份不同，看方向，别细比幅度</figcaption>
+</figure>
 <ul>
 <li><strong>1lookup</strong>：查一个电话、邮箱或 IP 是不是真的、有没有风险，按次收 API 费。近 30 天营收从 2026 年 6 月的 38.18 万美元涨到 10 月的 44.50 万美元。</li>
 <li><strong>Comp AI</strong>：帮公司拿 SOC 2、ISO 27001 这类安全认证。从 2026 年 3 月的 43.85 万美元涨到 52.71 万，再到现在的 75.60 万。</li>
@@ -38,7 +81,14 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 </ul>
 <p>同样是在回答「这东西真不真」，方向却相反。我的猜测是：检测假的，对手是下一代模型。模型越强，假的越像真的，检测就越难做准，而且给出的只是一个概率，没人为它签字。证明真的，是从源头记录下来：钱确实进了账户，证件确实对得上，审计师确实看过。假的越多，这种证明越抢手。</p>
 <p class="note">这是从几个产品推出来的假设，样本很小，不是定论。</p>
-<figure class="illus"><picture><source type="image/avif" srcset="/images/posts/proof-is-worth-more/fig-03-800.avif 800w, /images/posts/proof-is-worth-more/fig-03.avif 1200w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/proof-is-worth-more/fig-03.webp" alt="检测假的与证明真的对比" srcset="/images/posts/proof-is-worth-more/fig-03-800.webp 800w, /images/posts/proof-is-worth-more/fig-03.webp 1200w" sizes="(max-width: 768px) 100vw, 760px" width="1200" height="600" loading="lazy" decoding="async"></picture><figcaption>两种回答「真不真」的方式</figcaption></figure>
+<figure class="vs" aria-label="检测假的与证明真的对比">
+<div class="cards">
+<div class="card"><h4>检测「这是假的」</h4><ul><li>对手是下一代模型</li><li>模型越强，越难判断</li><li>结论是概率，没人签字</li><li>例：AI 文本检测</li></ul><p class="ft">在掉</p></div>
+<div class="card hi"><h4>证明「这是真的」</h4><ul><li>从源头记录：收款、证件、审计</li><li>假的越多，越要它</li><li>有人背书、出错有人负责</li><li>例：TrustMRR、Comp AI、Veriff、Checkr、1lookup</li></ul><p class="ft">在涨</p></div>
+</div>
+<p class="hyp">这是一个假设，不是定论</p>
+<figcaption>两种回答「真不真」的方式</figcaption>
+</figure>
 <h2>大公司的账本也指向同一个方向</h2>
 <p>榜单上都是小公司，那大一点的公司呢？我找了几家有公开数字的：</p>
 <ul>

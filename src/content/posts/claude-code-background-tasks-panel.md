@@ -19,13 +19,25 @@ draft: false
 .html-embed .illus img{width:100%;max-width:640px;height:auto;border-radius:8px;border:1px solid color-mix(in srgb,var(--foreground) 15%,transparent);display:block;margin:0 auto}
 .html-embed figcaption{font-size:.9em;opacity:.85;text-align:center;margin-top:.4em}
 .html-embed .diagram{margin:1.5em 0}
-.html-embed .diagram svg{width:100%;height:auto;display:block}
-.html-embed .diagram rect{fill:color-mix(in srgb,var(--foreground) 5%,transparent);stroke:color-mix(in srgb,var(--foreground) 35%,transparent);stroke-width:1.2}
-.html-embed .diagram .alt rect{stroke:var(--accent);stroke-width:1.6}
-.html-embed .diagram line{stroke:var(--accent);stroke-width:1.6}
-.html-embed .diagram text{fill:var(--foreground)}
-.html-embed .diagram .t{font-size:15px;font-weight:600}
-.html-embed .diagram .m{font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.85}
+.html-embed .lyr{--g:20px;--in:30px}
+.html-embed .lyr-card{position:relative;background:var(--muted);border:1px solid transparent;border-radius:10px;padding:10px 14px;min-width:0;overflow-wrap:anywhere}
+.html-embed .lyr-card b{display:block;font-size:15px;font-weight:600;line-height:1.35;color:var(--foreground)}
+.html-embed .lyr-card span{display:block;margin-top:3px;font-size:13px;line-height:1.45;color:var(--muted-foreground)}
+.html-embed .lyr-card .lyr-m{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap}
+.html-embed .lyr-card.lyr-alt{background:transparent;border:2px solid var(--accent)}
+.html-embed .lyr-n1{margin-inline:var(--in)}
+.html-embed .lyr-n2{margin-inline:calc(var(--in) * 2)}
+.html-embed .lyr-v{width:2px;height:20px;margin:0 auto;background:var(--muted-foreground)}
+.html-embed .lyr-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--g);grid-template-areas:"vj va" "j a" ". vt" "bg t";align-items:start}
+.html-embed .lyr-vj{grid-area:vj}
+.html-embed .lyr-va{grid-area:va}
+.html-embed .lyr-vt{grid-area:vt}
+.html-embed .lyr-j{grid-area:j;align-self:stretch}
+.html-embed .lyr-a{grid-area:a;align-self:stretch}
+.html-embed .lyr-t{grid-area:t}
+.html-embed .lyr-bg{grid-area:bg}
+.html-embed .lyr-t::before{content:"";position:absolute;top:50%;right:100%;width:calc(var(--g) + 1px);height:2px;background:var(--muted-foreground)}
+@media (max-width:640px){.html-embed .lyr{--g:10px;--in:10px}.html-embed .lyr-card{padding:9px 10px}}
 .html-embed .tag{display:inline-block;font-size:.75em;line-height:1.5;padding:0 .45em;border-radius:4px;border:1px solid currentColor;margin-right:.2em;white-space:nowrap}
 .html-embed .tag.ok{color:var(--accent)}
 .html-embed .tag.guess{color:var(--status-warning)}
@@ -48,61 +60,27 @@ draft: false
 <li><strong>名字不是小模型起的。</strong>workflow 卡片上的名字，是写脚本的模型写进脚本的。Finished 列表里的每一条，是跑命令的模型自己填的一句说明。</li>
 <li><strong>输出靠一个编号挂上去。</strong>每次调用工具都有一个 id，结果带着同一个 id 回来。后台命令还会多一个输出文件，所以面板能点开看；前台命令没有这个文件，面板就显示 "No output captured"。</li>
 </ul>
-<figure class="illus">
+<figure class="illus" style="max-width:420px;margin-left:auto;margin-right:auto">
 <picture><source type="image/avif" srcset="/images/posts/claude-code-background-tasks-panel/fig-01.avif"><img src="/images/posts/claude-code-background-tasks-panel/fig-01.webp" alt="Background tasks 面板：上半是 workflow 卡片 im-multi-device-ticket-09，有 Implement、Verify、Fix 三个阶段，分别对应 impl:09、verify:09、fix:09；下半是 Finished 91 列表" loading="lazy" width="961" height="1393" decoding="async"></picture>
 <figcaption>Background tasks 面板。上半是 workflow 卡片，下半是 Finished 列表。</figcaption>
 </figure>
 <h2>一张图看懂这些记录放在哪</h2>
 <p>可以把它想成一个文件柜：一个项目一个抽屉，一个会话一个文件夹，里面再分小袋子。</p>
-<figure class="diagram">
-<svg viewBox="0 0 720 470" role="img" aria-label="记录分层图：项目目录、会话、workflow 运行、journal 与 agent jsonl、tool_use 与 tool_result；后台任务另有 task-id 与 .output 文件">
-<g class="box">
-<rect x="20" y="16" width="680" height="54" rx="8"/>
-<text x="36" y="40" class="t">项目（一个抽屉）</text>
-<text x="36" y="60" class="m">~/.claude/projects/-Users-me-work-myproject/</text>
-</g>
-<g class="box">
-<rect x="50" y="90" width="620" height="54" rx="8"/>
-<text x="66" y="114" class="t">会话（一个文件夹）</text>
-<text x="66" y="134" class="m">&lt;会话id&gt;.jsonl  +  &lt;会话id&gt;/  （workflows/scripts/*.js 在这里）</text>
-</g>
-<g class="box">
-<rect x="80" y="164" width="560" height="54" rx="8"/>
-<text x="96" y="188" class="t">一次 workflow 运行（一个小袋子）</text>
-<text x="96" y="208" class="m">&lt;会话id&gt;/subagents/workflows/&lt;run id&gt;/</text>
-</g>
-<g class="box">
-<rect x="80" y="238" width="270" height="62" rx="8"/>
-<text x="96" y="262" class="t">journal.jsonl</text>
-<text x="96" y="284" class="m">每个子代理的最终结果</text>
-</g>
-<g class="box">
-<rect x="370" y="238" width="270" height="62" rx="8"/>
-<text x="386" y="262" class="t">agent-&lt;id&gt;.jsonl</text>
-<text x="386" y="284" class="m">每个子代理的完整过程</text>
-</g>
-<g class="box">
-<rect x="370" y="320" width="270" height="62" rx="8"/>
-<text x="386" y="344" class="m">tool_use  id=toolu_…</text>
-<text x="386" y="366" class="m">tool_result  tool_use_id=toolu_…</text>
-</g>
-<g class="box alt">
-<rect x="80" y="320" width="270" height="130" rx="8"/>
-<text x="96" y="344" class="t">后台命令多一条线</text>
-<text x="96" y="368" class="m">run_in_background: true</text>
-<text x="96" y="390" class="m">→ task-id</text>
-<text x="96" y="412" class="m">→ tasks/&lt;task-id&gt;.output</text>
-<text x="96" y="434" class="m">面板能点开看输出</text>
-</g>
-<g class="link">
-<line x1="360" y1="70" x2="360" y2="90"/>
-<line x1="360" y1="144" x2="360" y2="164"/>
-<line x1="215" y1="218" x2="215" y2="238"/>
-<line x1="505" y1="218" x2="505" y2="238"/>
-<line x1="505" y1="300" x2="505" y2="320"/>
-<line x1="370" y1="351" x2="350" y2="351"/>
-</g>
-</svg>
+<figure class="diagram lyr" role="img" aria-label="记录分层图：项目目录、会话、workflow 运行、journal 与 agent jsonl、tool_use 与 tool_result；后台任务另有 task-id 与 .output 文件">
+<div class="lyr-card"><b>项目（一个抽屉）</b><span class="lyr-m">~/.claude/projects/-Users-me-work-myproject/</span></div>
+<div class="lyr-v"></div>
+<div class="lyr-card lyr-n1"><b>会话（一个文件夹）</b><span class="lyr-m">&lt;会话id&gt;.jsonl  +  &lt;会话id&gt;/  （workflows/scripts/*.js 在这里）</span></div>
+<div class="lyr-v"></div>
+<div class="lyr-card lyr-n2"><b>一次 workflow 运行（一个小袋子）</b><span class="lyr-m">&lt;会话id&gt;/subagents/workflows/&lt;run id&gt;/</span></div>
+<div class="lyr-grid lyr-n2">
+<div class="lyr-v lyr-vj"></div>
+<div class="lyr-v lyr-va"></div>
+<div class="lyr-card lyr-j"><b>journal.jsonl</b><span>每个子代理的最终结果</span></div>
+<div class="lyr-card lyr-a"><b>agent-&lt;id&gt;.jsonl</b><span>每个子代理的完整过程</span></div>
+<div class="lyr-v lyr-vt"></div>
+<div class="lyr-card lyr-t"><span class="lyr-m">tool_use  id=toolu_…</span><span class="lyr-m">tool_result  tool_use_id=toolu_…</span></div>
+<div class="lyr-card lyr-alt lyr-bg"><b>后台命令多一条线</b><span class="lyr-m">run_in_background: true</span><span class="lyr-m">→ task-id</span><span class="lyr-m">→ tasks/&lt;task-id&gt;.output</span><span>面板能点开看输出</span></div>
+</div>
 <figcaption>从上到下：项目 → 会话 → workflow 运行 → 两种记录 → 工具调用和结果。左下是后台命令独有的输出文件。</figcaption>
 </figure>
 <h2>发现一：fork 出来的会话复制了什么</h2>

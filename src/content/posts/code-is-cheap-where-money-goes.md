@@ -15,20 +15,68 @@ draft: false
 .html-embed blockquote,.html-embed .note{border-left:2px solid var(--accent);padding-left:.8em;color:var(--foreground);opacity:1}
 .illus{margin:1.5em 0}
 .illus img{width:100%;height:auto;border-radius:8px}
-.illus figcaption,.sw-fig figcaption{font-size:.85em;opacity:.75;text-align:center;margin-top:.5em}
-.sw-fig{margin:1.6em 0;overflow-x:auto}
-.sw-fig svg{display:block;width:100%;min-width:520px;max-width:660px;height:auto;margin:0 auto;font-family:inherit}
-.sw-fig text{fill:var(--foreground);font-size:14px}
-.sw-fig .sm{font-size:12px;opacity:.75}
-.sw-fig .b{font-weight:700}
-.sw-fig .acT{fill:var(--accent);font-weight:700;opacity:1}
-.sw-fig .bx{fill:var(--muted)}
-.sw-fig .ac{fill:var(--muted);stroke:var(--accent);stroke-width:2}
-.sw-fig .fade{fill:none;stroke:var(--foreground);stroke-opacity:.35;stroke-width:1.5;stroke-dasharray:5 4}
-.sw-fig .ln{stroke:var(--foreground);stroke-opacity:.4;stroke-width:1.5;fill:none}
-.sw-fig .lnA{stroke:var(--accent);stroke-width:2.5;fill:none}
-.sw-fig .mA{fill:var(--accent)}
-.sw-fig .mL{fill:var(--foreground);fill-opacity:.55}
+.illus figcaption{font-size:.85em;opacity:.75;text-align:center;margin-top:.5em}
+/* flow figures (post-figures flow.css) */
+.fl{margin:28px 0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.fl figcaption{margin-top:10px;font-size:14px;color:var(--muted-foreground);text-align:center;max-width:36em}
+.fr{display:flex;align-items:center;justify-content:center;width:100%}
+.fc{display:flex;flex-direction:column;align-items:center;width:100%}
+.fn{background:var(--muted);border:1px solid transparent;border-radius:10px;padding:10px 14px;text-align:center;flex:0 1 190px;min-width:0}
+.fn b{display:block;font-size:15px;font-weight:600;color:var(--foreground);line-height:1.35}
+.fn small{display:block;margin-top:3px;font-size:13px;line-height:1.4;color:var(--muted-foreground)}
+.fn.hi{background:transparent;border:2px solid var(--accent)}
+.fn.dash{background:transparent;border:1px dashed var(--muted-foreground)}
+.fc>.fn{flex:none;width:min(100%,300px)}
+.fn.wide{width:min(100%,420px)}
+.fa{flex:1 1 70px;min-width:56px;max-width:150px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 6px;font-size:13px;line-height:1.3;color:var(--muted-foreground);text-align:center}
+.fa i{position:relative;display:block;width:100%;height:2px;background:currentColor}
+.fa i::after{content:"";position:absolute;right:-2px;top:-4px;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.fa.v{flex:none;max-width:none;flex-direction:row-reverse;justify-content:center;gap:10px;padding:6px 0}
+.fa.v i,.fr .fa.v i{width:2px;height:30px}
+.fa.v i::after{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.fa.v span{width:12em;text-align:left}
+.fo{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin-top:10px;font-size:13px}
+.fo span{padding:4px 10px;border-radius:999px;border:1px dashed var(--muted-foreground);color:var(--muted-foreground)}
+.fo .ok{border-style:solid;border-color:var(--accent);color:var(--foreground)}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;width:100%}
+.fg .fn{flex:none}
+.fp{width:100%;border:1px dashed var(--muted-foreground);border-radius:12px;padding:10px 10px 8px}
+.pl{font-size:13px;color:var(--muted-foreground);text-align:center;margin-bottom:8px}
+.pl.pb{margin:8px 0 0}
+@media (max-width:640px){
+.fr{flex-direction:column}
+.fr .fn{flex:none;width:min(100%,300px)}
+.fr .fa{flex:none;max-width:none;flex-direction:row-reverse;justify-content:center;gap:10px;padding:6px 0}
+.fr .fa i{width:2px;height:28px}
+.fr .fa i::after{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.fr .fa span{width:12em;text-align:left}
+}
+.fa span:empty{display:none}
+.fa.sw-acc{color:var(--accent)}
+.fa.sw-acc span{color:var(--muted-foreground)}
+.sw-code b{color:var(--muted-foreground)}
+.sw-fan{flex:0 1 340px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.sw-to{position:relative;margin-left:22px;display:flex;align-items:baseline;gap:10px;background:var(--muted);border:2px solid var(--accent);border-radius:10px;padding:9px 12px;text-align:left}
+.sw-to::before{content:"";position:absolute;left:-23px;top:-7px;bottom:-7px;width:2.5px;background:var(--accent)}
+.sw-to:first-child::before{top:50%}
+.sw-to:last-child::before{bottom:50%}
+.sw-to::after{content:"";position:absolute;left:-21px;top:50%;width:18px;height:10px;margin-top:-5px;background:var(--accent);clip-path:polygon(0 38%,55% 38%,55% 0,100% 50%,55% 100%,55% 62%,0 62%)}
+.sw-to b{flex:none;font-size:15px;font-weight:700;color:var(--accent)}
+.sw-to small{font-size:13px;line-height:1.4;color:var(--muted-foreground)}
+.sw-q{flex:none;width:min(100%,330px);padding:26px 56px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border:0}
+.sw-br{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:14px;width:100%;max-width:560px}
+.sw-arm{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0}
+.sw-arm::before{content:"";position:absolute;top:0;left:50%;right:-8px;height:2px;background:var(--muted-foreground)}
+.sw-arm.sw-yes::before{left:-8px;right:50%;background:var(--accent)}
+.sw-arm>.fa.v:first-child{padding-top:0}
+.sw-arm .fa.v span{width:auto}
+.sw-arm .fn{flex:none;width:min(100%,240px)}
+.fn.sw-ac{border:2px solid var(--accent)}
+.sw-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.sw-pills span{padding:4px 12px;border-radius:999px;border:2px solid var(--accent);background:var(--muted);font-size:13px;color:var(--foreground)}
+.sw-note{margin:8px 0 0;font-size:13px;line-height:1.4;color:var(--muted-foreground);text-align:center}
+.sw-win{margin:10px 0 0;font-size:15px;font-weight:700;color:var(--accent);text-align:center}
+@media (max-width:640px){.fr .sw-fan{flex:none;width:min(100%,340px)}}
 </style>
 
 <div class="html-embed" lang="zh">
@@ -47,7 +95,19 @@ draft: false
 <p>资本市场已经当真了。今年 2 月，华尔街给软件股的大跌起了个名字，叫 SaaSpocalypse，几周内蒸发的市值据估算接近 1 万亿美元，按人头收费的公司跌得最狠。也有人算了反方向的账：Jira 一个月 400 美元，自己造再加上维护，肯定更贵；Salesforce 一个月 2.5 万美元，自己造可能真划算。那篇文章的结论我认同：软件未死，平庸已死。</p>
 <h2>价值搬去了哪里</h2>
 <p>代码不值钱了，钱并没有消失，只是换了地方。我数下来有四处。</p>
-<figure class="sw-fig not-prose"><svg viewBox="0 0 640 300" role="img" aria-label="代码的价值在缩水，钱流向数据、入口、养护、算力四处"><defs><marker id="sw1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mA" d="M0,0L10,5L0,10z"/></marker><marker id="sw1l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mL" d="M0,0L10,5L0,10z"/></marker></defs><rect class="fade" x="30" y="110" width="170" height="80" rx="8"/><text class="b" x="115" y="146" text-anchor="middle" opacity=".55">代码</text><text class="sm" x="115" y="166" text-anchor="middle">写起来几乎免费</text><line class="lnA" x1="202" y1="150" x2="316" y2="45" marker-end="url(#sw1a)"/><line class="lnA" x1="202" y1="150" x2="316" y2="115" marker-end="url(#sw1a)"/><line class="lnA" x1="202" y1="150" x2="316" y2="185" marker-end="url(#sw1a)"/><line class="lnA" x1="202" y1="150" x2="316" y2="255" marker-end="url(#sw1a)"/><rect class="ac" x="320" y="20" width="300" height="50" rx="8"/><text class="acT" x="340" y="50">数据</text><text class="sm" x="390" y="50">粘性只剩它，企业想把它拿回来</text><rect class="ac" x="320" y="90" width="300" height="50" rx="8"/><text class="acT" x="340" y="120">入口</text><text class="sm" x="390" y="120">跨公司协作，大家得用同一个</text><rect class="ac" x="320" y="160" width="300" height="50" rx="8"/><text class="acT" x="340" y="190">养护</text><text class="sm" x="390" y="190">改了一百次，还不能坏</text><rect class="ac" x="320" y="230" width="300" height="50" rx="8"/><text class="acT" x="340" y="260">算力</text><text class="sm" x="390" y="260">每用一次，都要调一次模型</text></svg><figcaption>代码之外，价值去了这四个地方。</figcaption></figure>
+<figure class="fl not-prose" role="img" aria-label="代码的价值在缩水，钱流向数据、入口、养护、算力四处">
+<div class="fr">
+<div class="fn dash sw-code"><b>代码</b><small>写起来几乎免费</small></div>
+<div class="fa sw-acc"><span></span><i></i></div>
+<div class="sw-fan">
+<div class="sw-to"><b>数据</b><small>粘性只剩它，企业想把它拿回来</small></div>
+<div class="sw-to"><b>入口</b><small>跨公司协作，大家得用同一个</small></div>
+<div class="sw-to"><b>养护</b><small>改了一百次，还不能坏</small></div>
+<div class="sw-to"><b>算力</b><small>每用一次，都要调一次模型</small></div>
+</div>
+</div>
+<figcaption>代码之外，价值去了这四个地方。</figcaption>
+</figure>
 <h3>1. 数据</h3>
 <p>代码谁都能写，你公司十年的客户记录、审批历史、组织关系却抄不走。SaaS 剩下的粘性，基本就是「你的数据在我这里」。</p>
 <p>问题是，这种粘性越来越像扣人质。以前 SaaS 收钱，是因为你自己做不出来；现在你做得出来，它还在收钱，凭的只是数据。企业当然更想走。AI 还顺手降低了搬家成本：读懂旧系统的导出、对上新表的字段、照着旧审批流重建一份，都是 agent 擅长的活。</p>
@@ -72,7 +132,28 @@ draft: false
 <p>说到机会，最先想到的往往是「帮企业造第一版软件」和「帮企业搬数据」。可这两件事，企业自己的 agent 就能做。老板说一句，第一版就出来了；导出、对字段、清洗、导入，也是 agent 的拿手活。AI 外包会有一个窗口期，就是企业还不会指挥 agent 的这一两年，过了就关上了。</p>
 <p>所以我用一个问题来筛：</p>
 <blockquote><p><strong>这件事，企业自己的 agent 能不能做？能做，就不是好生意。</strong></p></blockquote>
-<figure class="sw-fig not-prose"><svg viewBox="0 0 640 330" role="img" aria-label="判断标准：企业自己的 agent 能做的，不是好生意；做不了的，看它占了门禁、兜底、持续、规模经验中的哪一条"><defs><marker id="sw2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mA" d="M0,0L10,5L0,10z"/></marker><marker id="sw2l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mL" d="M0,0L10,5L0,10z"/></marker></defs><line class="ln" x1="320" y1="46" x2="320" y2="66" marker-end="url(#sw2l)"/><polyline class="ln" points="170,105 140,105 140,172" marker-end="url(#sw2l)"/><polyline class="lnA" points="470,105 500,105 500,172" marker-end="url(#sw2a)"/><text class="sm" x="150" y="96">能</text><text class="sm" x="478" y="96">不能</text><line class="lnA" x1="500" y1="222" x2="500" y2="252" marker-end="url(#sw2a)"/><rect class="bx" x="190.0" y="10.0" width="260" height="36" rx="8"/><text class="b" x="320" y="33" text-anchor="middle">一件事，值不值得做成生意？</text><polygon class="bx" points="320,69 470,105 320,141 170,105"/><text class="b" x="320" y="110" text-anchor="middle">企业自己的 agent 能做吗？</text><rect class="bx" x="25.0" y="174.0" width="230" height="48" rx="8"/><text class="b" x="140" y="195" text-anchor="middle">不是好生意</text><text class="sm" x="140" y="213" text-anchor="middle">例：造第一版、搬一次数据</text><text class="sm" x="140" y="248" text-anchor="middle">AI 外包只有一个过渡窗口</text><rect class="ac" x="385.0" y="174.0" width="230" height="48" rx="8"/><text class="b" x="500" y="203" text-anchor="middle">看它占了哪一条</text><rect class="ac" x="364" y="256" width="62" height="30" rx="15"/><text class="sm" x="395" y="276" text-anchor="middle" opacity="1">门禁</text><rect class="ac" x="434" y="256" width="62" height="30" rx="15"/><text class="sm" x="465" y="276" text-anchor="middle" opacity="1">兜底</text><rect class="ac" x="504" y="256" width="62" height="30" rx="15"/><text class="sm" x="535" y="276" text-anchor="middle" opacity="1">持续</text><rect class="ac" x="574" y="256" width="62" height="30" rx="15"/><text class="sm" x="605" y="276" text-anchor="middle" opacity="1">规模经验</text><text class="acT" x="500" y="314" text-anchor="middle">占一条以上，才是机会</text></svg><figcaption>判断一件事值不值得做成生意。</figcaption></figure>
+<figure class="fl not-prose" role="img" aria-label="判断标准：企业自己的 agent 能做的，不是好生意；做不了的，看它占了门禁、兜底、持续、规模经验中的哪一条">
+<div class="fc">
+<div class="fn wide"><b>一件事，值不值得做成生意？</b></div>
+<div class="fa v"><span></span><i></i></div>
+<div class="fn sw-q"><b>企业自己的 agent 能做吗？</b></div>
+<div class="sw-br">
+<div class="sw-arm">
+<div class="fa v"><span>能</span><i></i></div>
+<div class="fn"><b>不是好生意</b><small>例：造第一版、搬一次数据</small></div>
+<p class="sw-note">AI 外包只有一个过渡窗口</p>
+</div>
+<div class="sw-arm sw-yes">
+<div class="fa v sw-acc"><span>不能</span><i></i></div>
+<div class="fn sw-ac"><b>看它占了哪一条</b></div>
+<div class="fa v sw-acc"><span></span><i></i></div>
+<div class="sw-pills"><span>门禁</span><span>兜底</span><span>持续</span><span>规模经验</span></div>
+<p class="sw-win">占一条以上，才是机会</p>
+</div>
+</div>
+</div>
+<figcaption>判断一件事值不值得做成生意。</figcaption>
+</figure>
 <p>agent 做不了的事，至少占下面一条：</p>
 <table><thead><tr><th>条件</th><th>说的是什么</th></tr></thead><tbody>
 <tr><td>门禁</td><td>别人不给你的 agent 开门，比如旧 SaaS 限制导出</td></tr>

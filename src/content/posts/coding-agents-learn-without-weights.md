@@ -52,6 +52,58 @@ html.dark .html-embed .cal{
 .html-embed .cal figure img{display:block;width:100%;max-width:100%;height:auto}
 .html-embed .cal figcaption{font-size:13.5px!important;line-height:1.55!important;color:var(--sub)!important;font-weight:400!important}
 .html-embed .cal .source{font-size:15px!important;line-height:1.7!important;color:var(--sub)!important;font-weight:400!important}
+/* Fig 1: host diagram (flow-component pieces, scoped). Driver and Navigator above, Host in the middle, inputs below. */
+.html-embed .cal .fl{margin:28px 0;display:flex;flex-direction:column;align-items:center;gap:0}
+.html-embed .cal .fl figcaption{margin-top:14px;text-align:center;max-width:36em}
+.html-embed .cal .fn,.html-embed .cal .hf-host,.html-embed .cal .hf-layers li{box-sizing:border-box}
+.html-embed .cal .fn{background:var(--muted);border:1px solid transparent;border-radius:10px;padding:10px 14px;text-align:center;min-width:0}
+.html-embed .cal .fn b{display:block;font-size:15px;font-weight:600;color:var(--foreground);line-height:1.35}
+.html-embed .cal .fn small{display:block;margin-top:3px;font-size:13px;line-height:1.4;color:var(--muted-foreground)}
+.html-embed .cal .hf-top{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;width:100%;max-width:640px}
+.html-embed .cal .hf-bot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto;grid-auto-flow:column;column-gap:10px;width:100%;max-width:640px}
+.html-embed .cal .hf-bot .hf-col{display:contents}
+.html-embed .cal .hf-bot .hf-arr{align-content:flex-start}
+.html-embed .cal .hf-side{display:flex;flex-direction:column;align-items:stretch;min-width:0}
+.html-embed .cal .hf-arr{display:flex;flex-wrap:wrap;justify-content:center;gap:0 14px;padding:6px 0}
+.html-embed .cal .fa{display:flex;flex-direction:row-reverse;align-items:center;gap:8px;font-size:12.5px;line-height:1.3;color:var(--muted-foreground);text-align:left}
+.html-embed .cal .fa span{max-width:8.5em}
+.html-embed .cal .fa i{position:relative;display:block;flex:none;width:2px;height:30px;background:currentColor}
+.html-embed .cal .fa i::after{content:"";position:absolute;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent}
+.html-embed .cal .fa.up i{transform:scaleY(-1)}
+.html-embed .cal .fa.dash i{width:0;background:none;border-left:2px dashed currentColor}
+.html-embed .cal .fa.dash i::after{left:-6px}
+.html-embed .cal .hf-host{width:100%;max-width:640px;border:2px solid var(--accent);border-radius:12px;padding:10px 12px 12px}
+.html-embed .cal .hf-host .pl{font-size:15px;font-weight:600;color:var(--foreground);margin:0 0 8px 2px}
+.html-embed .cal .hf-layers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.html-embed .cal .hf-layers li{margin:0;padding:8px 12px;background:var(--muted);border-radius:8px;display:grid;grid-template-columns:1.3em 11em minmax(0,1fr);align-items:baseline;gap:2px 8px}
+.html-embed .cal .hf-layers li::before{content:none}
+.html-embed .cal .hf-layers .n{font-size:13px;color:var(--muted-foreground)}
+.html-embed .cal .hf-layers b{font-size:15px;font-weight:600;color:var(--foreground)}
+.html-embed .cal .hf-layers small{font-size:13.5px;color:var(--muted-foreground)}
+/* Fig 2: table with fit pills. */
+.html-embed .cal .tt{font-size:16px;font-weight:700;color:var(--foreground);margin:0 0 10px}
+.html-embed .cal .rt{overflow-x:auto;max-width:100%}
+.html-embed .cal .rt table{border-collapse:collapse;width:100%;min-width:720px;margin:0;font-size:14.5px;line-height:1.5}
+.html-embed .cal .rt th{text-align:left;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-foreground);padding:6px 10px 8px;border-bottom:2px solid var(--foreground);background:transparent}
+.html-embed .cal .rt td{text-align:left;vertical-align:top;padding:9px 10px;color:var(--foreground);border-bottom:1px solid color-mix(in srgb,var(--foreground) 15%,transparent);background:transparent}
+.html-embed .cal .rt td:first-child{white-space:nowrap;font-weight:700}
+.html-embed .cal .pill{display:inline-block;white-space:nowrap;font-size:12.5px;font-weight:600;line-height:1.3;padding:2px 9px;border-radius:999px;border:1px solid var(--muted-foreground);color:var(--muted-foreground)}
+.html-embed .cal .pill.high{border-color:var(--accent);color:var(--foreground);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.html-embed .cal .pill.low{border-style:dashed}
+/* Fig 3: evidence list. */
+.html-embed .cal .ev ul{margin:0;padding-left:1.25em}
+.html-embed .cal .ev li{margin:0 0 10px;font-size:16px;line-height:1.7;color:var(--foreground)}
+.html-embed .cal .ev .end{margin-top:12px;font-size:15px;line-height:1.6;color:var(--muted-foreground)}
+@media (max-width:480px){
+  .html-embed .cal .hf-top{gap:10px 12px}
+  .html-embed .cal .hf-bot{column-gap:8px}
+  .html-embed .cal .fn{padding:8px 8px}
+  .html-embed .cal .fn b{font-size:14px}
+  .html-embed .cal .fn small{font-size:12.5px}
+  .html-embed .cal .hf-arr{gap:0 10px}
+  .html-embed .cal .hf-layers li{grid-template-columns:1.3em minmax(0,1fr)}
+  .html-embed .cal .hf-layers small{grid-column:2}
+}
 @media (max-width:640px){
   .html-embed .cal h2{font-size:20px!important;margin-top:40px!important}
   .html-embed .cal p{font-size:16px!important}
@@ -65,8 +117,41 @@ html.dark .html-embed .cal{
 <p>公开研究里已经出现了几类办法，它们改的是规则、脚手架、路由，或运行当中的决定，而不是模型本身。</p>
 <p class="key">一种常见的做法，是让一个 agent 负责写代码，另一个负责审阅。</p>
 <p>两边并不直接对话：写的一方改代码，审的一方查看并给出判断，消息都经过中间的宿主，规则则写在方法卡片里。</p>
-<figure>
-  <picture><source type="image/avif" srcset="/images/posts/coding-agents-learn-without-weights/fig-01-800.avif 800w, /images/posts/coding-agents-learn-without-weights/fig-01.avif 2096w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/coding-agents-learn-without-weights/fig-01.webp" alt="横向示意图：左边是 Driver，中间是 Host（Guards、Method rules、Delivery、Turn-end contracts、Loop check），右边是 Navigator；底部是 Method card、You 和 Background check。消息经过 Host，规则写在 Method card 里。" srcset="/images/posts/coding-agents-learn-without-weights/fig-01-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-01.webp 2096w" sizes="(max-width: 768px) 100vw, 760px" width="2096" height="943" loading="lazy" decoding="async"></picture>
+<figure class="fl" role="img" aria-label="写代码的一方和审阅的一方并不直接对话。消息都经过中间的宿主，规则写在方法卡片里。">
+  <div class="hf-top">
+    <div class="hf-side">
+      <div class="fn"><b>Driver</b><small>developer session<br>edits code, runs tests</small></div>
+      <div class="hf-arr"><div class="fa"><span>message</span><i></i></div><div class="fa up"><span>delivered</span><i></i></div></div>
+    </div>
+    <div class="hf-side">
+      <div class="fn"><b>Navigator</b><small>reviewer session<br>scouts, verifies, rules</small></div>
+      <div class="hf-arr"><div class="fa"><span>message</span><i></i></div><div class="fa up"><span>delivered</span><i></i></div></div>
+    </div>
+  </div>
+  <div class="hf-host">
+    <div class="pl">Host</div>
+    <ol class="hf-layers">
+      <li><span class="n">1</span><b>Guards</b><small>repeat, rate, round budget</small></li>
+      <li><span class="n">2</span><b>Method rules</b><small>script or written rules</small></li>
+      <li><span class="n">3</span><b>Delivery</b><small>queue, steer or interrupt</small></li>
+      <li><span class="n">4</span><b>Turn-end contracts</b><small>reviewed, replied, progress</small></li>
+      <li><span class="n">5</span><b>Loop check</b><small>flags a stuck exchange</small></li>
+    </ol>
+  </div>
+  <div class="hf-bot">
+    <div class="hf-col">
+      <div class="hf-arr"><div class="fa up dash"><span>snapshot at kickoff</span><i></i></div></div>
+      <div class="fn"><b>Method card</b><small>rules and settings</small></div>
+    </div>
+    <div class="hf-col">
+      <div class="hf-arr"><div class="fa up"><span>your message resets</span><i></i></div><div class="fa"><span>final verdict</span><i></i></div></div>
+      <div class="fn"><b>You</b><small>notified when a round closes</small></div>
+    </div>
+    <div class="hf-col">
+      <div class="hf-arr"><div class="fa up dash"><span>judges loops</span><i></i></div></div>
+      <div class="fn"><b>Background check</b><small>watches for loops</small></div>
+    </div>
+  </div>
   <figcaption>图 1　写代码的一方和审阅的一方并不直接对话。消息都经过中间的宿主，规则写在方法卡片里。</figcaption>
 </figure>
 <h2>五种办法改的不是同一种东西</h2>
@@ -75,7 +160,19 @@ html.dark .html-embed .cal{
 <p class="key">对模型权重做强化学习，并不适合直接用在改不了权重的闭源系统上。</p>
 <p>这一类的例子有 Agent Lightning、OpenPipe ART 和 SWE-RL。它们需要可训练的模型、沙盒和大量试跑。Claude Code、Codex 这类闭源系统改不了权重，所以这一路暂时用不上。</p>
 <figure>
-  <picture><source type="image/avif" srcset="/images/posts/coding-agents-learn-without-weights/fig-02-800.avif 800w, /images/posts/coding-agents-learn-without-weights/fig-02.avif 2080w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/coding-agents-learn-without-weights/fig-02.webp" alt="公开研究把改进办法分成五类的原表：Family、What it changes、What it needs、Fit、Examples。前四类适配度较高，对模型权重做强化学习目前较低。" srcset="/images/posts/coding-agents-learn-without-weights/fig-02-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-02.webp 2080w" sizes="(max-width: 768px) 100vw, 760px" width="2080" height="958" loading="lazy" decoding="async"></picture>
+  <div class="tt">What "agent RL" covers, and what fits here</div>
+  <div class="rt">
+  <table>
+    <thead><tr><th>Family</th><th>What it changes</th><th>What it needs</th><th>Fit</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td>Search over prompts<br>and harness</td><td>Rules text, settings, scripts</td><td>A re-runnable benchmark with a held-out split</td><td><span class="pill high">High</span></td><td>GEPA (2025), Meta-Harness (2026), RRSI (2026), AgentPilot</td></tr>
+      <tr><td>Bandits</td><td>A small choice: which mode, which reviewer, when to stop</td><td>Context, outcome, some randomized exploration</td><td><span class="pill high">High</span></td><td>RouteLLM (2024), PILOT router (2025), CascadeDebate (2026)</td></tr>
+      <tr><td>A supervisor that<br>steers a running<br>worker</td><td>Stop, redirect or continue</td><td>Live traces</td><td><span class="pill high">High</span></td><td>PILOT in the Loop (2026)</td></tr>
+      <tr><td>Memory and<br>playbooks</td><td>What is put in the context</td><td>Past runs and a success signal</td><td><span class="pill">Medium</span></td><td>Reflexion (2023), Agent Workflow Memory (2024), ACE (2025)</td></tr>
+      <tr><td>RL on model weights</td><td>The model itself</td><td>A sandboxed environment, hundreds to thousands of rollouts, GPUs, serving</td><td><span class="pill low">Low for now</span></td><td>Agent Lightning (2025), OpenPipe ART with RULER (2025), SWE-RL (2025)</td></tr>
+    </tbody>
+  </table>
+  </div>
   <figcaption>图 2　公开研究把改进办法分成五类。前四类都不训练模型权重。</figcaption>
 </figure>
 <h2>谁来审稿，符号可能会翻过来</h2>
@@ -93,8 +190,18 @@ html.dark .html-embed .cal{
 <p>The Replay Gap 在 SWE-bench 上发现：如果在轨迹较早的位置换模型，被回放的后续状态里只有约 <strong>3% 到 8%</strong> 仍然有效。如果只用旧日志去评估换模型或换路由，评到的往往是一个不会真正出现的世界，研究者需要重新跑一遍才能判断候选是否更好。</p>
 <p class="key">准备变成默认设置的经验，仍然需要人来把关。</p>
 <p>SkillsBench 表明，人工整理的技能能把 87 项任务、18 种配置上的平均通过率从 33.9% 提到 <strong>50.5%</strong>；但在三个专用配置里，智能体自己写的技能反而比不用技能低 8.1 到 11.5 个百分点。OpenHands 的一篇研究还指出，能对上「PR 被合并」的工作片段大约只有 <strong>6%</strong>，只用这类标签训练出来的评判模型，AUC 只有 0.58。</p>
-<figure>
-  <img src="/images/posts/coding-agents-learn-without-weights/fig-03.webp" alt="公开研究里关于结对的几条证据：谁来审稿会翻转结果；第二个 agent 也可能帮倒忙；失败多半来自设计；智能体自写的教训不可靠；旧日志不能代替重跑；使用标签往往又少又弱；权重级强化学习存在，但规模不同。目前还没有发现把强化学习或赌博机专门用在写代码加审稿这种结对上的公开研究。" srcset="/images/posts/coding-agents-learn-without-weights/fig-03-800.webp 800w, /images/posts/coding-agents-learn-without-weights/fig-03.webp 1409w" sizes="(max-width: 768px) 100vw, 760px" width="1409" height="1350" loading="lazy" decoding="async" data-avif="no">
+<figure class="ev">
+  <div class="tt">What the evidence says about pairs</div>
+  <ul>
+    <li><strong>Who reviews whom flips the sign.</strong> On 116 LiveCodeBench tasks, Claude Opus 4.7 reviewing Codex drafts raised the pass rate from 71.6% to 89.7%. Codex reviewing Claude drafts lowered it from 91.4% to 82.8%. One benchmark, one model pair, and the reviewer could not run tests, but it is the strongest argument for learning the reviewer choice.</li>
+    <li><strong>A second agent can hurt.</strong> A Google study of 180 configurations found multi-agent setups degraded sequential tasks by 39% to 70% and helped parallel ones. Pairing should be a per-task decision.</li>
+    <li><strong>Failures are mostly design, not model.</strong> The MAST study classified 14 failure modes across more than 1,600 multi-agent traces: lost handoffs, a role doing the other's job, loops.</li>
+    <li><strong>Lessons an agent writes for itself are unreliable.</strong> In SkillsBench, curated skills raised average pass rate from 33.9% to 50.5% across 87 tasks and 18 configurations; in three specialised configurations, self-written skills were 8.1 to 11.5 points worse than using none. Keep a human gate on anything that becomes a default.</li>
+    <li><strong>Logs cannot stand in for reruns.</strong> "The Replay Gap" found that after an early model swap only 3% to 8% of replayed states were still valid. Judge candidates by running them.</li>
+    <li><strong>Usage signals are sparse and weak.</strong> One 2026 study found merge labels on about 6% of work segments, with a critic trained on them barely beating chance. Online signals suit coarse choices only.</li>
+    <li><strong>Weight-level RL from real usage does exist, at a different scale.</strong> Cursor trains its tab model on accept and reject: plus 0.75 for an accepted suggestion, minus 0.25 for a rejected one, zero for staying silent, across hundreds of millions of requests a day.</li>
+  </ul>
+  <div class="end">I found no published study of reinforcement learning or bandits applied to a driver and reviewer coding pair.</div>
   <figcaption>图 3　公开研究里，关于结对的几条证据。</figcaption>
 </figure>
 <p class="key">Cursor 已经把在线强化学习用在 Tab 补全上，不过它和编程 agent 并不在一个量级。</p>

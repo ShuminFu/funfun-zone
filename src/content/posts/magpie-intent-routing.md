@@ -134,6 +134,77 @@ html.dark .html-embed .mir-try{
 .html-embed .mir-try .order .who{font-weight:600}
 .html-embed .mir-try .order .role{font-size:0.78rem; color:var(--mt-muted)}
 .html-embed .mir-try .why{font-size:0.92rem}
+/* Flow diagrams (post-figures/flow.css), scoped under .html-embed. Blog tokens only. */
+.html-embed .fl{margin:28px 0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.html-embed .fl figcaption{margin-top:10px;font-size:14px;color:var(--muted-foreground);text-align:center;max-width:36em}
+.html-embed .fr{display:flex;align-items:center;justify-content:center;width:100%}
+.html-embed .fc{display:flex;flex-direction:column;align-items:center;width:100%}
+.html-embed .fn{background:var(--muted);border:1px solid transparent;border-radius:10px;padding:10px 14px;text-align:center;flex:0 1 190px;min-width:0}
+.html-embed .fn b{display:block;font-size:15px;font-weight:600;color:var(--foreground);line-height:1.35}
+.html-embed .fn small{display:block;margin-top:3px;font-size:13px;line-height:1.4;color:var(--muted-foreground)}
+.html-embed .fn.hi{background:transparent;border:2px solid var(--accent)}
+.html-embed .fn.dash{background:transparent;border:1px dashed var(--muted-foreground)}
+.html-embed .fc>.fn{flex:none;width:min(100%,300px)}
+.html-embed .fn.wide{width:min(100%,420px)}
+.html-embed .fa{flex:1 1 70px;min-width:56px;max-width:150px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 6px;font-size:12.5px;line-height:1.3;color:var(--muted-foreground);text-align:center}
+.html-embed .fa i{position:relative;display:block;width:100%;height:2px;background:currentColor}
+.html-embed .fa i::after{content:"";position:absolute;right:-2px;top:-4px;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.html-embed .fa.v{flex:none;max-width:none;flex-direction:row-reverse;justify-content:center;gap:10px;padding:6px 0}
+.html-embed .fa.v i,.html-embed .fr .fa.v i{width:2px;height:30px}
+.html-embed .fa.v i::after{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.html-embed .fa.v span{width:12em;text-align:left}
+.html-embed .fo{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin-top:10px;font-size:13px}
+.html-embed .fo span{padding:4px 10px;border-radius:999px;border:1px dashed var(--muted-foreground);color:var(--muted-foreground)}
+.html-embed .fo .ok{border-style:solid;border-color:var(--accent);color:var(--foreground)}
+.html-embed .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;width:100%}
+.html-embed .fg .fn{flex:none}
+.html-embed .fp{width:100%;border:1px dashed var(--muted-foreground);border-radius:12px;padding:10px 10px 8px}
+.html-embed .pl{font-size:12.5px;color:var(--muted-foreground);text-align:center;margin-bottom:8px}
+.html-embed .pl.pb{margin:8px 0 0}
+@media (max-width:640px){
+.html-embed .fr{flex-direction:column}
+.html-embed .fr .fn{flex:none;width:min(100%,300px)}
+.html-embed .fr .fa{flex:none;max-width:none;flex-direction:row-reverse;justify-content:center;gap:10px;padding:6px 0}
+.html-embed .fr .fa i{width:2px;height:28px}
+.html-embed .fr .fa i::after{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.html-embed .fr .fa span{width:12em;text-align:left}
+}
+/* Flow extras: dashed arrow, branch columns, note line. */
+.html-embed .fa.dsh i{background:repeating-linear-gradient(to right,currentColor 0 5px,transparent 5px 9px)}
+.html-embed .fa.v.dsh i{background:repeating-linear-gradient(to bottom,currentColor 0 5px,transparent 5px 9px)}
+.html-embed .fr>.fc{flex:1 1 0;min-width:0}
+.html-embed .fl .pl.pb{max-width:36em}
+@media (max-width:640px){
+.html-embed .fr .fa.dsh i{background:repeating-linear-gradient(to bottom,currentColor 0 5px,transparent 5px 9px)}
+.html-embed .fr>.fc{flex:none;width:100%}
+.html-embed .fr>.fc+.fc{margin-top:14px}
+}
+/* Text figures: real text in a quiet panel with an accent rule. */
+.html-embed .tx{margin:28px 0;padding:2px 0 2px 16px;border-left:2px solid var(--accent);font-size:15.5px;line-height:1.7;color:var(--foreground);min-width:0}
+.html-embed .tx h3{font-family:inherit!important;font-style:normal!important;font-size:18px!important;line-height:1.4!important;font-weight:700;margin:22px 0 8px!important;color:var(--foreground)!important;border:0!important;padding:0!important}
+.html-embed .tx h3:first-child{margin-top:0!important}
+.html-embed .tx h4{font-family:inherit!important;font-style:normal!important;font-size:15.5px!important;font-weight:700;margin:14px 0 4px!important;color:var(--foreground)!important}
+.html-embed .tx p{margin:8px 0}
+.html-embed .tx ol,.html-embed .tx ul{margin:8px 0;padding-left:1.6em}
+.html-embed .tx li{margin:4px 0}
+.html-embed .tx li::marker{color:var(--muted-foreground)}
+.html-embed .tx ol.steps{padding-left:1.8em}
+.html-embed .tx ol.steps>li{margin:14px 0}
+.html-embed .tx ol.steps>li::marker{color:var(--accent);font-weight:700}
+.html-embed .tx ol.steps ul{list-style:circle}
+.html-embed .tx .st{margin:0 0 4px;font-weight:700}
+.html-embed .tx .note{font-size:14px;color:var(--muted-foreground)}
+.html-embed .tx code{font-size:0.9em;background:var(--muted);color:var(--foreground);padding:1px 5px;border-radius:4px}
+.prose-mycelium .html-embed .tx code::before,.prose-mycelium .html-embed .tx code::after{content:none}
+.html-embed .tx pre,.prose-mycelium .html-embed .tx pre{margin:12px 0;padding:10px 14px;background:var(--muted);color:var(--foreground);border:0;border-radius:8px;overflow-x:auto;white-space:pre;font-size:13px;line-height:1.6}
+.html-embed .tx pre code{background:none;padding:0;font-size:inherit}
+.html-embed .tx .tw{overflow-x:auto;max-width:100%;margin:12px 0}
+.html-embed .tx table{border-collapse:collapse;width:100%;font-size:14.5px;margin:0}
+.html-embed .tx th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted-foreground);padding:6px 10px 6px 0;border-bottom:1px solid var(--foreground)}
+.html-embed .tx td{text-align:left;vertical-align:top;padding:8px 10px 8px 0;border-bottom:1px solid var(--muted)}
+.html-embed .tx td:first-child,.html-embed .tx th:first-child{white-space:nowrap}
+.html-embed .tx .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 24px}
+.html-embed .tx figcaption{margin-top:14px;font-size:14px;line-height:1.6;color:var(--muted-foreground)}
 </style>
 
 <div class="html-embed" lang="zh-CN">
@@ -141,9 +212,28 @@ html.dark .html-embed .mir-try{
 <p>Magpie 是 yetone 做的开源工具，跑在你自己的电脑上。它给 Claude Code、Codex、Gemini CLI 这类 coding agent 提供一个统一的模型入口。你可以把多个模型放进同一个路由组，让 agent 选用整个组。Intent Routing 是组里的一种规则：每一轮开始时，一个小的分类模型会先判断这条消息是难还是易，再决定组里哪个模型先回答。</p>
 <h2>一轮是怎么选模型的</h2>
 <p>一个路由组里通常放一个强模型和一个便宜模型。新的一轮开始时，分类器会读用户的话，并判断这是困难任务还是简单任务。这个答案只决定谁先被问到，另一个模型仍然留在后面做故障转移。选定之后，这个选择会管住整一轮。因此，agent 把工具结果送回来时，请求会回到当初提出工具调用的那个模型，而不会重新分类。</p>
-<figure>
-  <picture><source type="image/avif" srcset="/images/posts/magpie-intent-routing/fig-01-800.avif 800w, /images/posts/magpie-intent-routing/fig-01.avif 2096w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/magpie-intent-routing/fig-01.webp" alt="一轮开始时，分类器先判断难或易，再决定强模型还是便宜模型先回答；失败时另一个模型做故障转移。整一轮包括工具结果都沿用这个选择。" srcset="/images/posts/magpie-intent-routing/fig-01-800.webp 800w, /images/posts/magpie-intent-routing/fig-01.webp 2096w" sizes="(max-width: 768px) 100vw, 760px" width="2096" height="780" loading="lazy" decoding="async"></picture>
-  <figcaption>图 1　一轮开始时，分类器只决定谁先上场。工具结果也会回到同一个模型。</figcaption>
+<figure class="fl" role="img" aria-label="一轮开始时，分类器只决定谁先上场。工具结果也会回到同一个模型。" lang="en">
+  <div class="fr">
+    <div class="fn"><b>User message</b><small>a new turn begins</small></div>
+    <div class="fa"><span>user's words</span><i></i></div>
+    <div class="fn"><b>Classifier</b><small>small model, once a turn</small></div>
+  </div>
+  <div class="fr">
+    <div class="fc">
+      <div class="fa v"><span>answers 1 · hard</span><i></i></div>
+      <div class="fn hi"><b>Strong model</b><small>asked first</small></div>
+      <div class="fa v dsh"><span>if it fails</span><i></i></div>
+      <div class="fn"><b>Cheap model</b><small>failover</small></div>
+    </div>
+    <div class="fc">
+      <div class="fa v"><span>answers 2 · easy</span><i></i></div>
+      <div class="fn hi"><b>Cheap model</b><small>asked first</small></div>
+      <div class="fa v dsh"><span>if it fails</span><i></i></div>
+      <div class="fn"><b>Strong model</b><small>failover</small></div>
+    </div>
+  </div>
+  <p class="pl pb">The choice holds for the whole turn: tool results go back to the model that asked for them.</p>
+  <figcaption lang="zh-CN">图 1　一轮开始时，分类器只决定谁先上场。工具结果也会回到同一个模型。</figcaption>
 </figure>
 <p>分类器并不是只看到最新这一句。源码说明写明，它拿到的是开启这一轮的用户原文，长消息会保留开头 3000 个字符和结尾 1000 个字符；同时还会拿到上一条用户消息和助手上一次回复，各最多 1000 个字符，并且被告知上一轮属于哪一类。因此，用户只回一句「go on」时，分类器可以按上一轮的类别来判断。官方文档则写分类器只看最新一条消息。就这一点而言，源码说明比文档写得更具体。</p>
 <h2>规则按什么顺序检查</h2>
@@ -332,15 +422,60 @@ The number of the kind that fits it best (0 only if none does):</pre>
 <p>分类器只在「一条带意图的规则有可能成为第一条命中规则」时才会被问起。如果更前面的规则已经命中，比如请求里带了图片，这次调用就不会发生。除了意图、压缩和图片，一条规则还可以加上请求长度、推理强度、来自哪个 agent、开始时间，以及工作目录这些看得见的条件。源码说明强调，这些条件不会被猜测，同一条请求每次都会按同样的方式路由。</p>
 <h2>分类器失败时会怎样</h2>
 <p>同一道题在 10 分钟内再问一次，会直接用记忆里的答案。分类器失败之后会被搁置 30 秒，这样后面的每一轮都不必再把超时时间等完。</p>
-<figure>
-  <img src="/images/posts/magpie-intent-routing/fig-02.webp" alt="每条请求按顺序处理：是否在压缩对话、是否仍是同一轮、读取可见事实、必要时才问分类器、分类器变慢或失败时怎么处理、第一条命中的规则说了算，以及把决定记住整一轮。分类器失败或回答 0 时，会沿用上一轮意图，或退回组的默认顺序。" srcset="/images/posts/magpie-intent-routing/fig-02-800.webp 800w, /images/posts/magpie-intent-routing/fig-02.webp 1467w" sizes="(max-width: 768px) 100vw, 760px" width="1467" height="2515" loading="lazy" decoding="async" data-avif="no">
-  <figcaption>图 3　每条请求按这个顺序处理。分类器失败或回答 0 时，会沿用上一轮的意图，或退回组的默认顺序。</figcaption>
+<figure class="tx" lang="en">
+<h3>What happens on each request</h3>
+<ol class="steps">
+<li>
+<p class="st">Is the agent compacting?</p>
+<p>When the agent asks for a summary of its conversation, the first rule that matches a compaction decides, by itself. This does not become the turn's decision, so the requests after it carry on as before. A model whose context window is known to be smaller than the conversation is passed over, because it would only refuse it.</p>
+</li>
+<li>
+<p class="st">Is this the same turn?</p>
+<p>If the agent is sending tool results back, nothing is decided again. The request goes to what was chosen when the turn began. One thing can move it: the conversation growing past what that model can take. Then the rules are looked at again and it moves to a model known to take more.</p>
+</li>
+<li>
+<p class="st">A new turn: read the facts</p>
+<p>The gateway reads what is visible in the request: its length in tokens, whether it carries an image (in this turn or an earlier one), the reasoning level the agent asked for, which agent sent it, its working folder, and the time. Rules on these are never guessed. The same request is always routed the same way.</p>
+</li>
+<li>
+<p class="st">Ask the classifier, only if needed</p>
+<p>The classifier is asked only when a rule that could be the first to match is waiting on an intent. If an earlier rule already matches, for example the image rule, no call is made.</p>
+<p>It is given the user's own words from the message that began the turn, without the blocks agents add to it. Long messages keep their first 3,000 and last 1,000 characters. It also gets the previous user message and the assistant's last reply, up to 1,000 characters each, and is told what kind the turn before was, so a short follow-up like "go on" is judged with what it follows.</p>
+<p>The request is sent at temperature 0 with reasoning turned off where the model allows it. The answer is a single number: the kind that fits, or 0 for none.</p>
+</li>
+<li>
+<p class="st">Handle a slow or failed classifier</p>
+<ul>
+<li>The same question asked again within 10 minutes is answered from memory, with no call.</li>
+<li>The classifier has a timeout, set in Settings. Its own failover counts against it.</li>
+<li>After a failure it is left alone for 30 seconds, so every turn does not wait out the timeout.</li>
+<li>If it cannot say and the turn before had an intent, that intent is used again. If there was none, no intent matches.</li>
+</ul>
+</li>
+<li>
+<p class="st">The first rule that matches decides</p>
+<p>Its member goes first. Members named by later rules that also match come next, then the rest of the group. If no rule matches, the group's own order is used, so whichever member is listed first gets the turn. That is why the strong model is listed first: an unplaced turn stays on it.</p>
+</li>
+<li>
+<p class="st">Remember it for the turn</p>
+<p>The decision is stored per group and conversation, along with the intent, and reused for every later request of the turn. The Routing view's trace shows which rule decided, what the classifier was asked, what it said, how long it took, and whether the answer came from memory.</p>
+</li>
+</ol>
+<figcaption lang="zh-CN">图 3　每条请求按这个顺序处理。分类器失败或回答 0 时，会沿用上一轮的意图，或退回组的默认顺序。</figcaption>
 </figure>
 <h2>它做不到的事</h2>
 <p>源码说明也列出了这项机制的短处。这些限制来自对源码的阅读，而不是线上评测。</p>
-<figure>
-  <picture><source type="image/avif" srcset="/images/posts/magpie-intent-routing/fig-03-800.avif 800w, /images/posts/magpie-intent-routing/fig-03.avif 1418w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/magpie-intent-routing/fig-03.webp" alt="六条短处：每轮多一次调用，判断的是消息而不是接下来的工作，难易取决于你写的措辞，没有反馈，换模型会丢掉 prompt cache，一张图片会把对话钉在强模型上。" srcset="/images/posts/magpie-intent-routing/fig-03-800.webp 800w, /images/posts/magpie-intent-routing/fig-03.webp 1418w" sizes="(max-width: 768px) 100vw, 760px" width="1418" height="763" loading="lazy" decoding="async"></picture>
-  <figcaption>图 4　源码说明里列出的六条短处。</figcaption>
+<figure class="tx" lang="en">
+<h3>What it costs and where it falls short</h3>
+<ul>
+<li><strong>One extra call per new turn.</strong> The classifier runs before the turn goes anywhere, so a slow classifier delays the first token.</li>
+<li><strong>It judges the message, not the work.</strong> "Fix the flaky test" can look easy and turn out hard. The turn stays on the cheap model unless the conversation outgrows its context window.</li>
+<li><strong>Hard and easy are what you wrote.</strong> The classifier chooses among your wordings. Vague intents give vague routing.</li>
+<li><strong>No feedback.</strong> Nothing checks whether the answer was good, and nothing is learned from past turns.</li>
+<li><strong>Switching models loses the prompt cache.</strong> A conversation that alternates between the two re-reads its whole context uncached each time it moves, which eats into the saving.</li>
+<li><strong>An image pins the conversation.</strong> With the image rule, one screenshot keeps every later turn of that conversation on the strong model.</li>
+</ul>
+<figcaption lang="zh-CN">图 4　源码说明里列出的六条短处。</figcaption>
 </figure>
 <p class="source">根据公开的 Claude Artifact <a href="https://claude.ai/artifact/Guj5eVmEapGk72iy4hgDtk">Magpie Intent Routing</a> 整理，对应开源项目 <a href="https://github.com/yetone/magpie">yetone/magpie</a> 的 commit 873b498。产品介绍参考了 <a href="https://usemagpie.ai/">usemagpie.ai</a>。</p>
 </div>

@@ -69,6 +69,23 @@ If you really need SVG (a shape the component cannot make), size it so the
 smallest text renders at 12px or more at the narrowest width it will be shown.
 If that cannot be done, it should be HTML.
 
+## Text is text, never a picture of text
+
+A screenshot of a paragraph, a list, a table or a card of bullet points is
+unreadable on a phone, cannot be searched, copied or translated, and does not
+follow dark mode. Write it as HTML and give it a quiet special style instead:
+
+- a passage worth setting apart: a 2px `var(--accent)` left rule, or a
+  `var(--muted)` panel with 10px radius
+- a table: a real `<table>` in an `overflow-x:auto` wrapper, small pill badges
+  for ratings
+- two options side by side: two cards that stack on phones, one neutral and
+  one with the accent border
+- a chart: HTML bars (label, proportional bar, value) beat a raster chart
+
+Images are for things that are not words: illustrations, real UI
+screenshots, photos.
+
 ## Illustrations
 
 - **Size**: inline illustrations `max-width: 600px`, centred; a wide hero
@@ -98,9 +115,11 @@ If that cannot be done, it should be HTML.
 
 1. `npm run build`, `npx astro preview --host 127.0.0.1 --port 4329`, then
    post-review's `post-audit.mjs --only <slug>` must be clean.
-2. Look at every figure at **375, 768 and 1280px**, in **light and dark**.
+2. Run `scripts/measure.mjs <slug>` against the preview: it reports SVG text
+   under 12px, SVGs that scroll sideways, tall images and page overflow.
+3. Look at every figure at **375, 768 and 1280px**, in **light and dark**.
    Read the figure's text at 375px: if you squint, it is too small.
-3. The page must not scroll sideways. Wide tables go in an
+4. The page must not scroll sideways. Wide tables go in an
    `overflow-x:auto` wrapper and keep their first column `white-space:nowrap`.
 
 ## Mistakes already made here
@@ -114,5 +133,7 @@ If that cannot be done, it should be HTML.
   between such runs, or shorten the title.
 - Illustrations at full width were too big, at 440px too small; 600px is the
   default.
+- Several notes carried screenshots of their own text (lists, tables,
+  cards) as images; on a phone they were a grey blur. Now HTML text.
 - An AI picture had its roof cut off by the frame. `edge-check.mjs` catches
   that before it ships.

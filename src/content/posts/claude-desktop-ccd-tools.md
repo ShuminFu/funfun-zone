@@ -12,6 +12,40 @@ draft: false
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
+/* flow figure (post-figures flow.css, scoped) */
+.html-embed .fl{margin:28px 0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.html-embed .fl figcaption{margin-top:10px;font-size:14px;color:var(--muted-foreground);text-align:center;max-width:36em}
+.html-embed .fn{background:var(--muted);border:1px solid transparent;border-radius:10px;padding:10px 14px;text-align:center;min-width:0}
+.html-embed .fn b{display:block;font-size:15px;font-weight:600;color:var(--foreground);line-height:1.35}
+.html-embed .fn small{display:block;margin-top:3px;font-size:13px;line-height:1.4;color:var(--muted-foreground)}
+.html-embed .fn.hi{background:transparent;border:2px solid var(--accent)}
+.html-embed .fa{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 6px;font-size:13px;line-height:1.3;color:var(--muted-foreground);text-align:center;overflow-wrap:anywhere}
+.html-embed .fa i{position:relative;display:block;width:100%;height:2px;background:currentColor}
+.html-embed .fa i::after,.html-embed .fa.both i::before{content:"";position:absolute;right:-2px;top:-4px;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.html-embed .fa.both i::before,.html-embed .fa.back i::after{right:auto;left:-2px;border-left:0;border-right:8px solid currentColor}
+.html-embed .fa.acc{color:var(--accent)}
+.html-embed .fa.acc span{color:var(--foreground);font-weight:600}
+.html-embed .fa.v{flex-direction:row-reverse;justify-content:center;gap:10px;padding:6px 0}
+.html-embed .fa.v i{width:2px;height:30px}
+.html-embed .fa.v i::after{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.html-embed .ccd-g{display:grid;width:100%;max-width:760px;grid-template-columns:minmax(0,1fr) minmax(48px,72px) minmax(0,1.6fr) minmax(84px,120px) minmax(0,1.2fr);align-items:center}
+.html-embed .ccd-you{grid-area:1/1}
+.html-embed .ccd-a1{grid-area:1/2}
+.html-embed .ccd-app{grid-area:1/3}
+.html-embed .ccd-a2{grid-area:1/4}
+.html-embed .ccd-agent{grid-area:1/5}
+.html-embed .ccd-a3{grid-area:2/5}
+.html-embed .ccd-files{grid-area:3/5}
+.html-embed .ccd-app>span{display:block;margin-top:8px;padding:7px 8px;border:1px solid var(--muted-foreground);border-radius:8px;font-size:14px;line-height:1.35;color:var(--foreground)}
+@media (max-width:720px){
+.html-embed .ccd-g{grid-template-columns:minmax(0,1fr);justify-items:center}
+.html-embed .ccd-g>*{grid-area:auto}
+.html-embed .ccd-g>.fn{width:min(100%,300px)}
+.html-embed .ccd-g .fa{flex-direction:row-reverse;justify-content:center;gap:10px;padding:6px 0}
+.html-embed .ccd-g .fa i{width:2px;height:28px}
+.html-embed .ccd-g .fa i::after,.html-embed .ccd-g .fa.both i::before{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.html-embed .ccd-g .fa.both i::before,.html-embed .ccd-g .fa.back i::after{bottom:auto;top:-2px;border-top:0;border-bottom:8px solid currentColor}
+}
 </style>
 
 <div class="html-embed" lang="en">
@@ -25,46 +59,17 @@ draft: false
 </ul>
 <p>The key point: these tools act on <strong>the app around the agent</strong>, not on your project. Reading and editing your files still uses ordinary tools like <code>Read</code>, <code>Edit</code> and <code>Bash</code>.</p>
 <h2>At a glance</h2>
-<figure class="ccd-figure">
-<svg viewBox="0 0 760 362" role="img" aria-label="The agent drives the app through ccd tools; your files go through ordinary tools" font-size="13" style="width:100%;height:auto;font-family:inherit">
-<defs>
-<marker id="ccd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--foreground);opacity:.55"/></marker>
-<marker id="ccd-accent-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker>
-</defs>
-<text x="24" y="34" font-size="15" font-weight="600" style="fill:var(--foreground)">The agent drives the app through ccd tools; your files go through ordinary tools</text>
-<g>
-<rect x="24" y="114" width="120" height="72" rx="8" style="fill:none;stroke:var(--foreground);stroke-opacity:.45;stroke-width:1.25"/>
-<text x="84" y="138" text-anchor="middle" font-weight="600" style="fill:var(--foreground)">You</text>
-<text x="84" y="158" text-anchor="middle" font-size="11.5" style="fill:var(--foreground);opacity:.7">watch progress</text>
-<text x="84" y="174" text-anchor="middle" font-size="11.5" style="fill:var(--foreground);opacity:.7">answer cards</text>
-</g>
-<g>
-<rect x="176" y="72" width="264" height="192" rx="8" style="fill:var(--foreground);fill-opacity:.05;stroke:var(--foreground);stroke-opacity:.45;stroke-width:1.25"/>
-<text x="308" y="96" text-anchor="middle" font-weight="600" style="fill:var(--foreground)">Claude desktop app</text>
-<rect x="192" y="112" width="232" height="40" rx="8" style="fill:none;stroke:var(--foreground);stroke-opacity:.35"/>
-<text x="308" y="136" text-anchor="middle" style="fill:var(--foreground)">To-do box and recap</text>
-<rect x="192" y="160" width="232" height="40" rx="8" style="fill:none;stroke:var(--foreground);stroke-opacity:.35"/>
-<text x="308" y="184" text-anchor="middle" style="fill:var(--foreground)">Session cards and notes</text>
-<rect x="192" y="208" width="232" height="40" rx="8" style="fill:none;stroke:var(--foreground);stroke-opacity:.35"/>
-<text x="308" y="232" text-anchor="middle" style="fill:var(--foreground)">Panes, sidebar, settings</text>
-</g>
-<g>
-<rect x="560" y="114" width="176" height="72" rx="8" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:2"/>
-<text x="648" y="138" text-anchor="middle" font-weight="600" style="fill:var(--foreground)">Claude agent</text>
-<text x="648" y="158" text-anchor="middle" font-size="11.5" style="fill:var(--foreground);opacity:.7">acts only through tools</text>
-</g>
-<g>
-<rect x="560" y="290" width="176" height="48" rx="8" style="fill:none;stroke:var(--foreground);stroke-opacity:.45;stroke-width:1.25"/>
-<text x="648" y="318" text-anchor="middle" style="fill:var(--foreground)">Your project files</text>
-</g>
-<g style="fill:none">
-<path d="M144 150H176" style="stroke:var(--foreground);stroke-opacity:.55;stroke-width:1.25" marker-start="url(#ccd-arrow)" marker-end="url(#ccd-arrow)"/>
-<path d="M560 150H440" style="stroke:var(--accent);stroke-width:2" marker-end="url(#ccd-accent-arrow)"/>
-<path d="M648 186V290" style="stroke:var(--foreground);stroke-opacity:.55;stroke-width:1.25" marker-end="url(#ccd-arrow)"/>
-</g>
-<text x="500" y="140" text-anchor="middle" font-size="10.5" font-weight="600" style="fill:var(--foreground)">mcp__ccd_* calls</text>
-<text x="638" y="242" text-anchor="end" font-size="11.5" style="fill:var(--foreground);opacity:.7">Read, Edit, Bash</text>
-</svg>
+<figure class="fl ccd-figure" role="img" aria-label="The agent drives the app through ccd tools; your files go through ordinary tools">
+<div class="ccd-g">
+<div class="fn ccd-you"><b>You</b><small>watch progress</small><small>answer cards</small></div>
+<div class="fa both ccd-a1"><i></i></div>
+<div class="fn ccd-app"><b>Claude desktop app</b><span>To-do box and recap</span><span>Session cards and notes</span><span>Panes, sidebar, settings</span></div>
+<div class="fa back acc ccd-a2"><span>mcp__ccd_* calls</span><i></i></div>
+<div class="fn hi ccd-agent"><b>Claude agent</b><small>acts only through tools</small></div>
+<div class="fa v ccd-a3"><span>Read, Edit, Bash</span><i></i></div>
+<div class="fn ccd-files"><b>Your project files</b></div>
+</div>
+<figcaption>The agent drives the app through ccd tools; your files go through ordinary tools</figcaption>
 </figure>
 <p>You only ever see the app. The agent changes what the app shows by calling <code>mcp__ccd_*</code> tools, and it touches your project through separate file tools.</p>
 <h2>The tool groups</h2>

@@ -36,6 +36,8 @@ tags:
   border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
   background: color-mix(in srgb, var(--foreground) 4%, transparent);
 }
+/* Tall illustration: cap width so it does not fill a whole screen. */
+.html-embed .fig.fig-tall { max-width: 480px; margin-left: auto; margin-right: auto; }
 .html-embed .fig figcaption {
   margin-top: 0.45rem;
   font-size: 0.88rem;
@@ -120,7 +122,7 @@ html[data-theme="dark"] .html-embed .tier .label {
   <section>
     <h2>二、四级实物链：每一层发生了什么</h2>
     <p>整场局是一张四级实物链金字塔。各层分工不同，结局也不同。</p>
-    <figure class="fig">
+    <figure class="fig fig-tall">
       <picture><source type="image/avif" srcset="/images/posts/gpu-subprime-wash-debt/fig-02.avif"><img alt="四级实物链金字塔：规则制定者、云巨头、算力包租工（白手套）、终极买单人" src="/images/posts/gpu-subprime-wash-debt/fig-02.webp" width="970" height="1432" loading="lazy" decoding="async"></picture>
       <figcaption>图 2 · 四级实物链：上面定规则的人通吃，下面买单的人扛损。</figcaption>
     </figure>
