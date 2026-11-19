@@ -59,7 +59,7 @@ draft: false
 </ul>
 <p>The key point: these tools act on <strong>the app around the agent</strong>, not on your project. Reading and editing your files still uses ordinary tools like <code>Read</code>, <code>Edit</code> and <code>Bash</code>.</p>
 <h2>At a glance</h2>
-<figure class="fl ccd-figure" role="img" aria-label="The agent drives the app through ccd tools; your files go through ordinary tools">
+<figure class="fl ccd-figure">
 <div class="ccd-g">
 <div class="fn ccd-you"><b>You</b><small>watch progress</small><small>answer cards</small></div>
 <div class="fa both ccd-a1"><i></i></div>

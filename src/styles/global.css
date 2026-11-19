@@ -12,13 +12,39 @@
 @import '@fontsource/jetbrains-mono/500.css' layer(base);
 @import '@fontsource/source-serif-4/600.css' layer(base);
 /* Noto Serif SC, cut down to the characters headings use. The full file is
-   1.5 MB; this one is built by scripts/subset-heading-font.mjs before every
-   dev and build run (npm run fonts to refresh it by hand). */
+   1.5 MB. In dev this is one site-wide subset (scripts/subset-heading-font.mjs);
+   in a production build it is empty and each page gets its own smaller font
+   (scripts/per-page-heading-font.mjs). */
 @import './generated/heading-font.css' layer(base);
 
 @import 'tailwindcss';
 
 @config '../../tailwind.config.mjs';
+
+/* Local fonts stretched to the web fonts' width, used until Inter and
+   Source Serif 4 arrive. Without them the text under a title re-wrapped to one
+   more line when Inter loaded and pushed the article down (CLS 0.016).
+   Ratios measured in Chrome: Inter = 107.3% of Arial, Source Serif 4 600 =
+   93% of Georgia Bold. Overrides are the web fonts' own ascent/descent divided
+   by size-adjust, so line boxes match too. Chinese is not affected: neither
+   fallback has Chinese glyphs, so it falls through to the next font as before. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 107.3%;
+  ascent-override: 90.3%;
+  descent-override: 22.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Source Serif 4 Fallback";
+  src: local("Georgia Bold"), local("Georgia-Bold");
+  font-weight: 600;
+  size-adjust: 93%;
+  ascent-override: 98.6%;
+  descent-override: 36%;
+  line-gap-override: 0%;
+}
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -244,7 +270,7 @@
   /* Headings */
   & :is(h1, h2, h3, h4) {
     @apply font-semibold text-primary-900 dark:text-primary-100;
-    font-family: "Source Serif 4", "Noto Serif SC", "Songti SC", Georgia, serif;
+    font-family: "Source Serif 4", "Source Serif 4 Fallback", "Noto Serif SC", "Songti SC", Georgia, serif;
   }
 
   /* rehype-autolink-headings wraps each heading in an anchor. It is a
@@ -413,7 +439,7 @@
 
   /* Titles are serif. Nav, buttons, and meta stay on the sans body font. */
   h1, h2, h3, h4 {
-    font-family: "Source Serif 4", "Noto Serif SC", "Songti SC", Georgia, serif;
+    font-family: "Source Serif 4", "Source Serif 4 Fallback", "Noto Serif SC", "Songti SC", Georgia, serif;
     font-weight: 600;
     text-wrap: balance;
   }
@@ -578,7 +604,7 @@
 .drop-cap {
   @apply float-left text-primary-900 dark:text-primary-100;
   @apply font-semibold leading-none;
-  font-family: "Source Serif 4", "Noto Serif SC", "Songti SC", Georgia, serif;
+  font-family: "Source Serif 4", "Source Serif 4 Fallback", "Noto Serif SC", "Songti SC", Georgia, serif;
   font-size: 3.5em;
   margin-right: 0.1em;
   margin-top: 0.05em;

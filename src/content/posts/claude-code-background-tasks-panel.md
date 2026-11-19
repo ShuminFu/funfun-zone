@@ -66,7 +66,7 @@ draft: false
 </figure>
 <h2>一张图看懂这些记录放在哪</h2>
 <p>可以把它想成一个文件柜：一个项目一个抽屉，一个会话一个文件夹，里面再分小袋子。</p>
-<figure class="diagram lyr" role="img" aria-label="记录分层图：项目目录、会话、workflow 运行、journal 与 agent jsonl、tool_use 与 tool_result；后台任务另有 task-id 与 .output 文件">
+<figure class="diagram lyr">
 <div class="lyr-card"><b>项目（一个抽屉）</b><span class="lyr-m">~/.claude/projects/-Users-me-work-myproject/</span></div>
 <div class="lyr-v"></div>
 <div class="lyr-card lyr-n1"><b>会话（一个文件夹）</b><span class="lyr-m">&lt;会话id&gt;.jsonl  +  &lt;会话id&gt;/  （workflows/scripts/*.js 在这里）</span></div>

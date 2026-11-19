@@ -99,7 +99,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
         >
           <GrowthIndicator status="seedling" size="sm" tint={false} />
           Seedling
-          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500">{seedlings.length}</span>
+          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-600 dark:text-primary-400">{seedlings.length}</span>
         </button>
         <button
           type="button"
@@ -109,7 +109,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
         >
           <GrowthIndicator status="budding" size="sm" tint={false} />
           Budding
-          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500">{budding.length}</span>
+          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-600 dark:text-primary-400">{budding.length}</span>
         </button>
         <button
           type="button"
@@ -119,7 +119,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
         >
           <GrowthIndicator status="evergreen" size="sm" tint={false} />
           Evergreen
-          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500">{evergreen.length}</span>
+          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-600 dark:text-primary-400">{evergreen.length}</span>
         </button>
       </div>
     </div>
@@ -170,7 +170,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
         <div id="posts-grid" data-view="grid" class:list={["mb-12 grid grid-cols-1 gap-8 md:grid-flow-dense md:grid-cols-2 lg:grid-cols-3", layout === 'list' && "hidden"]}>
           {allPostsSorted.map((post) => (
             <div class:list={["post-card flex min-w-0 flex-col", post.data.icon && "md:col-span-2"]} data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
-              <PostCard post={post} effectiveGrowth={getPostGrowth(post)} />
+              <PostCard headingLevel={2} post={post} effectiveGrowth={getPostGrowth(post)} />
             </div>
           ))}
         </div>
@@ -237,7 +237,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
     const tabOn = 'bg-primary-900 text-primary-50 dark:bg-primary-100 dark:text-primary-950';
     const tabOff = 'text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-100';
     const badgeOn = 'growth-count rounded-sm px-1.5 py-0.5 text-xs';
-    const badgeOff = 'growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-500';
+    const badgeOff = 'growth-count rounded-sm px-1.5 py-0.5 text-xs text-primary-600 dark:text-primary-400';
 
     function updateTabStyles() {
       tabs.forEach((tab) => {

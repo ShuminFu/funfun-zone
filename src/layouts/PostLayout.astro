@@ -133,8 +133,9 @@ const breadcrumbLd = {
 
   <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
     <div class="lg:grid lg:grid-cols-1 lg:gap-8 lg:has-[#local-graph-container]:grid-cols-[1fr_280px] lg:has-[nav.toc]:grid-cols-[1fr_280px]">
-      <!-- Main Content -->
-      <article>
+      <!-- Main Content. Capped at 46rem (~40 Chinese characters or ~80 Latin per line at 18px)
+           so a post without a sidebar does not stretch to 62 characters per line. -->
+      <article class="mx-auto w-full max-w-[46rem]">
         <!-- Post Header -->
         <header class="mb-8">
           <!-- Growth indicator and dates -->

@@ -14,9 +14,11 @@ import { participatesInGrowth } from '../utils/growth';
 export interface Props {
   post: Post;
   effectiveGrowth?: GrowthStatus; // Calculated growth (may differ from post.data.growth)
+  headingLevel?: 2 | 3; // 2 where the card sits right under the page h1
 }
 
-const { post, effectiveGrowth } = Astro.props;
+const { post, effectiveGrowth, headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
 const { title, description, growth, planted, tags, icon } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
@@ -48,14 +50,14 @@ const hasTags = Boolean(siteConfig.posts.showTags && tags && tags.length > 0);
 
     <div class="flex min-h-0 grow">
       <div class="flex min-w-0 grow flex-col px-6 pt-3 pb-5">
-        <h3
+        <Heading
           class:list={[
             "mb-2 leading-snug text-primary-900 transition-colors group-hover:text-accent-700 dark:text-primary-100 dark:group-hover:text-accent-300",
             icon ? "text-2xl" : "text-xl",
           ]}
         >
           {title}
-        </h3>
+        </Heading>
         {description && (
           <p class="text-sm leading-relaxed text-primary-600 dark:text-primary-400 line-clamp-2">
             {description}

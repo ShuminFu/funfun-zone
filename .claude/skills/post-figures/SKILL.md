@@ -24,7 +24,10 @@ sentence.
   verifier, the gate, the option you lean to) with the accent. Everything
   else stays neutral.
 - **One figure, one claim.** Every figure gets a `<figcaption>` that states
-  what it shows in one sentence, and the same sentence as `aria-label`.
+  what it shows in one sentence. Only an `<svg>` or `<img>` gets
+  `role="img"` + the same sentence as `aria-label`; never put `role="img"` on
+  a `<figure>` or `<div>` of HTML boxes (it hides their text from screen
+  readers, and Lighthouse fails `aria-allowed-role`).
 - **Short labels.** A title plus at most one short line of detail per box.
   Explanations go in the caption or the prose.
 
@@ -39,7 +42,7 @@ only uses blog tokens (`--foreground`, `--muted`, `--muted-foreground`,
 `--accent`), so dark mode needs nothing extra.
 
 ```html
-<figure class="fl" role="img" aria-label="One-sentence claim">
+<figure class="fl">                                 <!-- no role="img": the boxes are real text a screen reader should read -->
   <div class="fr">                                   <!-- a row: horizontal, stacks on phones -->
     <div class="fn"><b>首轮工人</b><small>做第一版 · 跑测试</small></div>
     <div class="fa"><span>交出改动</span><i></i></div>   <!-- labelled arrow -->
@@ -124,6 +127,7 @@ screenshots, photos.
 
 ## Mistakes already made here
 
+- `role="img"` + `aria-label` on 18 HTML flow figures: screen readers heard only the label, not the boxes; Lighthouse flagged every one (2026-11).
 - SVG diagrams capped at 640px with 11–14px text: tiny on desktop, unreadable
   or sideways-scrolling on phones. Use the HTML component.
 - `flex-basis` on a box inside a column container became its **height**

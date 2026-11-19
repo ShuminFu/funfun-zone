@@ -95,7 +95,7 @@ draft: false
 <p>资本市场已经当真了。今年 2 月，华尔街给软件股的大跌起了个名字，叫 SaaSpocalypse，几周内蒸发的市值据估算接近 1 万亿美元，按人头收费的公司跌得最狠。也有人算了反方向的账：Jira 一个月 400 美元，自己造再加上维护，肯定更贵；Salesforce 一个月 2.5 万美元，自己造可能真划算。那篇文章的结论我认同：软件未死，平庸已死。</p>
 <h2>价值搬去了哪里</h2>
 <p>代码不值钱了，钱并没有消失，只是换了地方。我数下来有四处。</p>
-<figure class="fl not-prose" role="img" aria-label="代码的价值在缩水，钱流向数据、入口、养护、算力四处">
+<figure class="fl not-prose">
 <div class="fr">
 <div class="fn dash sw-code"><b>代码</b><small>写起来几乎免费</small></div>
 <div class="fa sw-acc"><span></span><i></i></div>
@@ -132,7 +132,7 @@ draft: false
 <p>说到机会，最先想到的往往是「帮企业造第一版软件」和「帮企业搬数据」。可这两件事，企业自己的 agent 就能做。老板说一句，第一版就出来了；导出、对字段、清洗、导入，也是 agent 的拿手活。AI 外包会有一个窗口期，就是企业还不会指挥 agent 的这一两年，过了就关上了。</p>
 <p>所以我用一个问题来筛：</p>
 <blockquote><p><strong>这件事，企业自己的 agent 能不能做？能做，就不是好生意。</strong></p></blockquote>
-<figure class="fl not-prose" role="img" aria-label="判断标准：企业自己的 agent 能做的，不是好生意；做不了的，看它占了门禁、兜底、持续、规模经验中的哪一条">
+<figure class="fl not-prose">
 <div class="fc">
 <div class="fn wide"><b>一件事，值不值得做成生意？</b></div>
 <div class="fa v"><span></span><i></i></div>

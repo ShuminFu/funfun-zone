@@ -21,8 +21,9 @@
   "scripts": {
     "predev": "node scripts/subset-heading-font.mjs",
     "dev": "astro dev",
-    "prebuild": "node scripts/subset-heading-font.mjs",
+    "prebuild": "node scripts/subset-heading-font.mjs --build",
     "build": "astro build",
+    "postbuild": "node scripts/per-page-heading-font.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "setup": "node scripts/setup.mjs",

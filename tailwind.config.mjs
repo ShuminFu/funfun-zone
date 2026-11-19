@@ -35,8 +35,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        serif: ['"Source Serif 4"', '"Noto Serif SC"', '"Songti SC"', 'Georgia', 'serif'],
+        sans: ['Inter', '"Inter Fallback"', 'system-ui', 'sans-serif'],
+        serif: ['"Source Serif 4"', '"Source Serif 4 Fallback"', '"Noto Serif SC"', '"Songti SC"', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       typography: ({ theme }) => ({

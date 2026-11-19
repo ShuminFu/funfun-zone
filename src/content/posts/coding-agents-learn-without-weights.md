@@ -117,7 +117,7 @@ html.dark .html-embed .cal{
 <p>公开研究里已经出现了几类办法，它们改的是规则、脚手架、路由，或运行当中的决定，而不是模型本身。</p>
 <p class="key">一种常见的做法，是让一个 agent 负责写代码，另一个负责审阅。</p>
 <p>两边并不直接对话：写的一方改代码，审的一方查看并给出判断，消息都经过中间的宿主，规则则写在方法卡片里。</p>
-<figure class="fl" role="img" aria-label="写代码的一方和审阅的一方并不直接对话。消息都经过中间的宿主，规则写在方法卡片里。">
+<figure class="fl">
   <div class="hf-top">
     <div class="hf-side">
       <div class="fn"><b>Driver</b><small>developer session<br>edits code, runs tests</small></div>

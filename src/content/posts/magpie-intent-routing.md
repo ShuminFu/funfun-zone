@@ -212,7 +212,7 @@ html.dark .html-embed .mir-try{
 <p>Magpie 是 yetone 做的开源工具，跑在你自己的电脑上。它给 Claude Code、Codex、Gemini CLI 这类 coding agent 提供一个统一的模型入口。你可以把多个模型放进同一个路由组，让 agent 选用整个组。Intent Routing 是组里的一种规则：每一轮开始时，一个小的分类模型会先判断这条消息是难还是易，再决定组里哪个模型先回答。</p>
 <h2>一轮是怎么选模型的</h2>
 <p>一个路由组里通常放一个强模型和一个便宜模型。新的一轮开始时，分类器会读用户的话，并判断这是困难任务还是简单任务。这个答案只决定谁先被问到，另一个模型仍然留在后面做故障转移。选定之后，这个选择会管住整一轮。因此，agent 把工具结果送回来时，请求会回到当初提出工具调用的那个模型，而不会重新分类。</p>
-<figure class="fl" role="img" aria-label="一轮开始时，分类器只决定谁先上场。工具结果也会回到同一个模型。" lang="en">
+<figure class="fl" lang="en">
   <div class="fr">
     <div class="fn"><b>User message</b><small>a new turn begins</small></div>
     <div class="fa"><span>user's words</span><i></i></div>
