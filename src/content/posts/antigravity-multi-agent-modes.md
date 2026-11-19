@@ -18,8 +18,8 @@ tags:
 .tw table{margin:0;min-width:560px}
 .tw td:first-child,.tw th:first-child{white-space:nowrap}
 .tw table.sum{min-width:0}
-.ill{max-width:440px;margin:24px auto}
-.ill.hero{max-width:640px}
+.ill{max-width:600px;margin:24px auto}
+.ill.hero{max-width:none}
 .ill img{display:block;width:100%;height:auto;border-radius:8px}
 html[data-theme="dark"] .ill img{filter:brightness(.88)}
 .dg{overflow-x:auto;margin:20px 0}
