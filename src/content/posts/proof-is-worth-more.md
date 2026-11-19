@@ -42,8 +42,8 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 .vs .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .vs .card{background:var(--muted);border:2px solid transparent;border-radius:12px;padding:1em 1.1em;display:flex;flex-direction:column;min-width:0}
 .vs .card.hi{background:transparent;border-color:var(--accent)}
-.vs .card h4{margin:0 0 .6em;font-size:1.12em;text-align:center;color:var(--foreground)}
-.vs .card.hi h4,.vs .card.hi .ft{color:var(--accent)}
+.vs .card h3{margin:0 0 .6em;font-size:1.12em;text-align:center;color:var(--foreground)}
+.vs .card.hi h3,.vs .card.hi .ft{color:var(--accent)}
 .vs .card ul{margin:0;padding-left:1.2em;flex:1}
 .vs .card li{margin:.25em 0}
 .vs .ft{margin:.8em 0 0;text-align:center;color:var(--muted-foreground)}
@@ -83,8 +83,8 @@ td,th{padding:.35em .7em;border-bottom:1px solid var(--muted);text-align:left;ve
 <p class="note">这是从几个产品推出来的假设，样本很小，不是定论。</p>
 <figure class="vs" aria-label="检测假的与证明真的对比">
 <div class="cards">
-<div class="card"><h4>检测「这是假的」</h4><ul><li>对手是下一代模型</li><li>模型越强，越难判断</li><li>结论是概率，没人签字</li><li>例：AI 文本检测</li></ul><p class="ft">在掉</p></div>
-<div class="card hi"><h4>证明「这是真的」</h4><ul><li>从源头记录：收款、证件、审计</li><li>假的越多，越要它</li><li>有人背书、出错有人负责</li><li>例：TrustMRR、Comp AI、Veriff、Checkr、1lookup</li></ul><p class="ft">在涨</p></div>
+<div class="card"><h3>检测「这是假的」</h3><ul><li>对手是下一代模型</li><li>模型越强，越难判断</li><li>结论是概率，没人签字</li><li>例：AI 文本检测</li></ul><p class="ft">在掉</p></div>
+<div class="card hi"><h3>证明「这是真的」</h3><ul><li>从源头记录：收款、证件、审计</li><li>假的越多，越要它</li><li>有人背书、出错有人负责</li><li>例：TrustMRR、Comp AI、Veriff、Checkr、1lookup</li></ul><p class="ft">在涨</p></div>
 </div>
 <p class="hyp">这是一个假设，不是定论</p>
 <figcaption>两种回答「真不真」的方式</figcaption>

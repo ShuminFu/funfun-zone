@@ -14,13 +14,13 @@ draft: false
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
 /* Next OS demo, Apple-style: system grays, frosted cards, one blue accent; follows the blog's light/dark toggle. */
-.fz{--bg:#f5f5f7;--card:rgba(255,255,255,.86);--ink:#1d1d1f;--ink2:#6e6e73;--ink3:#86868b;--line:rgba(0,0,0,.08);
+.fz{--bg:#f5f5f7;--card:rgba(255,255,255,.86);--ink:#1d1d1f;--ink2:#6e6e73;--ink3:#707075;--line:rgba(0,0,0,.08);
   --fill:rgba(118,118,128,.12);--fill2:rgba(118,118,128,.08);--blue:#0071e3;--green:#34c759;--red:#ff3b30;--shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.06);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro SC","PingFang SC","Helvetica Neue",sans-serif;
   position:relative;margin:2rem 0;border-radius:22px;overflow:hidden;color:var(--ink);background:var(--bg);
   font-family:var(--font);font-size:14px;line-height:1.5;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;
   border:1px solid var(--line);box-shadow:0 20px 60px -30px rgba(0,0,0,.25)}
-html[data-theme="dark"] .fz{--bg:#1c1c1e;--card:rgba(44,44,46,.86);--ink:#f5f5f7;--ink2:#a1a1a6;--ink3:#8e8e93;--line:rgba(255,255,255,.1);
+html[data-theme="dark"] .fz{--bg:#1c1c1e;--card:rgba(44,44,46,.86);--ink:#f5f5f7;--ink2:#a1a1a6;--ink3:#98989d;--line:rgba(255,255,255,.1);
   --fill:rgba(118,118,128,.24);--fill2:rgba(118,118,128,.16);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);
   box-shadow:0 20px 60px -30px rgba(0,0,0,.8)}
 .fz *{box-sizing:border-box}
@@ -139,7 +139,7 @@ html[data-theme="dark"] .fz{--bg:#1c1c1e;--card:rgba(44,44,46,.86);--ink:#f5f5f7
 .fz-spot{font-size:17px;color:var(--ink3)}
 .fz-typed{color:var(--ink)}
 .fz-typed::after{content:"";display:inline-block;width:2px;height:1.1em;margin-left:2px;vertical-align:-3px;background:var(--blue);animation:fz-blink 1s steps(1) infinite}
-.fz-typed.fz-ph{color:var(--ink3)}
+.fz-typed.fz-ph{color:#606065}html[data-theme="dark"] .fz .fz-typed.fz-ph{color:#b4b4b9}
 .fz-sugs{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .fz-sugs .fz-label{margin:0;min-width:44px}
 .fz-ask.set{color:var(--blue)}

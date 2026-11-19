@@ -232,6 +232,16 @@
     color: var(--shiki-dark);
   }
 
+  /* github-light's comment grey (#6E7781) is 4.09:1 on the code block
+     background (primary-100); use the theme's darker grey (5.74:1). */
+  & pre span[style*="--shiki-light:#6E7781" i] {
+    color: #57606a;
+  }
+
+  .dark & pre span[style*="--shiki-light:#6E7781" i] {
+    color: var(--shiki-dark);
+  }
+
   /* Inline code is neutral ink on a chip, so it cannot be mistaken for a link. */
   & code {
     @apply text-primary-800 dark:text-primary-200;
