@@ -18,7 +18,8 @@ tags:
 .tw table{margin:0;min-width:560px}
 .tw td:first-child,.tw th:first-child{white-space:nowrap}
 .tw table.sum{min-width:0}
-.ill{margin:24px 0}
+.ill{max-width:440px;margin:24px auto}
+.ill.hero{max-width:640px}
 .ill img{display:block;width:100%;height:auto;border-radius:8px}
 html[data-theme="dark"] .ill img{filter:brightness(.88)}
 .dg{overflow-x:auto;margin:20px 0}
@@ -34,7 +35,7 @@ html[data-theme="dark"] .ill img{filter:brightness(.88)}
 <li><strong><code>/teamwork</code></strong>：先访谈定需求，再在专用目录里按里程碑跑几小时到几天，每个里程碑都要过几道独立检查。</li>
 </ul>
 <p>这篇是我的调研笔记。说法都对照了官方文档和博客；开源代码部分是<strong>静态读源码</strong>，没有安装，也没有运行。</p>
-<figure class="ill"><picture><source type="image/avif" srcset="/images/posts/antigravity-multi-agent-modes/fig-06-800.avif 800w, /images/posts/antigravity-multi-agent-modes/fig-06.avif 1568w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/antigravity-multi-agent-modes/fig-06.webp" alt="从轻到重的四种模式：派个跑腿的、一排机器人轮流挑错、装修队各管一间房加一块公告板、盖楼每层都有质检" loading="lazy" decoding="async" srcset="/images/posts/antigravity-multi-agent-modes/fig-06-800.webp 800w, /images/posts/antigravity-multi-agent-modes/fig-06.webp 1568w" sizes="(max-width: 768px) 100vw, 760px" width="1568" height="520"></picture></figure>
+<figure class="ill hero"><picture><source type="image/avif" srcset="/images/posts/antigravity-multi-agent-modes/fig-06-800.avif 800w, /images/posts/antigravity-multi-agent-modes/fig-06.avif 1568w" sizes="(max-width: 768px) 100vw, 760px"><img src="/images/posts/antigravity-multi-agent-modes/fig-06.webp" alt="从轻到重的四种模式：派个跑腿的、一排机器人轮流挑错、装修队各管一间房加一块公告板、盖楼每层都有质检" loading="lazy" decoding="async" srcset="/images/posts/antigravity-multi-agent-modes/fig-06-800.webp 800w, /images/posts/antigravity-multi-agent-modes/fig-06.webp 1568w" sizes="(max-width: 768px) 100vw, 760px" width="1568" height="520"></picture></figure>
 <h2>先看总表</h2>
 <div class="tw"><table class="sum">
 <thead><tr><th>模式</th><th>适合什么活</th><th>谁来验收</th><th>耗时</th></tr></thead>
