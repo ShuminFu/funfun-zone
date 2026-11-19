@@ -2,7 +2,8 @@
 title: "用例子写规格：Gherkin 和 Matt Pocock 的 skills 有什么不同"
 description: "Gherkin 把验收例子写成人人看得懂、机器能执行的句子；Matt Pocock 的 skills 把讨论、规格、拆票、测试做成给 AI agent 走的流水线。两者怎么分工、怎么接在一起。"
 growth: seedling
-planted: 2026-11-19T11:04:35+08:00
+planted: 2026-11-19T11:01:44+08:00
+lastTended: 2026-11-19T11:11:43+08:00
 draft: false
 tags:
   - "ai-agents"
@@ -152,11 +153,5 @@ tags:
 </table>
 <p><strong>相同的地方：</strong>都从用户故事或具体例子出发；都要求「做完的定义」写在代码之前；都只看外部行为，不看内部怎么实现。</p>
 <p><strong>可以合起来用：</strong>to-tickets 拆出来的每张票，验收标准可以直接写成「假如 / 当 / 那么」的场景。到 tdd 阶段，把这些场景一条条写成缝上的测试。这样既有人人看得懂的例子，又不用维护一套步骤定义胶水。</p>
-<h2>什么时候选哪个</h2>
-<ul>
-<li><strong>选 Gherkin：</strong>业务方真的会读、会改验收例子；规则多、例子多，适合用表格列出来；团队愿意长期维护步骤定义。</li>
-<li><strong>选 Matt 这套：</strong>主要靠 AI agent 写代码；要的是从模糊想法一路走到可合并的代码；不想维护自然语言胶水。</li>
-<li><strong>两个都用：</strong>用 grilling 和 to-spec 把事想清楚；拆票时把验收写成 Given/When/Then；最后落成测试，不一定接 Cucumber。</li>
-</ul>
 <div class="tldr"><p>一句话：Gherkin 让「例子」本身变成能跑的规格；Matt Pocock 的 skills 把「从想法到代码」变成 agent 能走的流程。前者重在把话说清，后者重在把事做完，两者可以接在一起。</p></div>
 </div>
