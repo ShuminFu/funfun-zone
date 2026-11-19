@@ -3,6 +3,7 @@ title: "Antigravity 的四种多代理模式：Subagents、/boost、/swarm、/te
 description: "Google Antigravity 的普通 Subagents、/boost、/swarm、/teamwork 各自怎么分工、怎么防假装做完、怎么撑过长时间，以及开源代码里能找到哪些对应零件。"
 growth: seedling
 planted: 2026-11-19T11:28:59+08:00
+lastTended: 2026-11-19T11:31:12+08:00
 draft: false
 tags:
   - "ai-agents"
@@ -13,6 +14,8 @@ tags:
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
 .tldr{border-left:2px solid var(--accent);padding:2px 14px;margin:20px 0}
 .tldr p{margin:0}
+.tw{overflow-x:auto;max-width:100%;margin:20px 0}
+.tw table{margin:0;min-width:560px}
 </style>
 
 <div class="html-embed" lang="zh-CN">
@@ -26,7 +29,7 @@ tags:
 <p>这篇是我的调研笔记。说法都对照了官方文档和博客；开源代码部分是<strong>静态读源码</strong>，没有安装，也没有运行。</p>
 <h2>先看总表</h2>
 <p>这张表是我按官方文档核对后整理的。官方文档每一页底部都有一张同样维度的对比表，下面的说法都能在那里或各自的文档页找到。</p>
-<table>
+<div class="tw"><table>
 <thead><tr><th>维度</th><th>普通 Subagents</th><th><code>/boost</code></th><th><code>/swarm</code></th><th><code>/teamwork</code></th></tr></thead>
 <tbody>
 <tr><td>擅长什么</td><td>把独立的小活甩到后台</td><td>单点攻坚：多轮挑刺、自检</td><td>广度并行：分片同时做</td><td>超长周期：按里程碑推进的工程和研究</td></tr>
@@ -37,7 +40,7 @@ tags:
 <tr><td>典型耗时</td><td>秒到分钟</td><td>秒到小时</td><td>分钟到小时</td><td>小时到天</td></tr>
 <tr><td>一句话口诀</td><td>顺手查资料、跑个单测</td><td>问题「难」而不是「广」</td><td>任务「广」而且切得开</td><td>跨天的重构、复杂仿真</td></tr>
 </tbody>
-</table>
+</table></div>
 <p>和网上流传的那张表相比，我改了几处：<code>/swarm</code> 官方叫 <em>message board</em>（留言板），没出现过 bulletin board 这个词；<code>/swarm</code> 的「每人一份工作副本」官方没说是 Git worktree；<code>/teamwork</code> 的检查关除了 Critic 和 Auditor，还有 Challenger 和 Success Auditor。</p>
 <h2>普通 Subagents：派个跑腿的</h2>
 <p><strong>比方：</strong>你在写代码，顺手叫个助手去查份资料，查完回来告诉你。</p>
@@ -162,14 +165,14 @@ tags:
 </ol>
 <p><strong>工作区：</strong>专用项目目录，默认 <code>~/teamwork_projects/{PROJECT_NAME}</code>。多个工人从不同时改同一个文件；每个子代理还有自己的草稿目录。</p>
 <p><strong>防假装做完：</strong>这是四种里最重的。除了 Critic、Challenger、Auditor、Success Auditor 几道关，访谈时还会问你哪些捷径不许走，据此定一个严格度：</p>
-<table>
+<div class="tw"><table>
 <thead><tr><th>严格度</th><th>用在哪</th><th>查什么</th></tr></thead>
 <tbody>
 <tr><td><code>development</code>（默认）</td><td>快速迭代</td><td>只抓伪造的输出和空壳实现；可以用现成库和框架</td></tr>
 <tr><td><code>demo</code></td><td>可复现的演示</td><td>再加：不许抄开源的核心逻辑、不许把核心活交给外部工具、不许读测试源码反推答案</td></tr>
 <tr><td><code>benchmark</code></td><td>严格评测</td><td>完全从零实现，只能用语言标准库</td></tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>长时间不停靠什么：</strong>三样东西。</p>
 <ul>
 <li><strong>外部持久状态</strong>：Request、Project plan、Progress 几份文档，所有状态变化、命令、审查意见、验证日志都记在里面，不靠某个对话的记忆。</li>
