@@ -1,9 +1,9 @@
 ---
 title: "Google Antigravity 的四种多代理模式各自怎么运作"
-description: "Google Antigravity 的普通 Subagents、/boost、/swarm、/teamwork 各自怎么分工、怎么防假装做完、怎么撑过长时间，以及开源代码里能找到哪些对应零件。"
+description: "讲清 Google Antigravity 四种多代理模式（普通 Subagents、/boost、/swarm 和 /teamwork）各自怎么分工、怎么防假装做完、怎么撑过长时间，以及开源代码里能找到哪些对应零件。"
 growth: seedling
 planted: 2026-11-19T11:28:59+08:00
-lastTended: 2026-11-19T11:33:49+08:00
+lastTended: 2026-11-19T11:36:35+08:00
 draft: false
 tags:
   - "ai-agents"
