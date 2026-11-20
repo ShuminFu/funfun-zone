@@ -13,7 +13,7 @@ draft: false
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.html-embed .callout{border-left:2px solid var(--accent);padding-left:1rem;margin:1rem 0}
+.html-embed .pg-callout{border-left:2px solid var(--accent);padding-left:1rem;margin:1rem 0}
 .html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums}
 .html-embed tr.hl td{font-weight:600}
 .html-embed .hash{word-break:break-all}
@@ -27,7 +27,7 @@ draft: false
 </style>
 
 <div class="html-embed" lang="zh">
-<div class="callout"><b>结论先说</b>：这本质上是对开源项目的信任问题——别把项目的默认配置（默认 key、默认绑定 <code>0.0.0.0</code>）原样跑在公网上。默认值写在公开 README 里，扫描器早就内置了。<br>
+<div class="pg-callout"><b>结论先说</b>：这本质上是对开源项目的信任问题——别把项目的默认配置（默认 key、默认绑定 <code>0.0.0.0</code>）原样跑在公网上。默认值写在公开 README 里，扫描器早就内置了。<br>
 <b>马上自查</b>：如果你也在跑 Open WebUI pipelines，现在就执行 <code>ss -ltnp | grep 9099</code>，看它是不是监听在 <code>0.0.0.0</code>；再确认 key 不是默认的 <code>0p3n-w3bu!</code>。</div>
 <p>我一台 VPS 的 pipelines 端口对公网开着，用的还是默认 key，结果被人塞进一个 DDoS 木马，两天就把一个月的流量额度打光了。下面是排查经过、根因和修复清单。</p>
 <h2>症状：流量费突然涨了</h2>
@@ -56,7 +56,7 @@ draft: false
 <h2>根因：pipelines 端口 + 默认 key = 远程 root 执行</h2>
 <p>机器上跑着 Open WebUI 和它配套的 <a href="https://github.com/open-webui/pipelines">pipelines</a> 服务。pipelines 的 9099 端口通过 <code>docker -p 9099:9099</code> 发布到了 <code>0.0.0.0</code>，API key 还是项目公开的默认值 <code>0p3n-w3bu!</code>。</p>
 <p>pipelines 有个接口 <code>POST /v1/pipelines/upload</code>，上传一个 Python 文件，它会立刻 import 执行。容器内是 root。所以知道默认 key 的任何人，都能在这个容器里以 root 跑任意代码。</p>
-<div class="callout">注意：<code>docker -p</code> 发布的端口会直接写 iptables 规则，绕过 ufw。你以为防火墙挡住了，其实没有。</div>
+<div class="pg-callout">注意：<code>docker -p</code> 发布的端口会直接写 iptables 规则，绕过 ufw。你以为防火墙挡住了，其实没有。</div>
 <h3>攻击过程</h3>
 <ol>
 <li>攻击者从 <code>94.154.43.7</code> 向 9099 上传 Python 脚本，前后 4 次。每次上传后约 5 秒再调用删除接口，把 pipeline 删掉。</li>

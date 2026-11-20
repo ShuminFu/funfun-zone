@@ -18,14 +18,14 @@ tags:
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
 /* --native companion: badges, figures, callouts (under .html-embed). */
-.html-embed .callout {
+.html-embed .pg-callout {
   border-left: 3px solid var(--accent);
   background: color-mix(in srgb, var(--accent) 8%, transparent);
   padding: 0.85rem 1rem;
   margin: 1.25rem 0;
 }
-.html-embed .callout p { margin: 0; }
-.html-embed .callout p + p { margin-top: 0.6rem; }
+.html-embed .pg-callout p { margin: 0; }
+.html-embed .pg-callout p + p { margin-top: 0.6rem; }
 
 .html-embed .fig { margin: 1.35rem 0 1.5rem; }
 .html-embed .fig img {
@@ -102,7 +102,7 @@ html[data-theme="dark"] .html-embed .tier .label {
     <p>第三期只问一件事：全行业自由现金流都被算力干成负数，过去三年涌进数据中心的约 <strong>1.65 万亿美元</strong>影子债务，是谁借出来的？泡沫警报响起时，华尔街和硅谷又打算怎么收场？</p>
     <p>二级市场看起来要塌：CoreWeave 高收益债砸到面值约 80 美分、收益率约 15%；微软取消英国 Nscale 巨额租约；德州、新墨西哥项目因地方反对或监管受阻。可同一周一级市场里，黑石、阿波罗联合博通做完代号 <strong>BigSky</strong>、约 <strong>350 亿美元</strong>芯片抵押交易，专门给未上市的 Anthropic 买卡；博通还在筹约 600 亿同类融资；SpaceX 也在寻求约 400 亿显卡抵押贷款。</p>
     <p>一边老债跌到违约边缘，一边顶级机构继续往池子里砸钱——这不是风控集体失智，而是四年前就设计好的<strong>成本重置与破产洗债</strong>。</p>
-    <div class="callout">
+    <div class="pg-callout">
       <p><strong>整条线可以压成一段话：</strong>显卡的硬件寿命大约还能再跑好几年，并不是第三年就坏掉。但是云厂商和规则制定者可以靠合同、撕约和破产重整，把算力包租公从一级训练价（约 4 美元/小时）压到二级推理价（约 1.8 美元/小时），顺便把泡沫出清。五年期高息债撑不住之后，包租公违约进重整；云巨头逼债主本金砍半、租金腰斩，再以白菜价收回还能再跑约五年的机房与卡。华尔街先赚前端费，再拿优先债权接管去杠杆后的现金奶牛。</p>
     </div>
     <figure class="fig">
@@ -186,7 +186,7 @@ html[data-theme="dark"] .html-embed .tier .label {
       <p><strong>最假的一环：</strong>开了三年的福特，全美国大约有两亿司机可以接盘；但是装满十万张三年期二手卡、每月电费几千万美元的百兆瓦液冷机房，全世界又有几个买家？底层信用多来自少数科技巨头，买方垄断、议价权极度不对称——因此巨头随时可以逼包租公和放贷机构重谈，把租金砍半。多头借贷更放大黑洞：BIS 报告显示，私募信贷放给软件与科技公司的贷款里，约 <strong>60%</strong> 借给了同时向 7 家以上机构借钱的企业（十年前不到 10%），同一批资产被不同 SPE 交叉质押。</p>
       <p>老手已经在用脚投票：部分大型固收负责人公开拒绝，在看清结构遇冲击如何演变之前，不向获投资级评级的大型芯片交易提供贷款。</p>
     </div>
-    <div class="callout">
+    <div class="pg-callout">
       <p>在华尔街字典里，从来没有白吹的泡沫，只有精心设计好的财富转移。每一场看似失控的技术狂热背后，都早就标好了：谁在台前唱戏，谁在台下买单，谁在散场后把整座剧场收归己有。</p>
     </div>
   </section>

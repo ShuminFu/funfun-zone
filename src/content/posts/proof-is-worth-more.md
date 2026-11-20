@@ -40,12 +40,12 @@ draft: false
 /* Two cards (fig 3): neutral vs highlighted; stack on phones. */
 .html-embed .vs{margin:1.6em 0}
 .html-embed .vs .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.html-embed .vs .card{background:var(--muted);border:2px solid transparent;border-radius:12px;padding:1em 1.1em;display:flex;flex-direction:column;min-width:0}
-.html-embed .vs .card.hi{background:transparent;border-color:var(--accent)}
-.html-embed .vs .card h3{margin:0 0 .6em;font-size:1.12em;text-align:center;color:var(--foreground)}
-.html-embed .vs .card.hi h3,.html-embed .vs .card.hi .ft{color:var(--accent)}
-.html-embed .vs .card ul{margin:0;padding-left:1.2em;flex:1}
-.html-embed .vs .card li{margin:.25em 0}
+.html-embed .vs .pg-card{background:var(--muted);border:2px solid transparent;border-radius:12px;padding:1em 1.1em;display:flex;flex-direction:column;min-width:0}
+.html-embed .vs .pg-card.hi{background:transparent;border-color:var(--accent)}
+.html-embed .vs .pg-card h3{margin:0 0 .6em;font-size:1.12em;text-align:center;color:var(--foreground)}
+.html-embed .vs .pg-card.hi h3,.html-embed .vs .pg-card.hi .ft{color:var(--accent)}
+.html-embed .vs .pg-card ul{margin:0;padding-left:1.2em;flex:1}
+.html-embed .vs .pg-card li{margin:.25em 0}
 .html-embed .vs .ft{margin:.8em 0 0;text-align:center;color:var(--muted-foreground)}
 .html-embed .vs .hyp{margin:.7em 0 0;text-align:center;font-size:.85em;color:var(--muted-foreground)}
 .html-embed .vs figcaption{font-size:.85em;color:var(--muted-foreground);margin-top:.4em;text-align:center}
@@ -83,8 +83,8 @@ draft: false
 <p class="note">这是从几个产品推出来的假设，样本很小，不是定论。</p>
 <figure class="vs" aria-label="检测假的与证明真的对比">
 <div class="cards">
-<div class="card"><h3>检测「这是假的」</h3><ul><li>对手是下一代模型</li><li>模型越强，越难判断</li><li>结论是概率，没人签字</li><li>例：AI 文本检测</li></ul><p class="ft">在掉</p></div>
-<div class="card hi"><h3>证明「这是真的」</h3><ul><li>从源头记录：收款、证件、审计</li><li>假的越多，越要它</li><li>有人背书、出错有人负责</li><li>例：TrustMRR、Comp AI、Veriff、Checkr、1lookup</li></ul><p class="ft">在涨</p></div>
+<div class="pg-card"><h3>检测「这是假的」</h3><ul><li>对手是下一代模型</li><li>模型越强，越难判断</li><li>结论是概率，没人签字</li><li>例：AI 文本检测</li></ul><p class="ft">在掉</p></div>
+<div class="pg-card hi"><h3>证明「这是真的」</h3><ul><li>从源头记录：收款、证件、审计</li><li>假的越多，越要它</li><li>有人背书、出错有人负责</li><li>例：TrustMRR、Comp AI、Veriff、Checkr、1lookup</li></ul><p class="ft">在涨</p></div>
 </div>
 <p class="hyp">这是一个假设，不是定论</p>
 <figcaption>两种回答「真不真」的方式</figcaption>

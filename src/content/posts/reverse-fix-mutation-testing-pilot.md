@@ -91,11 +91,11 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .g3{grid-template-columns:repeat(3,1fr)}
 .html-embed .g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:720px){.html-embed .g2,.html-embed .g3,.html-embed .g4{grid-template-columns:1fr}}
-.html-embed .card{background:var(--surface);border:1px solid var(--line);padding:16px 18px}
-.html-embed .card h3{margin:0 0 6px;font-size:14.5px}
-.html-embed .card p{margin:0;color:var(--ink-2);font-size:13.5px;text-wrap:pretty}
-.html-embed .card.feature{grid-column:span 2;border-top:3px solid var(--accent)}
-@media(max-width:720px){.html-embed .card.feature{grid-column:auto}}
+.html-embed .pg-card{background:var(--surface);border:1px solid var(--line);padding:16px 18px}
+.html-embed .pg-card h3{margin:0 0 6px;font-size:14.5px}
+.html-embed .pg-card p{margin:0;color:var(--ink-2);font-size:13.5px;text-wrap:pretty}
+.html-embed .pg-card.feature{grid-column:span 2;border-top:3px solid var(--accent)}
+@media(max-width:720px){.html-embed .pg-card.feature{grid-column:auto}}
 .html-embed .stat{background:var(--surface);border:1px solid var(--line);padding:16px 18px}
 .html-embed .stat .v{font-family:var(--mono);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums; line-height:1.1;color:var(--ink)}
 .html-embed .stat .l{color:var(--ink-3);font-size:12px;letter-spacing:.03em;margin-top:6px}
@@ -209,7 +209,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .legend span{display:inline-flex;align-items:center;gap:6px}
 .html-embed .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .html-embed .verdict,.html-embed .tldr,.html-embed .calc,.html-embed .insight{border-radius:var(--rp)}
-.html-embed .toc,.html-embed .card,.html-embed .stat,.html-embed .lane,.html-embed .tablebox,.html-embed .filebox,.html-embed .phase{border-radius:var(--r)}
+.html-embed .toc,.html-embed .pg-card,.html-embed .stat,.html-embed .lane,.html-embed .tablebox,.html-embed .filebox,.html-embed .phase{border-radius:var(--r)}
 .html-embed .lane,.html-embed .verdict{overflow:hidden}
 .html-embed .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:700; letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px; border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2); white-space:nowrap;vertical-align:middle;margin-right:8px}
 .html-embed .pill.grn{color:var(--grn);background:color-mix(in srgb,var(--grn) 13%,transparent);border-color:color-mix(in srgb,var(--grn) 34%,transparent)}
@@ -233,7 +233,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .themebtn,.html-embed .toc{display:none!important}
 .html-embed a{color:inherit;text-decoration:none}
 .html-embed h2{break-after:avoid;page-break-after:avoid}
-.html-embed .verdict,.html-embed .tldr,.html-embed .card,.html-embed .stat,.html-embed .calc,.html-embed .lane,.html-embed .tablebox,.html-embed .layer,.html-embed .phase,.html-embed .filebox,.html-embed .insight{break-inside:avoid;page-break-inside:avoid}
+.html-embed .verdict,.html-embed .tldr,.html-embed .pg-card,.html-embed .stat,.html-embed .calc,.html-embed .lane,.html-embed .tablebox,.html-embed .layer,.html-embed .phase,.html-embed .filebox,.html-embed .insight{break-inside:avoid;page-break-inside:avoid}
 .html-embed .footer{margin-top:36px}}
 .html-embed{background:transparent!important}  /* the blog owns the page background */
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
@@ -324,15 +324,15 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <figcaption>左：随手乱挪的人（规则工具）。中：躲在柱子后先看保安站位的人（大模型）。右：照着旧案图纸再偷一次的人（撤回历史修复）。保安始终是同一个——仓库里现有的测试。</figcaption>
   </figure>
   <div class="pg-grid g3">
-    <div class="card">
+    <div class="pg-card">
       <h3><span class="pill blu">规则工具</span>随手乱挪</h3>
       <p>工具按固定规则改代码：<code>==</code> 改成 <code>!=</code>，<code>&amp;&amp;</code> 改成 <code>||</code>，<code>continue</code> 改成 <code>break</code>。量大、便宜、全自动。Go 用 <code>gremlins</code>，Python 用 <code>mutmut</code>。</p>
     </div>
-    <div class="card">
+    <div class="pg-card">
       <h3><span class="pill pur">大模型</span>先看站位再下手</h3>
       <p>把代码和相关测试一起交给大模型，让它造「它认为现有测试抓不住」的真实型 bug，比如写错 ID、少个保护条件、状态记错。参考 2026 年 test-aware 变异的做法。每个文件 12 个。</p>
     </div>
-    <div class="card">
+    <div class="pg-card">
       <h3><span class="pill grn">撤回修复</span>照旧案再偷一次</h3>
       <p>把历史上的 bug 修复反向打回去，得到的是一个真实发生过的 bug。打不上的（代码已经变了），交给大模型按意思移植成最小补丁。</p>
     </div>

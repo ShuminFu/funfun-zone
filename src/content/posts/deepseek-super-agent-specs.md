@@ -12,7 +12,7 @@ tags:
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
 /* Companion CSS for --native embed on FunFun Zone */
-.html-embed .callout {
+.html-embed .pg-callout {
   border-left: 3px solid var(--accent);
   border-right: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
   border-top: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
@@ -21,8 +21,8 @@ tags:
   margin: 0 0 1.4rem;
   background: transparent;
 }
-.html-embed .callout p { margin: 0 0 0.55rem; color: var(--foreground); }
-.html-embed .callout p:last-child { margin-bottom: 0; }
+.html-embed .pg-callout p { margin: 0 0 0.55rem; color: var(--foreground); }
+.html-embed .pg-callout p:last-child { margin-bottom: 0; }
 .html-embed .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 1.2rem; }
 .html-embed .chip {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -84,7 +84,7 @@ html[data-theme="dark"] .html-embed .pill.open { background: #d0b8e8; color: #20
     <span class="chip">2026-10-31</span>
     <span class="chip">原型：dsh-superagent-prototype</span>
   </div>
-  <div class="callout">
+  <div class="pg-callout">
     <p><strong>出处与声明</strong></p>
     <p>权威规格来源：DeepSeek Harness《<a href="https://www.bilibili.com/opus/1265361021143351318">Super-agent 设计探索：迈向更自主的 Agent 系统</a>》（编辑于 2026-10-31）。原文明确声明：这是面向工程实践的架构思路探讨，并非对 DeepSeek Harness 现有产品功能的介绍。</p>
     <p>讲解入口：程序员鱼皮 B 站视频《<a href="https://www.bilibili.com/video/BV1kr4h6fExw/">DeepSeek 新出的 Super Agent 是什么？真有用么？</a>》（BV1kr4h6fExw）。本笔记以 opus 全文为规格依据；鱼皮口述只作讲解侧重与例子，不把口述当成原文没有的规格。</p>

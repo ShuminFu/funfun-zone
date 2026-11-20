@@ -17,8 +17,8 @@
 //   E3 utility class    embed markup uses a Tailwind utility name as its own class
 //                       (sticky, fixed, hidden, flex, ...). The site's utility then
 //                       applies to the embed, and the embed's rule fights the site.
-// Warnings (printed only):
-//   W1 component class  embed markup uses a site component class (card, callout, ...).
+//   E4 component class  embed markup uses a site component class (card, callout, ...);
+//                       the site's own rule for it then leaks into the embed.
 //
 // Posts listed in scripts/lint-embeds.baseline.json predate this lint. Their
 // errors print as warnings so the build passes; fix them and delete the entry.
@@ -148,7 +148,7 @@ for (const file of files) {
     for (const m of body.matchAll(/\bclass="([^"]*)"/g)) {
       for (const c of m[1].split(/\s+/)) {
         if (UTILITY.has(c)) report('E3', m.index, `class "${c}" is a Tailwind utility; the site's rule will apply to the embed — rename it (e.g. "pg-${c}")`);
-        else if (COMPONENT.has(c)) report('W1', m.index, `class "${c}" is also a site component class; site styles may leak in`);
+        else if (COMPONENT.has(c)) report('E4', m.index, `class "${c}" is also a site component class; the site's rule leaks into the embed — rename it (e.g. "pg-${c}")`);
       }
     }
   }

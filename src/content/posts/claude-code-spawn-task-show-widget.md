@@ -112,11 +112,11 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .g3{grid-template-columns:repeat(3,1fr)}
 .html-embed .g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:720px){.html-embed .g2,.html-embed .g3,.html-embed .g4{grid-template-columns:1fr}}
-.html-embed .card{background:var(--surface);border:1px solid var(--line);padding:16px 18px}
-.html-embed .card h3{margin:0 0 6px;font-size:14.5px}
-.html-embed .card p{margin:0;color:var(--ink-2);font-size:13.5px;text-wrap:pretty}
-.html-embed .card.feature{grid-column:span 2;border-top:3px solid var(--accent)}
-@media(max-width:720px){.html-embed .card.feature{grid-column:auto}}
+.html-embed .pg-card{background:var(--surface);border:1px solid var(--line);padding:16px 18px}
+.html-embed .pg-card h3{margin:0 0 6px;font-size:14.5px}
+.html-embed .pg-card p{margin:0;color:var(--ink-2);font-size:13.5px;text-wrap:pretty}
+.html-embed .pg-card.feature{grid-column:span 2;border-top:3px solid var(--accent)}
+@media(max-width:720px){.html-embed .pg-card.feature{grid-column:auto}}
 .html-embed .stat{background:var(--surface);border:1px solid var(--line);padding:16px 18px}
 .html-embed .stat .v{font-family:var(--mono);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums; line-height:1.1;color:var(--ink)}
 .html-embed .stat .l{color:var(--ink-3);font-size:12px;letter-spacing:.03em;margin-top:6px}
@@ -199,7 +199,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .legend span{display:inline-flex;align-items:center;gap:6px}
 .html-embed .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .html-embed .verdict,.html-embed .tldr,.html-embed .calc,.html-embed .insight{border-radius:var(--rp)}
-.html-embed .toc,.html-embed .card,.html-embed .stat,.html-embed .lane,.html-embed .tablebox,.html-embed .filebox,.html-embed .phase{border-radius:var(--r)}
+.html-embed .toc,.html-embed .pg-card,.html-embed .stat,.html-embed .lane,.html-embed .tablebox,.html-embed .filebox,.html-embed .phase{border-radius:var(--r)}
 .html-embed .lane,.html-embed .verdict{overflow:hidden}
 .html-embed .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:700; letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px; border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2); white-space:nowrap;vertical-align:middle;margin-right:8px}
 .html-embed .pill.grn{color:var(--grn);background:color-mix(in srgb,var(--grn) 13%,transparent);border-color:color-mix(in srgb,var(--grn) 34%,transparent)}
@@ -223,7 +223,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 .html-embed .themebtn,.html-embed .toc{display:none!important}
 .html-embed a{color:inherit;text-decoration:none}
 .html-embed h2{break-after:avoid;page-break-after:avoid}
-.html-embed .verdict,.html-embed .tldr,.html-embed .card,.html-embed .stat,.html-embed .calc,.html-embed .lane,.html-embed .tablebox,.html-embed .layer,.html-embed .phase,.html-embed .filebox,.html-embed .insight{break-inside:avoid;page-break-inside:avoid}
+.html-embed .verdict,.html-embed .tldr,.html-embed .pg-card,.html-embed .stat,.html-embed .calc,.html-embed .lane,.html-embed .tablebox,.html-embed .layer,.html-embed .phase,.html-embed .filebox,.html-embed .insight{break-inside:avoid;page-break-inside:avoid}
 .html-embed .footer{margin-top:36px}}
 .html-embed pre{font-family:var(--mono);font-size:12.5px;line-height:1.6;background:var(--surface-2);border:1px solid var(--line-soft); border-radius:var(--r);padding:12px 14px;margin:8px 0 0;overflow-x:auto;color:var(--ink)}
 .html-embed pre .add{color:var(--grn);font-weight:600}
@@ -292,8 +292,8 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   <section>
   <h2 id="s01"><span class="n">01</span>先打两个比方</h2>
   <div class="pg-grid g2">
-    <div class="card"><h3><span class="pill blu">spawn_task</span>贴在工单上的便利贴</h3><p>修车师傅给你换轮胎，发现刹车片快磨完了。他不顺手去拆刹车——那会把今天的活越搞越大。他在工单上贴一张便利贴：“刹车片该换了，要的话另开一单。”开不开，你说了算。</p></div>
-    <div class="card"><h3><span class="pill teal">show_widget</span>摆在你面前的样板</h3><p>装修师傅不用嘴给你描述三种瓷砖，而是把三块样板直接摆在桌上。你用手一指：“这块。”比来回打字说“第二种偏灰那个”快得多，也不会听岔。</p></div>
+    <div class="pg-card"><h3><span class="pill blu">spawn_task</span>贴在工单上的便利贴</h3><p>修车师傅给你换轮胎，发现刹车片快磨完了。他不顺手去拆刹车——那会把今天的活越搞越大。他在工单上贴一张便利贴：“刹车片该换了，要的话另开一单。”开不开，你说了算。</p></div>
+    <div class="pg-card"><h3><span class="pill teal">show_widget</span>摆在你面前的样板</h3><p>装修师傅不用嘴给你描述三种瓷砖，而是把三块样板直接摆在桌上。你用手一指：“这块。”比来回打字说“第二种偏灰那个”快得多，也不会听岔。</p></div>
   </div>
   <h2 id="s02"><span class="n">02</span>spawn_task：顺路看到的事，交给你决定</h2>
   <p class="sub">它管的是“范围”。这次的改动只做这次该做的事，其他值得修的事记下来，变成一张卡片。</p>
