@@ -53,8 +53,8 @@ html[data-theme="dark"] .html-embed{--bg:#12161c; --surface:#1b2129; --ink:#e7eb
 .html-embed .col .colh .lim{font-family:var(--f-num);font-variant-numeric:tabular-nums}
 .html-embed .col.full{box-shadow:inset 0 0 0 2px var(--hot)}
 .html-embed .col.full .colh .lim{color:var(--hot)}
-.html-embed .sticky{background:var(--note);color:var(--note-ink);border-radius:6px;padding:6px 8px;font-size:13px;line-height:1.4; box-shadow:0 1px 0 rgba(0,0,0,.08);animation:pop .25s ease}
-.html-embed .sticky.hot{background:var(--hot-soft);color:var(--hot);font-weight:700;box-shadow:inset 0 0 0 1.5px var(--hot)}
+.html-embed .pg-note{background:var(--note);color:var(--note-ink);border-radius:6px;padding:6px 8px;font-size:13px;line-height:1.4; box-shadow:0 1px 0 rgba(0,0,0,.08);animation:pop .25s ease}
+.html-embed .pg-note.hot{background:var(--hot-soft);color:var(--hot);font-weight:700;box-shadow:inset 0 0 0 1.5px var(--hot)}
 @keyframes pop{from{transform:scale(.9);opacity:.4}to{transform:none;opacity:1}}
 .html-embed .btns{display:flex;flex-wrap:wrap;gap:8px}
 .html-embed button{font:inherit;font-size:14px;border-radius:999px;border:1.5px solid currentColor;background:transparent;padding:6px 14px;cursor:pointer;color:var(--ink)}
@@ -71,7 +71,7 @@ html[data-theme="dark"] .html-embed{--bg:#12161c; --surface:#1b2129; --ink:#e7eb
 .html-embed .day.on{background:var(--scr)}
 .html-embed .sprint .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-family:var(--f-num)}
 .html-embed .backlog{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;align-items:center}
-.html-embed .backlog .sticky{font-size:12px;padding:3px 6px}
+.html-embed .backlog .pg-note{font-size:12px;padding:3px 6px}
 .html-embed .locked{font-size:12px;color:var(--scr);font-weight:700}
 .html-embed .tbl{overflow-x:auto;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
 .html-embed table{border-collapse:collapse;width:100%;min-width:620px;font-size:15px}
@@ -100,7 +100,7 @@ html[data-theme="dark"] .html-embed{--bg:#12161c; --surface:#1b2129; --ink:#e7eb
 .html-embed .src a{color:inherit}
 @media (max-width:760px){.html-embed .boards,.html-embed .bottom{grid-template-columns:1fr}
 .html-embed .mix{grid-template-columns:1fr}}
-@media (prefers-reduced-motion:reduce){.html-embed .sticky{animation:none}
+@media (prefers-reduced-motion:reduce){.html-embed .pg-note{animation:none}
 .html-embed .bar span{transition:none}}
 .html-embed{background:transparent!important}  /* the blog owns the page background */
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
@@ -202,8 +202,8 @@ html[data-theme="dark"] .html-embed{--bg:#12161c; --surface:#1b2129; --ink:#e7eb
   const $ = id => document.getElementById(id);
   const tasks = ["登录页改版","修复支付超时","导出报表","新手引导","搜索加速","消息推送","深色模式","权限设置","订单筛选","头像上传","数据看板","邮件模板"];
   let ti = 0; const nextName = () => tasks[ti++ % tasks.length];
-  const mk = (t) => { const d=document.createElement("div"); d.className="sticky"+(t.hot?" hot":""); d.textContent=(t.hot?"⚡ ":"")+t.name; return d; };
-  const fill = (col, list) => { col.querySelectorAll(".sticky").forEach(c=>c.remove()); list.forEach(t=>col.appendChild(mk(t))); };
+  const mk = (t) => { const d=document.createElement("div"); d.className="pg-note"+(t.hot?" hot":""); d.textContent=(t.hot?"⚡ ":"")+t.name; return d; };
+  const fill = (col, list) => { col.querySelectorAll(".pg-note").forEach(c=>c.remove()); list.forEach(t=>col.appendChild(mk(t))); };
   /* ---------- Kanban ---------- */
   const WIP = 3; let step = 0;
   const K = { todo:[], doing:[], done:[], cycles:[] };
@@ -243,7 +243,7 @@ html[data-theme="dark"] .html-embed{--bg:#12161c; --surface:#1b2129; --ink:#e7eb
   const daysEl = $("days"); for(let i=0;i<10;i++){ const d=document.createElement("div"); d.className="day"; daysEl.appendChild(d); }
   function sRender(msg, warn){
     fill($("sTodo"),S.todo); fill($("sDoing"),S.doing); fill($("sDone"),S.done);
-    const bk=$("sBack"); bk.querySelectorAll(".sticky").forEach(c=>c.remove()); S.back.slice(0,6).forEach(t=>bk.appendChild(mk(t)));
+    const bk=$("sBack"); bk.querySelectorAll(".pg-note").forEach(c=>c.remove()); S.back.slice(0,6).forEach(t=>bk.appendChild(mk(t)));
     [...daysEl.children].forEach((d,i)=>d.classList.toggle("on", i<S.day));
     $("dayLbl").textContent = "第 "+S.day+" / 10 天";
     $("sLock").textContent = S.running ? "已锁定" : "";

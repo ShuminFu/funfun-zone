@@ -1,0 +1,41 @@
+{
+  "src/content/posts/a2a-outcome-delivery.md": [
+    "E1"
+  ],
+  "src/content/posts/ai-native-app-interaction.md": [
+    "E1"
+  ],
+  "src/content/posts/antigravity-multi-agent-modes.md": [
+    "E1"
+  ],
+  "src/content/posts/blog-performance-audit.md": [
+    "E1"
+  ],
+  "src/content/posts/claude-code-queued-messages.md": [
+    "E1"
+  ],
+  "src/content/posts/claude-code-spawn-task-show-widget.md": [
+    "E3"
+  ],
+  "src/content/posts/claude-code-workflow-multi-turn.md": [
+    "E3"
+  ],
+  "src/content/posts/code-is-cheap-where-money-goes.md": [
+    "E1"
+  ],
+  "src/content/posts/gherkin-vs-matt-pocock-skills.md": [
+    "E1"
+  ],
+  "src/content/posts/proof-is-worth-more.md": [
+    "E1"
+  ],
+  "src/content/posts/reverse-fix-mutation-testing-pilot.md": [
+    "E3"
+  ],
+  "src/content/posts/side-agent-mods-you-should-know.md": [
+    "E1"
+  ],
+  "src/content/posts/vps-pipelines-ddos-botnet-incident.md": [
+    "E1"
+  ]
+}

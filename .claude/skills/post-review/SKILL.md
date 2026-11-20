@@ -73,6 +73,13 @@ Do not work around these in a note; if one is wrong, fix it in the layout.
 Most notes here are HTML embeds with their own `<style>`. These are the
 ways they have broken, so check them when writing one.
 
+`npm run lint:embeds` (`scripts/lint-embeds.mjs`) enforces the first three
+rules below and runs before every build, so a bad note fails the build:
+an unscoped selector (E1), a pasted page's `<title>`/`<meta>`/`<body>` (E2),
+or a Tailwind utility name such as `sticky` used as the note's own class
+(E3). Older notes are grandfathered in `scripts/lint-embeds.baseline.json`;
+fix one, then delete its entry. Never add a new entry to get a build through.
+
 - **Give it both palettes.** Define colours as variables and redefine them
   under `html[data-theme="dark"] .html-embed` (or `.dark .html-embed`). A
   note with only light colours is unreadable at night: dark ink on the
@@ -84,7 +91,9 @@ ways they have broken, so check them when writing one.
 - **`--muted` is a surface, not a text colour.** Captions set in it are
   invisible.
 - **Scope every rule under `.html-embed`** and avoid class names the site
-  uses (`.card`, `.callout`, `.highlight`, `.line`).
+  uses (`.card`, `.callout`, `.highlight`, `.line`) and Tailwind utility
+  names (`.sticky`, `.hidden`, `.grid`, `.flex`, …). A `.sticky` rule once
+  painted the site header yellow.
 - **Small labels and chips need 4.5:1 too.** Tinted chips are where
   contrast is lost: amber on cream, grey on grey.
 - **No `# ` first-level heading and no repeat of the description** at the
