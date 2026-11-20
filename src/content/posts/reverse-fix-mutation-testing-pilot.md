@@ -86,7 +86,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 @media(min-width:1380px){.html-embed .toc{position:fixed;top:50%;transform:translateY(-50%); left:max(16px,calc((100vw - 880px)/2 - 236px));width:216px;margin:0; max-height:calc(100vh - 48px);overflow-y:auto;z-index:15;border:0;background:none;padding:0}
 .html-embed .toc ol{grid-template-columns:1fr;gap:0}
 .html-embed .toc a{font-size:12.5px;padding:6px 7px;border-bottom:0}}
-.html-embed .grid{display:grid;gap:14px}
+.html-embed .pg-grid{display:grid;gap:14px}
 .html-embed .g2{grid-template-columns:1fr 1fr}
 .html-embed .g3{grid-template-columns:repeat(3,1fr)}
 .html-embed .g4{grid-template-columns:repeat(4,1fr)}
@@ -323,7 +323,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
     <img src="/images/posts/reverse-fix-mutation-testing-pilot/fig-01.webp" width="960" height="540" decoding="async" alt="夜间博物馆里一名保安守着展柜，三个闯入者用不同方式试探他：左边一个随手碰倒东西，中间一个躲在柱子后观察保安，右边一个照着旧图纸重演以前的盗窃" loading="lazy" data-avif="no">
     <figcaption>左：随手乱挪的人（规则工具）。中：躲在柱子后先看保安站位的人（大模型）。右：照着旧案图纸再偷一次的人（撤回历史修复）。保安始终是同一个——仓库里现有的测试。</figcaption>
   </figure>
-  <div class="grid g3">
+  <div class="pg-grid g3">
     <div class="card">
       <h3><span class="pill blu">规则工具</span>随手乱挪</h3>
       <p>工具按固定规则改代码：<code>==</code> 改成 <code>!=</code>，<code>&amp;&amp;</code> 改成 <code>||</code>，<code>continue</code> 改成 <code>break</code>。量大、便宜、全自动。Go 用 <code>gremlins</code>，Python 用 <code>mutmut</code>。</p>
@@ -340,7 +340,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </section>
   <section>
   <h2>实验怎么做</h2>
-  <div class="grid g2">
+  <div class="pg-grid g2">
     <div class="phase">
       <div class="ph">两段代码</div>
       <ul>
@@ -380,7 +380,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </div>
   <p class="sub" style="margin-top:10px">Python 规则组是从 <code>mutmut</code> 造的 885 个里按文件各抽 40 个。Python 撤回修复组：30 个修复里自动撤回 3 个、移植 16 个，另 11 个牵涉已删除的代码，没有做。</p>
   <h3>存活的里面，有多少是真漏洞</h3>
-  <div class="grid g3">
+  <div class="pg-grid g3">
     <div class="stat"><div class="v">13% – 29%</div><div class="l">规则工具造的变异体（Py / Go）</div></div>
     <div class="stat warn"><div class="v">29% – 40%</div><div class="l">大模型造的变异体（Go / Py）</div></div>
     <div class="stat good"><div class="v">3 / 3</div><div class="l">撤回修复造的变异体：存活的全是真漏洞</div></div>
@@ -514,7 +514,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </section>
   <section>
   <h2>怎么用到日常流程</h2>
-  <div class="grid g3">
+  <div class="pg-grid g3">
     <div class="phase">
       <div class="ph">PR 上 · 规则工具</div>
       <ul>

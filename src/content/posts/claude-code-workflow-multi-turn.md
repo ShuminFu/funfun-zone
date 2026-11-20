@@ -59,8 +59,8 @@ html[data-theme="dark"] .wf-report{color-scheme:dark; --bg:#151a20; --surface:#1
 .wf-report .tldr{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent); padding:18px 22px;margin:22px 0 4px}
 .wf-report .tldr p{margin:0;color:var(--ink-2);font-size:14.5px;max-width:var(--measure);text-wrap:pretty}
 .wf-report .tldr .hl{color:var(--accent-ink);font-weight:650}
-.wf-report .prose{max-width:var(--measure);color:var(--ink-2);text-wrap:pretty}
-.wf-report .prose p:first-child{margin-top:0}
+.wf-report .pg-prose{max-width:var(--measure);color:var(--ink-2);text-wrap:pretty}
+.wf-report .pg-prose p:first-child{margin-top:0}
 .wf-report .lead{max-width:58ch;font-size:17px;line-height:1.72;color:var(--ink-2);text-wrap:pretty}
 .wf-report .rule{height:1px;border:0;background:var(--line);margin:30px 0}
 .wf-report .toc{border:1px solid var(--line);background:var(--surface);padding:18px 22px;margin-top:24px}
@@ -75,7 +75,7 @@ html[data-theme="dark"] .wf-report{color-scheme:dark; --bg:#151a20; --surface:#1
 @media(min-width:1380px){.wf-report .toc{position:fixed;top:50%;transform:translateY(-50%); left:max(16px,calc((100vw - 880px)/2 - 236px));width:216px;margin:0; max-height:calc(100vh - 48px);overflow-y:auto;z-index:15;border:0;background:none;padding:0}
 .wf-report .toc ol{grid-template-columns:1fr;gap:0}
 .wf-report .toc a{font-size:12.5px;padding:6px 7px;border-bottom:0}}
-.wf-report .grid{display:grid;gap:14px}
+.wf-report .pg-grid{display:grid;gap:14px}
 .wf-report .g2{grid-template-columns:1fr 1fr}
 .wf-report .g3{grid-template-columns:repeat(3,1fr)}
 .wf-report .g4{grid-template-columns:repeat(4,1fr)}
@@ -249,7 +249,7 @@ plus everything after it runs again. So add new work at the <em>end</em>.</p>
 <section aria-labelledby="s01">
 <h2 id="s01"><span class="n">01</span>The four pieces</h2>
 <p class="sub">Think of a recipe card plus a box of finished dishes. You can add a line to the card; the dishes already cooked stay in the box.</p>
-<div class="grid g2">
+<div class="pg-grid g2">
 <div class="card"><h3><span class="pill teal">recipe</span>The script file</h3><p>The JavaScript that says which agents to run. Each run saves it as a file in this session's folder; the tool result prints the path. I edit it with <code>Edit</code>, then pass it back as <code>scriptPath</code>.</p></div>
 <div class="card"><h3><span class="pill blu">receipt</span>The run ID</h3><p>A name for one run, like <code>wf_…</code>. It points to that run's saved results. You pass it as <code>resumeFromRunId</code>.</p></div>
 <div class="card"><h3><span class="pill grn">dish box</span>The journal</h3><p><code>journal.jsonl</code> in the run's folder records what each <code>agent()</code> call returned. Resume reads it. I also read it when a result looks empty or odd.</p></div>
@@ -317,7 +317,7 @@ const confirmed = await verifyAll(found)          // unchanged → replayed from
 // --- appended in turn 2 ---
 const fixes = await parallel(confirmed.map(f =&gt; () =&gt;
   agent(`Fix ${f.title} in ${f.file}`, { phase: 'Fix', isolation: 'worktree' })))
-return { confirmed, fixes }</span></pre><p class="prose" style="margin-top:12px">Two small rules: the <code>meta</code> block must be a plain literal, and the script cannot use
+return { confirmed, fixes }</span></pre><p class="pg-prose" style="margin-top:12px">Two small rules: the <code>meta</code> block must be a plain literal, and the script cannot use
 <code>Date.now()</code>, <code>Math.random()</code>, or <code>new Date()</code>. Those would give a different answer on every replay and break the cache.
 Pass a timestamp in through <code>args</code> instead.</p>
 </section>
@@ -376,11 +376,11 @@ Pass a timestamp in through <code>args</code> instead.</p>
 </tbody>
 </table>
 </div>
-<p class="prose" style="margin-top:12px">For big tasks, the guidance is to run phases as <strong>separate workflows in sequence</strong>—understand → design → implement → review—so I read each result before choosing the next step. That keeps you in the loop between phases.</p>
+<p class="pg-prose" style="margin-top:12px">For big tasks, the guidance is to run phases as <strong>separate workflows in sequence</strong>—understand → design → implement → review—so I read each result before choosing the next step. That keeps you in the loop between phases.</p>
 </section>
 <section aria-labelledby="s06">
 <h2 id="s06"><span class="n">06</span>Limits and gotchas</h2>
-<div class="grid g2">
+<div class="pg-grid g2">
 <div class="phase">
 <div class="ph">Hard limits</div>
 <ul>

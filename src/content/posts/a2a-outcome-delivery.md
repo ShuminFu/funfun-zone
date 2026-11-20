@@ -10,12 +10,12 @@ draft: false
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-table{border-collapse:collapse;width:100%;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",system-ui,-apple-system,"Segoe UI",sans-serif !important;font-size:.85em;margin:1.2em 0;border-top:2px solid var(--foreground,#222) !important;border-bottom:2px solid var(--foreground,#222) !important;background:none}
-table *{font-family:inherit !important;font-variant-emoji:text}
-table tr,table thead tr,table tbody tr,table th,table td{border:none !important;background:none !important;box-shadow:none !important}
-table th,table td{padding:6px 10px;white-space:nowrap;text-align:left;line-height:1.5}
-table thead th{font-weight:600;border-bottom:1px solid var(--foreground,#222) !important}
-img{max-width:100%;height:auto}
+.html-embed table{border-collapse:collapse;width:100%;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",system-ui,-apple-system,"Segoe UI",sans-serif !important;font-size:.85em;margin:1.2em 0;border-top:2px solid var(--foreground,#222) !important;border-bottom:2px solid var(--foreground,#222) !important;background:none}
+.html-embed table *{font-family:inherit !important;font-variant-emoji:text}
+.html-embed table tr,.html-embed table thead tr,.html-embed table tbody tr,.html-embed table th,.html-embed table td{border:none !important;background:none !important;box-shadow:none !important}
+.html-embed table th,.html-embed table td{padding:6px 10px;white-space:nowrap;text-align:left;line-height:1.5}
+.html-embed table thead th{font-weight:600;border-bottom:1px solid var(--foreground,#222) !important}
+.html-embed img{max-width:100%;height:auto}
 </style>
 
 <div class="html-embed" lang="zh-CN">

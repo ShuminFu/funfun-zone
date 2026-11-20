@@ -12,12 +12,12 @@ draft: false
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.note,blockquote{border-left:2px solid var(--accent);padding-left:.8em;color:var(--foreground);opacity:1}
-.note code,blockquote code{color:var(--foreground);background:color-mix(in srgb,var(--foreground) 10%,transparent);padding:0 .25em;border-radius:3px}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-.illus{margin:1.5em 0}
-.illus img{width:100%;height:auto;border-radius:8px}
-.illus figcaption{font-size:.9em;color:var(--foreground);opacity:.85;text-align:center;margin-top:.4em}
+.html-embed .note,.html-embed blockquote{border-left:2px solid var(--accent);padding-left:.8em;color:var(--foreground);opacity:1}
+.html-embed .note code,.html-embed blockquote code{color:var(--foreground);background:color-mix(in srgb,var(--foreground) 10%,transparent);padding:0 .25em;border-radius:3px}
+.html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums}
+.html-embed .illus{margin:1.5em 0}
+.html-embed .illus img{width:100%;height:auto;border-radius:8px}
+.html-embed .illus figcaption{font-size:.9em;color:var(--foreground);opacity:.85;text-align:center;margin-top:.4em}
 </style>
 
 <div class="html-embed" lang="zh">

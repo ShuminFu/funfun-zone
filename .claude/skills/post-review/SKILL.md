@@ -77,8 +77,8 @@ ways they have broken, so check them when writing one.
 rules below and runs before every build, so a bad note fails the build:
 an unscoped selector (E1), a pasted page's `<title>`/`<meta>`/`<body>` (E2),
 or a Tailwind utility name such as `sticky` used as the note's own class
-(E3). Older notes are grandfathered in `scripts/lint-embeds.baseline.json`;
-fix one, then delete its entry. Never add a new entry to get a build through.
+(E3). `scripts/lint-embeds.baseline.json` is empty: every note passes.
+Keep it that way; never add an entry to get a build through.
 
 - **Give it both palettes.** Define colours as variables and redefine them
   under `html[data-theme="dark"] .html-embed` (or `.dark .html-embed`). A

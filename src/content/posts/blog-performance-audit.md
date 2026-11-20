@@ -12,12 +12,12 @@ tags:
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.tldr{border-left:2px solid var(--accent);padding-left:1em}
-.tw{overflow-x:auto}
-.tw table{width:100%}
-.tw td:first-child,.tw th:first-child{white-space:nowrap}
-.tw table.num td:nth-child(n+2){font-variant-numeric:tabular-nums}
-@media (max-width:640px){.tw td:first-child,.tw th:first-child{white-space:normal}}
+.html-embed .tldr{border-left:2px solid var(--accent);padding-left:1em}
+.html-embed .tw{overflow-x:auto}
+.html-embed .tw table{width:100%}
+.html-embed .tw td:first-child,.html-embed .tw th:first-child{white-space:nowrap}
+.html-embed .tw table.num td:nth-child(n+2){font-variant-numeric:tabular-nums}
+@media (max-width:640px){.html-embed .tw td:first-child,.html-embed .tw th:first-child{white-space:normal}}
 </style>
 
 <div class="html-embed" lang="zh-CN">

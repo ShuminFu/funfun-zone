@@ -13,8 +13,8 @@ tags:
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.tldr{border-left:2px solid var(--accent);padding:2px 14px;margin:20px 0}
-.tldr p{margin:0}
+.html-embed .tldr{border-left:2px solid var(--accent);padding:2px 14px;margin:20px 0}
+.html-embed .tldr p{margin:0}
 </style>
 
 <div class="html-embed" lang="zh-CN">

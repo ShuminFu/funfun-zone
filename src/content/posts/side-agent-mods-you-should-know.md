@@ -11,16 +11,16 @@ draft: false
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.flow{display:flex;flex-direction:column;margin:1.4em 0}
-.step{border:1px solid color-mix(in srgb,var(--foreground) 18%,transparent);border-radius:8px;padding:10px 14px;color:var(--foreground)}
-.step b{color:var(--accent)}
-.step small{display:block;color:color-mix(in srgb,var(--foreground) 75%,transparent);line-height:1.5;font-size:.9em}
-.arrow{text-align:center;color:color-mix(in srgb,var(--foreground) 55%,transparent);line-height:1.6}
-.mock{border:1px solid color-mix(in srgb,var(--foreground) 18%,transparent);border-radius:8px;padding:12px 14px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem;line-height:1.6;color:var(--foreground)}
-.mock .star{color:var(--accent)}
-.mock .dim,.note,.gloss,blockquote .gloss{color:color-mix(in srgb,var(--foreground) 72%,transparent)}
-blockquote{border-left:2px solid var(--accent);padding-left:1em}
-.lead{color:color-mix(in srgb,var(--foreground) 75%,transparent)}
+.html-embed .flow{display:flex;flex-direction:column;margin:1.4em 0}
+.html-embed .step{border:1px solid color-mix(in srgb,var(--foreground) 18%,transparent);border-radius:8px;padding:10px 14px;color:var(--foreground)}
+.html-embed .step b{color:var(--accent)}
+.html-embed .step small{display:block;color:color-mix(in srgb,var(--foreground) 75%,transparent);line-height:1.5;font-size:.9em}
+.html-embed .arrow{text-align:center;color:color-mix(in srgb,var(--foreground) 55%,transparent);line-height:1.6}
+.html-embed .mock{border:1px solid color-mix(in srgb,var(--foreground) 18%,transparent);border-radius:8px;padding:12px 14px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem;line-height:1.6;color:var(--foreground)}
+.html-embed .mock .star{color:var(--accent)}
+.html-embed .mock .dim,.html-embed .note,.html-embed .gloss,.html-embed blockquote .gloss{color:color-mix(in srgb,var(--foreground) 72%,transparent)}
+.html-embed blockquote{border-left:2px solid var(--accent);padding-left:1em}
+.html-embed .lead{color:color-mix(in srgb,var(--foreground) 75%,transparent)}
 </style>
 
 <div class="html-embed" lang="zh-CN">

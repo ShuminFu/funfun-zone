@@ -107,7 +107,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
 @media(min-width:1380px){.html-embed .toc{position:fixed;top:50%;transform:translateY(-50%); left:max(16px,calc((100vw - 880px)/2 - 236px));width:216px;margin:0; max-height:calc(100vh - 48px);overflow-y:auto;z-index:15;border:0;background:none;padding:0}
 .html-embed .toc ol{grid-template-columns:1fr;gap:0}
 .html-embed .toc a{font-size:12.5px;padding:6px 7px;border-bottom:0}}
-.html-embed .grid{display:grid;gap:14px}
+.html-embed .pg-grid{display:grid;gap:14px}
 .html-embed .g2{grid-template-columns:1fr 1fr}
 .html-embed .g3{grid-template-columns:repeat(3,1fr)}
 .html-embed .g4{grid-template-columns:repeat(4,1fr)}
@@ -291,7 +291,7 @@ html[data-theme="light"] .html-embed{color-scheme:light;}
   </div>
   <section>
   <h2 id="s01"><span class="n">01</span>先打两个比方</h2>
-  <div class="grid g2">
+  <div class="pg-grid g2">
     <div class="card"><h3><span class="pill blu">spawn_task</span>贴在工单上的便利贴</h3><p>修车师傅给你换轮胎，发现刹车片快磨完了。他不顺手去拆刹车——那会把今天的活越搞越大。他在工单上贴一张便利贴：“刹车片该换了，要的话另开一单。”开不开，你说了算。</p></div>
     <div class="card"><h3><span class="pill teal">show_widget</span>摆在你面前的样板</h3><p>装修师傅不用嘴给你描述三种瓷砖，而是把三块样板直接摆在桌上。你用手一指：“这块。”比来回打字说“第二种偏灰那个”快得多，也不会听岔。</p></div>
   </div>

@@ -13,17 +13,17 @@ draft: false
 
 <style>
 .html-embed{overflow-x:auto;max-width:100%}  /* a too-wide table scrolls inside the post, not the page */
-.callout{border-left:2px solid var(--accent);padding-left:1rem;margin:1rem 0}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-tr.hl td{font-weight:600}
-.hash{word-break:break-all}
-ol.tl{list-style:none;padding-left:1rem;border-left:2px solid var(--accent)}
-ol.tl li{margin:.6rem 0}
-ol.tl .t{display:block;font-size:.85em;color:var(--accent);font-variant-numeric:tabular-nums}
-ul.check li::marker{content:"✓  ";color:var(--accent)}
-.illus{margin:1.5em 0}
-.illus img{width:100%;height:auto;border-radius:8px}
-.illus figcaption{font-size:.9em;color:var(--foreground);opacity:.85;text-align:center;margin-top:.4em}
+.html-embed .callout{border-left:2px solid var(--accent);padding-left:1rem;margin:1rem 0}
+.html-embed td.num,.html-embed th.num{text-align:right;font-variant-numeric:tabular-nums}
+.html-embed tr.hl td{font-weight:600}
+.html-embed .hash{word-break:break-all}
+.html-embed ol.tl{list-style:none;padding-left:1rem;border-left:2px solid var(--accent)}
+.html-embed ol.tl li{margin:.6rem 0}
+.html-embed ol.tl .t{display:block;font-size:.85em;color:var(--accent);font-variant-numeric:tabular-nums}
+.html-embed ul.check li::marker{content:"✓  ";color:var(--accent)}
+.html-embed .illus{margin:1.5em 0}
+.html-embed .illus img{width:100%;height:auto;border-radius:8px}
+.html-embed .illus figcaption{font-size:.9em;color:var(--foreground);opacity:.85;text-align:center;margin-top:.4em}
 </style>
 
 <div class="html-embed" lang="zh">
