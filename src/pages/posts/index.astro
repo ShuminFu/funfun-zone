@@ -2,7 +2,7 @@
 /**
  * Posts Listing Page
  *
- * Lists all garden posts/notes
+ * Lists garden posts. Public Notes stay on /notes/.
  * Supports grid/list layout toggle and pages/infinite pagination via config
  */
 
@@ -17,7 +17,7 @@ import Pagination from '../../components/Pagination.astro';
 import InfiniteScroll from '../../components/InfiniteScroll.astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '../../config';
-import { calculateAllGrowth, getEffectiveGrowth, participatesInGrowth } from '../../utils/growth';
+import { calculateAllGrowth, getEffectiveGrowth, isNote, participatesInGrowth } from '../../utils/growth';
 
 // Get all posts, filter drafts in production
 const allPosts = await getCollection('posts', ({ data }) => {
@@ -43,11 +43,13 @@ for (const [postId, result] of growthResults) {
 const getPostGrowth = (post: typeof allPostsSorted[0]) =>
   effectiveGrowthMap.get(post.id) || post.data.growth;
 
-// Notes stay under All only; stage tabs count posts that can grow.
-const seedlings = allPostsSorted.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'seedling');
-const budding = allPostsSorted.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'budding');
-const evergreen = allPostsSorted.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'evergreen');
-const cardGrowth = (post: typeof allPostsSorted[0]) =>
+// Growth uses the full set, so a public note can still move a post between stages.
+// The garden itself lists only posts.
+const gardenPosts = allPostsSorted.filter((post) => !isNote(post.data.tags));
+const seedlings = gardenPosts.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'seedling');
+const budding = gardenPosts.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'budding');
+const evergreen = gardenPosts.filter(p => participatesInGrowth(p.data.tags) && getPostGrowth(p) === 'evergreen');
+const cardGrowth = (post: typeof gardenPosts[0]) =>
   participatesInGrowth(post.data.tags) ? getPostGrowth(post) : undefined;
 
 // Config
@@ -55,14 +57,14 @@ const { postsPerPage, layout, pagination } = siteConfig.posts;
 const isInfinite = pagination === 'infinite';
 
 // For infinite scroll, show all posts; for pages, show first page only
-const posts = isInfinite ? allPostsSorted : allPostsSorted.slice(0, postsPerPage);
-const totalPages = Math.ceil(allPostsSorted.length / postsPerPage);
+const posts = isInfinite ? gardenPosts : gardenPosts.slice(0, postsPerPage);
+const totalPages = Math.ceil(gardenPosts.length / postsPerPage);
 
-// Get unique tags from all posts
-const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || []))].sort();
+// Tags that remain on the posts listed here.
+const allTags = [...new Set(gardenPosts.flatMap((post) => post.data.tags || []))].sort();
 ---
 
-<BaseLayout title="Garden" description="All notes in the digital garden">
+<BaseLayout title="Garden" description="Posts growing in this garden.">
   <Header slot="header" />
 
   <div data-layout-container class:list={["mx-auto px-4 py-12 sm:py-16", layout === 'list' ? "max-w-3xl" : "max-w-5xl"]}>
@@ -73,7 +75,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
           The Garden
         </h1>
         <p class="text-primary-600 dark:text-primary-400">
-          {allPostsSorted.length} notes growing in this garden
+          {gardenPosts.length} notes growing in this garden
         </p>
       </div>
       <LayoutToggle defaultLayout={layout} storageKey="posts-layout" />
@@ -89,7 +91,7 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
           class="growth-tab inline-flex items-center gap-2 rounded-xl px-4 py-2 font-sans font-medium transition-colors bg-primary-900 text-primary-50 dark:bg-primary-100 dark:text-primary-950"
         >
           All
-          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs">{allPostsSorted.length}</span>
+          <span class="growth-count rounded-sm px-1.5 py-0.5 text-xs">{gardenPosts.length}</span>
         </button>
         <button
           type="button"
@@ -164,18 +166,18 @@ const allTags = [...new Set(allPostsSorted.flatMap((post) => post.data.tags || [
     )}
 
     <!-- Posts -->
-    {allPostsSorted.length > 0 ? (
+    {gardenPosts.length > 0 ? (
       <>
         <!-- Grid items stay height:auto. h-full on the item would size each card to its content. -->
         <div id="posts-grid" data-view="grid" class:list={["mb-12 grid grid-cols-1 gap-8 md:grid-flow-dense md:grid-cols-2 lg:grid-cols-3", layout === 'list' && "hidden"]}>
-          {allPostsSorted.map((post) => (
+          {gardenPosts.map((post) => (
             <div class:list={["post-card flex min-w-0 flex-col", post.data.icon && "md:col-span-2"]} data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
               <PostCard headingLevel={2} post={post} effectiveGrowth={getPostGrowth(post)} />
             </div>
           ))}
         </div>
         <div id="posts-list" data-view="list" class:list={["mb-12", layout === 'grid' && "hidden"]}>
-          {allPostsSorted.map((post) => (
+          {gardenPosts.map((post) => (
             <div class="post-card min-w-0" data-growth={cardGrowth(post)} data-tags={JSON.stringify(post.data.tags || [])}>
               <PostListItem post={post} effectiveGrowth={getPostGrowth(post)} />
             </div>
