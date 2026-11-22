@@ -28,11 +28,19 @@ export interface GrowthResult {
   reasons: string[];
 }
 
-const NOTES_TAG = 'notes';
+export const NOTES_TAG = 'notes';
+
+/**
+ * The Note badge and the /notes/ index.
+ * A reading-notes tag is a normal post, not a note.
+ */
+export function isNote(tags?: readonly string[]): boolean {
+  return tags?.includes(NOTES_TAG) ?? false;
+}
 
 /** Notes stay in the garden index but never receive a growth stage. */
 export function participatesInGrowth(tags?: readonly string[]): boolean {
-  return !tags?.includes(NOTES_TAG);
+  return !isNote(tags);
 }
 
 // Thresholds for growth calculation
