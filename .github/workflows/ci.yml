@@ -15,4 +15,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm test
       - run: npm run build
+      - run: node scripts/check-public-boundary.mjs --dist
+      - run: node --experimental-strip-types --test functions/lib/chrome.built.test.ts

@@ -16,3 +16,5 @@ In the Pages project (funfun.zone):
 The old feed URL `/rss.xml` redirects to `/feed.xml` via `public/_redirects`.
 
 `public/appcast.xml` is the Claude Island Sparkle feed. Leave it in `public/` so `https://funfun.zone/appcast.xml` keeps working.
+
+Private notes are not part of this build. The gate and the separate deployment are described in [private-notes.md](private-notes.md). Do not point this Pages project at a private notes repository.

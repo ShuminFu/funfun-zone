@@ -51,7 +51,7 @@ What changed for that skill:
 
 ## Deploy
 
-Cloudflare Pages, static output. See [docs/cloudflare-pages.md](docs/cloudflare-pages.md). Node 22, build `npm run build`, publish `dist`.
+Cloudflare Pages, static output, plus a Pages Function that gates private notes. See [docs/cloudflare-pages.md](docs/cloudflare-pages.md) and [docs/private-notes.md](docs/private-notes.md). Node 22, build `npm run build`, publish `dist`. Private notes are not part of this build.
 
 ## Theme
 

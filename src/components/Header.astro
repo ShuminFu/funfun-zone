@@ -52,6 +52,15 @@ function isActive(url: string): boolean {
             {item.title}
           </a>
         ))}
+        <!-- Edge gate fills this after it verifies the owner. Static HTML has no private entry. -->
+        <!-- owner-entry:desktop -->
+        <a
+          href="/auth/login/"
+          data-auth="sign-in"
+          class="font-sans text-sm text-primary-600 transition-colors hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-100"
+        >
+          Sign in
+        </a>
 
         <div class="h-4 w-px bg-primary-200 dark:bg-primary-800" />
       </div>
@@ -94,6 +103,14 @@ function isActive(url: string): boolean {
           {item.title}
         </a>
       ))}
+      <!-- owner-entry:mobile -->
+      <a
+        href="/auth/login/"
+        data-auth="sign-in"
+        class="block rounded-lg px-3 py-2 text-sm font-medium text-primary-600 transition-colors hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-100"
+      >
+        Sign in
+      </a>
 
       <div class="pt-2 border-t border-primary-200 dark:border-primary-800">
         <div class="flex items-center justify-between py-2 px-3">

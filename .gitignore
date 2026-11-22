@@ -19,6 +19,13 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.dev.vars
+.dev.vars.*
+
+# A local checkout of private notes at the repo root. Never part of this public site.
+/private-notes/
+deploy/private-notes/notes/*
+!deploy/private-notes/notes/README.md
 
 # macOS-specific files
 .DS_Store
