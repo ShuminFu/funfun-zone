@@ -38,7 +38,7 @@ export const GET: APIRoute = async ({ site }) => {
     '## Optional',
     [
       line('Garden', url('/posts/'), 'the garden index, filterable by growth stage and tag'),
-      line('Notes', url('/notes/'), 'notes only; posts tagged reading-notes stay in the garden'),
+      line('Public Notes', url('/notes/'), 'notes only; posts tagged reading-notes stay in the garden'),
       line('RSS feed', url('/feed.xml')),
       line('Sitemap', url('/sitemap-index.xml')),
     ].join('\n'),

@@ -24,14 +24,14 @@ const { layout } = siteConfig.posts;
 const description = 'Short notes, kept outside the garden\'s growth stages.';
 ---
 
-<BaseLayout title="Notes" description={description}>
+<BaseLayout title="Public Notes" description={description}>
   <Header slot="header" />
 
   <div data-layout-container class:list={["mx-auto px-4 py-12 sm:py-16", layout === 'list' ? "max-w-3xl" : "max-w-5xl"]}>
     <div class="flex items-start justify-between mb-8">
       <div>
         <h1 class="mb-2 text-4xl text-primary-900 dark:text-primary-100">
-          Notes
+          Public Notes
         </h1>
         <p class="text-primary-600 dark:text-primary-400">
           {notes.length} {notes.length === 1 ? 'note' : 'notes'}, outside the growth stages

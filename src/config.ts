@@ -128,7 +128,7 @@ export const siteConfig: MyceliumConfig = {
   navigation: {
     items: [
       { title: 'Garden', url: '/posts/' },
-      { title: 'Notes', url: '/notes/' },
+      { title: 'Public Notes', url: '/notes/' },
       { title: 'About', url: '/about/' },
     ],
     showSocialLinks: true,
