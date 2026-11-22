@@ -9,7 +9,7 @@ import GrowthIndicator from './GrowthIndicator.astro';
 import MemoryPoint from './MemoryPoint.astro';
 import Tags from './Tags.astro';
 import { siteConfig } from '../config';
-import { participatesInGrowth } from '../utils/growth';
+import { isNote, participatesInGrowth } from '../utils/growth';
 
 export interface Props {
   post: Post;
@@ -23,7 +23,7 @@ const { title, description, growth, planted, tags, icon } = post.data;
 // Use effective growth if provided, otherwise fall back to manual growth
 const displayGrowth = effectiveGrowth || growth;
 const showGrowth = siteConfig.garden.showGrowthStatus && participatesInGrowth(tags);
-const kind = tags?.includes('notes') ? 'Note' : 'Post';
+const kind = isNote(tags) ? 'Note' : 'Post';
 
 const plantedDate = planted.toLocaleDateString('en-US', {
   year: 'numeric',

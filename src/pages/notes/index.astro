@@ -1,0 +1,68 @@
+---
+/**
+ * Notes index. Lists posts the Note badge already marks (isNote).
+ * Growth filters stay on the garden.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PostCard from '../../components/PostCard.astro';
+import PostListItem from '../../components/PostListItem.astro';
+import LayoutToggle from '../../components/LayoutToggle.astro';
+import { getCollection } from 'astro:content';
+import { siteConfig } from '../../config';
+import { isNote } from '../../utils/growth';
+
+const notes = (await getCollection('posts', ({ data }) => {
+  return import.meta.env.PROD ? !data.draft : true;
+}))
+  .filter((post) => isNote(post.data.tags))
+  .sort((a, b) => b.data.planted.valueOf() - a.data.planted.valueOf());
+
+const { layout } = siteConfig.posts;
+const description = 'Short notes, kept outside the garden\'s growth stages.';
+---
+
+<BaseLayout title="Public Notes" description={description}>
+  <Header slot="header" />
+
+  <div data-layout-container class:list={["mx-auto px-4 py-12 sm:py-16", layout === 'list' ? "max-w-3xl" : "max-w-5xl"]}>
+    <div class="flex items-start justify-between mb-8">
+      <div>
+        <h1 class="mb-2 text-4xl text-primary-900 dark:text-primary-100">
+          Public Notes
+        </h1>
+        <p class="text-primary-600 dark:text-primary-400">
+          {notes.length} {notes.length === 1 ? 'note' : 'notes'}, outside the growth stages
+        </p>
+      </div>
+      <LayoutToggle defaultLayout={layout} storageKey="posts-layout" />
+    </div>
+
+    {notes.length > 0 ? (
+      <>
+        <div id="posts-grid" data-view="grid" class:list={["mb-12 grid grid-cols-1 gap-8 md:grid-flow-dense md:grid-cols-2 lg:grid-cols-3", layout === 'list' && "hidden"]}>
+          {notes.map((post) => (
+            <div class:list={["flex min-w-0 flex-col", post.data.icon && "md:col-span-2"]}>
+              <PostCard headingLevel={2} post={post} />
+            </div>
+          ))}
+        </div>
+        <div id="posts-list" data-view="list" class:list={["mb-12", layout === 'grid' && "hidden"]}>
+          {notes.map((post) => (
+            <PostListItem post={post} />
+          ))}
+        </div>
+      </>
+    ) : (
+      <div class="text-center py-12">
+        <p class="text-primary-600 dark:text-primary-400">
+          No notes yet.
+        </p>
+      </div>
+    )}
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>
