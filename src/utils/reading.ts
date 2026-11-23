@@ -7,10 +7,17 @@
  * a widget's script has many.
  */
 
+/**
+ * A bilingual note marks the translation a reader switches to with
+ * `<section data-alt-lang>`. Only one language is read, so it is not counted.
+ */
+const ALT_LANG = /<section\b[^>]*\bdata-alt-lang\b[^>]*>[\s\S]*?<\/section>/gi;
+
 /** The note's prose with markup, code, styles, scripts and data URIs removed. */
 export function readableText(body: string): string {
   return body
     .replace(/^---\n[\s\S]*?\n---\n/, '')
+    .replace(ALT_LANG, ' ')
     .replace(/<(style|script|svg|textarea)\b[\s\S]*?<\/\1>/gi, ' ')
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/<[^>]+>/g, ' ')
