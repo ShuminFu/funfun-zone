@@ -1,8 +1,9 @@
 ---
-title: "Always-on agent 并不是一直开着"
+title: "Always-on Agent：被唤醒，记住进度，接着做事"
 description: "事件进入 inbox，agent 醒来干活、把进度存进 memory，然后休眠。"
 growth: seedling
 planted: 2026-11-23T18:04:32+08:00
+lastTended: 2026-11-23T18:14:04+08:00
 draft: false
 tags:
   - "ai-agents"
