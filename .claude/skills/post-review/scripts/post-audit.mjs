@@ -63,6 +63,8 @@ const note = (id, text) => findings[id].notes.push(text);
 // ---------------------------------------------------------------- source pass
 const plain = (s) =>
   s
+    // A bilingual note's translation (<section data-alt-lang>) is not read in the same pass; same rule as reading.ts.
+    .replace(/<section\b[^>]*\bdata-alt-lang\b[^>]*>[\s\S]*?<\/section>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>|<svg[\s\S]*?<\/svg>/gi, ' ')
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/<[^>]+>/g, ' ')

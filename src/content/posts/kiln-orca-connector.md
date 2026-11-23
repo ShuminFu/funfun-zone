@@ -52,10 +52,20 @@ tags:
 .html-embed .fr .fa i::after{right:auto;top:auto;left:-4px;bottom:-2px;border-top:8px solid currentColor;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
 .html-embed .fr .fa span{width:12em;text-align:left}
 }
+.html-embed .lsr{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.html-embed .lsw{display:inline-flex;gap:2px;background:var(--muted);border-radius:999px;padding:3px;margin:0 0 20px}
+.html-embed .lsw label{padding:4px 16px;border-radius:999px;font-size:14px;line-height:1.5;cursor:pointer;color:var(--foreground);user-select:none}
+.html-embed #lang-zh:checked ~ .lsw label[for="lang-zh"],.html-embed #lang-en:checked ~ .lsw label[for="lang-en"]{background:var(--foreground);color:var(--background)}
+.html-embed #lang-zh:focus-visible ~ .lsw label[for="lang-zh"],.html-embed #lang-en:focus-visible ~ .lsw label[for="lang-en"]{outline:2px solid var(--accent);outline-offset:2px}
+.html-embed #lang-zh:checked ~ .le,.html-embed #lang-en:checked ~ .lz{display:none}
+.html-embed .alt-title{font-size:1.35em;font-weight:600;line-height:1.35;margin:0 0 12px}
 </style>
 
 <div class="html-embed" lang="zh-CN">
-<p class="where">English version: <a href="/posts/kiln-orca-connector-en/" lang="en">How kiln-orca runs Kiln's work through agents in Orca</a> · 前一篇：<a href="/posts/kiln-automation-flow/">Kiln 怎么把一个 Issue 自动变成一次发布</a></p>
+<input class="lsr" type="radio" name="post-lang" id="lang-zh" checked>
+<input class="lsr" type="radio" name="post-lang" id="lang-en">
+<div class="lsw"><label for="lang-zh" lang="zh-CN">中文</label><label for="lang-en" lang="en">English</label></div>
+<section class="lz" lang="zh-CN">
 <p><a href="/posts/kiln-automation-flow/">上一篇</a>讲了 Kiln 的整条自动化链：Issue 被 AI 开发、被另一个 Agent 审计，然后合并、打 tag、发布。那篇里 AI 的部分只说到「Server 把任务派给 AI 执行节点」。这篇往下看一层：执行节点上发生了什么，Kiln 怎么让 Orca 里的编程 Agent 替它干活，又怎么防它乱来。</p>
 <p>读的是 <a href="https://github.com/hewenyu/kilnflow.dev">kilnflow.dev</a> 的 <code>kiln-orca/</code> 目录（TypeScript，约 1.15 万行源码），commit <code>e3bff51</code>。只读源码和测试，<strong>没有安装，也没有运行</strong>；Orca 本身不开源，我只看了连接器怎么调用它的命令行，以及测试里录下的 Orca 输出。下文路径都相对于 <code>kiln-orca/src/</code>。</p>
 
@@ -144,4 +154,106 @@ tags:
 </tbody>
 </table></div>
 <p>做得好的地方也很明显：所有子进程都用参数数组启动，没有 <code>shell: true</code>；token 不出现在命令行参数、journal 和日志里，日志只记指纹；外部输入都按 <code>unknown</code> 解析再校验，源码里没有一处 <code>as any</code>；每个外部命令都有超时。</p>
+</section>
+<section class="le" lang="en" data-alt-lang>
+<p class="alt-title">How kiln-orca runs Kiln&#39;s work through agents in Orca</p>
+<p>The <a href="/posts/kiln-automation-flow/#en">previous post</a> covered Kiln's whole automation chain: an issue is developed by an AI, reviewed by another agent, then merged, tagged and released. On the AI side it stopped at "the server hands the task to an AI execution node". This post goes one level down: what happens on that node, how Kiln gets a coding agent inside Orca to do its work, and how it keeps the agent from doing anything else.</p>
+<p>I read the <code>kiln-orca/</code> directory of <a href="https://github.com/hewenyu/kilnflow.dev">kilnflow.dev</a> (TypeScript, about 11.5k lines of source) at commit <code>e3bff51</code>. Source and tests only: <strong>nothing was installed or run</strong>. Orca itself is not open source; I only looked at how the connector calls its command line and at Orca output recorded in the tests. Paths are relative to <code>kiln-orca/src/</code>.</p>
+
+<div class="tldr"><p>In one sentence: <code>kiln-orca</code> is a resident user service between the Kiln server and Orca. It takes tasks from the server, starts an agent in a one-shot Orca worktree, and writes each step to a local journal so it can carry on after a crash; the agent can only act by asking it through the <code>kiln-orca task</code> command, and git credentials are fetched from the server per transfer and handed back when done.</p></div>
+
+<h2>Who does what</h2>
+<figure class="fl"><div class="fr"><div class="fn "><b>Kiln server</b><small>tasks · credentials · results</small></div><div class="fa "><span>airunner.v2 long-poll</span><i></i></div><div class="fn hi"><b>kiln-orca</b><small>resident user service</small></div><div class="fa "><span>Orca CLI</span><i></i></div><div class="fn "><b>Orca</b><small>worktrees · terminals · orchestration</small></div></div><div class="fa v"><span>Orca starts the agent</span><i></i></div><div class="fn "><b>Codex / Claude Code</b><small>works in a one-shot worktree</small></div><div class="fo"><span class="lp">↺ the agent reaches back only through kiln-orca task (local unix socket)</span></div><figcaption>The connector does not run the agent itself, and the agent never talks to the server directly: every outbound request goes through the connector.</figcaption></figure>
+<p><strong>Orca</strong> is a desktop app that manages agents' worktrees, terminals and orchestration (runs, dispatches, workers). How Orca divides work inside, and whether it spawns sub-agents, is its own business; Kiln does not care.</p>
+<p><strong>kiln-orca</strong> runs as a macOS LaunchAgent or a Linux <code>systemd --user</code> service, and one data directory is one node. The token a node enrols with decides whether it is a review node or a development node; a machine with both Codex and Claude Code installed can enrol one of each, each with its own data directory.</p>
+
+<h2>The life of one task on a node</h2>
+<figure class="fl"><div class="fr"><div class="fn "><b>prepare</b><small>clone · worktree · toolchain · services</small></div><div class="fa "><span>request id recorded first</span><i></i></div><div class="fn "><b>start</b><small>orca worker-start</small></div><div class="fa "><span>agent works</span><i></i></div><div class="fn hi"><b>running</b><small>waits for worker_done · 5s heartbeat</small></div></div><div class="fa v"><span>agent sends worker_done</span><i></i></div><div class="fr"><div class="fn "><b>finishing</b><small>push attempt branch · Complete</small></div><div class="fa "><span>result committed</span><i></i></div><div class="fn "><b>stopping / releasing</b><small>stop agent · free terminal</small></div><div class="fa "><span>both confirmed</span><i></i></div><div class="fn "><b>reclaiming</b><small>delete worktree · journal</small></div></div><figcaption>These stage names are the values of the stage field in a journal record; the connector writes the journal before each step and resumes from it after a restart.</figcaption></figure>
+
+<h3>1. Startup: check it can work before asking for work</h3>
+<p>On start, the connector reads its enrolment and private key, takes a single-instance lock, opens a socket at <code>run/kiln-orca.sock</code> in the data directory, then checks each dependency: Orca is open and at least version <code>1.4.258</code>; Docker and Compose work; the bundled <code>kiln-runner</code> can prepare toolchains; the journal is writable; each agent answers <code>--version</code>; and the <code>kiln-task</code> skill is synced into each agent's skills directory.</p>
+<p>This status, plus the protocol version (currently 10), goes to the server with every <code>Acquire</code>. When capacity is full (default <code>max_tasks: 2</code>), local drain is on, Orca is not ready, or the journal or skill has a problem, the node stays connected but declares it takes no new work. An unreadable journal record counts as one slot of capacity, because it may describe an agent still running in Orca that the connector cannot identify.</p>
+<p class="where"><code>host/run.ts:132</code> · <code>core/node.ts:176,473,728</code> · <code>core/orca.ts:306</code></p>
+
+<h3>2. Prepare: clone, worktree, toolchain, test services</h3>
+<p>After taking a task, the connector prepares the repository's clone under <code>repos/&lt;repo id&gt;/&lt;name&gt;</code>. It asks the server for a read token (<code>IssueCredential</code> with an <code>op_id</code>), passes it to git as <code>http.&lt;url&gt;.extraHeader</code> through environment variables so it never appears in argv, and calls <code>RevokeCredential</code> as soon as the clone is done. The connector's own git ignores the global and system git config.</p>
+<p>It then registers the repository with Orca, writes task files under <code>tasks/&lt;attempt&gt;/</code> (<code>work.json</code>, <code>candidates.json</code> for development selection, and so on), runs <code>kiln-runner toolchain ensure</code> to prepare Go, Node and pnpm from the repository's <code>.kiln/runtimes.lock</code>, and, if the repository declares test services, brings up Postgres or Redis with <code>docker compose up -d --wait</code>.</p>
+<p class="where"><code>core/attempt.ts:459,746</code> · <code>core/git.ts:171,410</code> · <code>core/credentials.ts:77</code> · <code>core/toolchain.ts:167</code> · <code>core/services.ts:305</code></p>
+
+<h3>3. Start the agent, never twice</h3>
+<p>Before starting, the connector writes this start's request id to the journal, and <strong>only then</strong> calls:</p>
+<p><code>orca orchestration worker-start --worktree new-top-level --name kiln-a&lt;attempt&gt;-e&lt;epoch&gt; --base-branch &lt;commit&gt; --comment kiln:attempt=…;epoch=…;task=…;kind=… --agent &lt;agent&gt; --spec &lt;prompt&gt;</code></p>
+<p>Orca creates a new top-level worktree and starts the agent in it. If the call's outcome is unclear (timeout, dropped connection), the connector does not retry; it asks <code>request-show</code> with the same request id whether Orca actually started it. If that cannot be settled, the task ends as <code>infra.lost</code>: failing is better than one task running two agents. The worktree's name and comment carry the attempt and epoch, which is how cleanup later proves "I created this".</p>
+<p class="where"><code>core/attempt.ts:864,958</code> · <code>core/orca.ts:611</code></p>
+
+<h3>4. Tracking: mailbox, heartbeat, timeouts</h3>
+<p>When the agent finishes it sends a <code>worker_done</code> message. The connector keeps a "mailbox" terminal of its own in Orca running <code>orchestration check --types worker_done,escalation,question</code> and writes each message to a file; if the agent asks a question mid-task, it gets a fixed reply telling it to decide according to its brief.</p>
+<p>While a task runs, the connector checks the mailbox every 2 seconds, falls back to <code>worker-show</code> every 30 seconds, and sends the server a heartbeat with the current stage every 5 seconds. The heartbeat reply can carry a cancel request; exceeding the task's time limit, losing the server for 10 minutes, a stale epoch, or the node being revoked all make the connector stop the agent. When the connector itself restarts it simply stops tracking; the agent keeps running in Orca and is picked up again from the journal.</p>
+<p class="where"><code>core/mailbox.ts:585</code> · <code>core/attempt.ts:118-123,1000,1358</code></p>
+
+<h3>5. The agent's only door: <code>kiln-orca task</code></h3>
+<p>The agent's brief contains a command of the form <code>node cli.js task --home &lt;data dir&gt; --attempt &lt;id&gt;</code>; its usage is documented in the <code>kiln-task</code> skill, which ships with the package and is synced into the agent's directory by the connector. The command hands each request over the unix socket to the running connector, which calls the server on its behalf.</p>
+<div class="tw"><table>
+<thead><tr><th>Subcommand</th><th>What it does</th><th>Who validates</th></tr></thead>
+<tbody>
+<tr><td><code>info</code></td><td>Basic task information</td><td>Local</td></tr>
+<tr><td><code>check-report</code></td><td>Review: validate <code>report.json</code> before finishing</td><td>Server <code>ValidateReport</code>; locally only file type and a 1 MiB cap</td></tr>
+<tr><td><code>claim</code></td><td>Development: claim the selected issues</td><td>Server <code>ValidateReport</code> + <code>ClaimDevIssues</code></td></tr>
+<tr><td><code>deliver</code></td><td>Development: submit the delivery report</td><td>Server validates the report; locally: clean tree, HEAD contains the delivered commit, design phase Markdown-only</td></tr>
+<tr><td><code>ci</code></td><td>Latest CI result for a PR or commit</td><td>Server <code>GetVerification</code></td></tr>
+<tr><td><code>doc</code></td><td>Read the frozen external design docs</td><td>Server, authorised from task relations</td></tr>
+<tr><td><code>exec</code></td><td>Run a command with the managed toolchain; git gets credentials via the connector</td><td>See the next section</td></tr>
+<tr><td><code>done</code></td><td>End the round: validate once more, then send <code>worker_done</code> to Orca from the agent's own process</td><td>Connector</td></tr>
+</tbody>
+</table></div>
+<p>One detail in that last row: <code>worker_done</code> is sent by the agent's process, using the identity Orca set in that session's environment; the connector never impersonates the agent to report completion.</p>
+<p class="where"><code>host/socket.ts:295</code> · <code>core/attempt.ts:1412-1649</code> · <code>core/done.ts:138</code></p>
+
+<h3>6. <code>task exec</code>: one token per git transfer</h3>
+<figure class="fl"><div class="fr"><div class="fn "><b>Agent's git</b><small>run through task exec</small></div><div class="fa "><span>git-remote-https swapped for a wrapper</span><i></i></div><div class="fn hi"><b>Transport wrapper</b><small>checks for other credentials first</small></div><div class="fa "><span>opens a read operation</span><i></i></div><div class="fn "><b>Connector → server</b><small>token for this one repo</small></div></div><div class="fo"><span class="ok">✓ transfer ends, connection closes: revoked at once</span><span class="lp">netrc, extraHeader or password in URL found: transfer refused</span></div><figcaption>Neither the agent nor the worktree holds a lasting git credential; every fetch is requested and revoked on its own.</figcaption></figure>
+<p><code>task exec -- &lt;command&gt;</code> puts the toolchain first on <code>PATH</code>, points <code>GIT_EXEC_PATH</code> at a mirror directory where <code>git-remote-http(s)</code> is replaced by the connector's wrapper, and configures the connector's credential helper for the task repository's host.</p>
+<p>Each time git goes over HTTP(S), the wrapper first checks whether the transfer would carry some other credential: a user or password in the URL, an <code>http.extraHeader</code> effective for that URL, netrc mentioning the host or <code>default</code>, or any of these being unreadable. Any one of them refuses the transfer. Otherwise it opens a read operation with the connector over the socket, and the connector asks the server for a token only if the URL is exactly the task repository or a declared dependency; when the connection closes, the token is revoked.</p>
+<p>Write access is used only for delivery: the connector requests a separate write token for its own push of the attempt branch and returns it right after. The agent never gets a write credential.</p>
+<p class="where"><code>host/cli.ts:306,365</code> · <code>core/gitexec.ts:45,109</code> · <code>core/credentials.ts:246,362</code> · <code>core/attempt.ts:1468,1490</code></p>
+
+<h3>7. Finishing: confirm the result, then delete things</h3>
+<p>When the agent finishes, the connector first records the verdict in the journal (stage <code>finishing</code>). For a development task that delivered, it pushes the delivered commit to <code>kiln/attempt-&lt;id&gt;</code> with a write token and confirms with <code>ls-remote</code>; if nothing was delivered, it pushes the current changes to the same branch as a checkpoint, so the next round can continue on a different machine. Then it sends <code>Complete</code>, retrying for up to 30 minutes.</p>
+<p>Only after the result is confirmed does cleanup start: stop test services, confirm the agent has stopped and its terminal is released, delete the worktree, checkout and local branch through Orca, verify that Orca, git and the disk no longer have them, and finally delete the journal record. Before deleting, it checks name, comment, path and git registration; anything the connector did not create is left alone. Unfinished reclaim is retried every minute and abandoned after 12 hours with a log entry explaining the manual fix.</p>
+<p class="where"><code>core/attempt.ts:1159,1223,1256,1297</code> · <code>core/git.ts:558</code> · <code>core/reclaim.ts:185-411</code></p>
+
+<h2>What happens after a crash</h2>
+<p>This is the core of the design. Before every action that changes something outside the process, the connector records what it is about to do in <code>journal/&lt;attempt&gt;.json</code>: the start request id, the verdict, whether to push, the content of <code>Complete</code>. On restart it reads each record:</p>
+<ul>
+<li>a recorded <code>Complete</code> is sent again;</li>
+<li>a verdict without a confirmed push redoes the push;</li>
+<li>records stuck in <code>stopping</code>, <code>releasing</code> or <code>reclaiming</code> are retried every minute;</li>
+<li>an unreadable record is neither skipped nor deleted: the node stops taking new work and reports the file and the reason in the log, <code>doctor</code> and the dashboard until a person deals with it.</li>
+</ul>
+<p>The tests follow the same idea: about 580 cases using real git, a local git HTTP server, a real unix socket and multi-process lock races, plus many "epoch goes stale / process crashes in the middle of step X" cases.</p>
+
+<h2>Problems I found</h2>
+<p>No high-severity defects. Most of what is worth fixing only matters if "the agent and the connector run as the same user" is treated as a security boundary; Kiln's own docs call these guard rails, not a boundary.</p>
+<div class="tw"><table>
+<thead><tr><th>Problem</th><th>Effect</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>The socket identifies callers by attempt id alone</td><td>With two tasks running, one agent can act as the other: get its credentials, claim issues, read docs. A random per-task secret in the task command would fix it</td><td><code>host/run.ts:202</code></td></tr>
+<tr><td>Fixed 10-minute git timeout on a full clone</td><td>On a large repo or slow link the clone times out, the next task starts from zero, and it can fail with <code>infra.fetch</code> indefinitely</td><td><code>core/git.ts:50,412</code></td></tr>
+<tr><td>The shared clone's own <code>.git/config</code> and hooks still apply</td><td>A proxy or hook left by an earlier development agent affects later tasks' token-carrying git</td><td><code>core/git.ts:183</code></td></tr>
+<tr><td>Journal and state files are not fsynced</td><td>After power loss a record can be empty; an empty journal stops the node taking work until someone deletes it</td><td><code>core/journal.ts:215</code></td></tr>
+<tr><td>The clone path is built from the server-supplied repo name with no containment check before deletion</td><td>Only reachable if the server is buggy or compromised; the reclaim code already has this check, this path does not</td><td><code>core/attempt.ts:428</code></td></tr>
+<tr><td>A report file over 1 MiB is reported to the agent as "retry later"</td><td>The agent may keep retrying until the task times out</td><td><code>core/attempt.ts:1534</code></td></tr>
+</tbody>
+</table></div>
+<p>What is done well is just as clear: every child process is started with an argv array, never <code>shell: true</code>; tokens never appear in argv, the journal or logs, which record only fingerprints; external input is parsed as <code>unknown</code> and then validated, with not one <code>as any</code> in the source; and every external command has a timeout.</p>
+</section>
+<script>
+(() => {
+  const zh = document.getElementById('lang-zh'), en = document.getElementById('lang-en');
+  if (!zh || !en) return;
+  if (location.hash === '#en') en.checked = true;
+  const sync = () => history.replaceState(null, '', en.checked ? '#en' : location.pathname + location.search);
+  zh.addEventListener('change', sync);
+  en.addEventListener('change', sync);
+})();
+</script>
 </div>
