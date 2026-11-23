@@ -26,6 +26,7 @@
     "build": "astro build",
     "postbuild": "node scripts/per-page-heading-font.mjs",
     "preview": "astro preview",
+    "test": "node --experimental-strip-types --test functions/lib/*.test.ts deploy/private-notes/src/*.test.ts && node --test deploy/private-notes/build-catalog.test.mjs && node scripts/check-public-boundary.mjs",
     "astro": "astro",
     "setup": "node scripts/setup.mjs",
     "update-theme": "bash scripts/update-theme.sh",

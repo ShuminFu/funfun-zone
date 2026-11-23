@@ -1,0 +1,8 @@
+# Copy to wrangler.toml in the private repository only.
+# Do not add wrangler.toml to the public Pages project.
+# Set ACCESS_TEAM_DOMAIN, ACCESS_AUD, and OWNER_EMAIL in that project's
+# dashboard. Do not commit the values.
+
+name = "private-notes"
+main = "src/worker.ts"
+compatibility_date = "2025-04-01"

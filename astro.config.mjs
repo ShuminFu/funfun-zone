@@ -31,7 +31,9 @@ export default defineConfig({
 
   integrations: [
     mdx(),
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes('/auth/'),
+    }),
   ],
 
   // Tailwind CSS v4 is wired via its Vite plugin (the former @astrojs/tailwind
